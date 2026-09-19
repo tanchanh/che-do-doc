@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chế Độ Đọc - Dương Tấn Chánh</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   1. RESET & BOX-SIZING
+   ========================================================= */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0.5rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  word-break: normal;
+  overflow-wrap: break-word;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* =========================================================
+   2. VARIABLES
+   ========================================================= */
+:root {
+  --reader-fs: 1.2rem;
+  --reader-lh: 1.75;
+  --reader-mw: 37.5rem;
+  --reader-ff: Georgia, "Times New Roman", "Noto Serif", serif;
+  --paper: #faf9f6;
+  --ink: #1a1a1a;
+  --line: #e6e1d6;
+  --muted: #8a8578;
+  --link: #b04a00;
+  --accent: #2980b9;
+  --accent-bg: rgba(52, 152, 219, 0.12);
+  --accent-bg-hover: rgba(52, 152, 219, 0.22);
+}
+
+body.dark {
+  --paper: #1c1a17;
+  --ink: #d8d4cc;
+  --line: #33302a;
+  --muted: #7a766a;
+  --link: #e8a06b;
+  --accent: #6cb2eb;
+  --accent-bg: rgba(108, 178, 235, 0.15);
+  --accent-bg-hover: rgba(108, 178, 235, 0.25);
+}
+
+/* =========================================================
+   3. BỐ CỤC CHUNG
+   ========================================================= */
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* =========================================================
+   4. HEADER — H1 + TÁC GIẢ CÙNG DÒNG
+   ========================================================= */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.2rem 0.8rem;
+  margin: 0.3rem 0 0.5rem;
+  padding: 0 0.5rem;
+  flex: 0 0 auto;
+}
+
+.page-header-side {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04rem;
+  margin: 0;
+  flex: 0 0 auto;
+  color: var(--ink);
+}
+
+.page-header .author {
+  font-size: 1.1rem;
+  font-weight: normal;
+  font-style: normal;
+  text-align: right;
+  margin: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+h2 { font-size: 1.3rem; font-weight: bold; margin: 1rem 0 0.5rem; }
+h3 { font-size: 1.2rem; font-weight: bold; margin: 1rem 0 0.5rem; }
+h4 { font-size: 1.1rem; font-weight: bold; margin: 1rem 0 0.5rem; }
+
+/* =========================================================
+   5. TOOLBAR
+   ========================================================= */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--line);
+  flex: 0 0 auto;
+}
+
+.toolbar-spacer { flex: 1 1 auto; }
+
+select,
+button {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: normal;
+  line-height: 1.4;
+  color: var(--ink);
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s, opacity 0.12s, color 0.12s;
+}
+
+select {
+  border-bottom: 2px solid var(--line);
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.5rem;
+}
+
+select:hover { border-bottom-color: var(--muted); }
+
+button:hover:not(:disabled) { background-color: rgba(128, 128, 128, 0.12); }
+button.active { color: var(--link); font-weight: bold; }
+button:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+#pasteBtn {
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  font-weight: bold;
+}
+
+#pasteBtn:hover:not(:disabled) { background-color: var(--accent-bg-hover); }
+
+.mobile-only { display: none; }
+.desktop-only { display: inline-flex; }
+
+/* =========================================================
+   6. CHẾ ĐỘ TOÀN MÀN HÌNH (desktop)
+   ========================================================= */
+body.is-fullscreen .page-header { display: none; }
+
+body.is-fullscreen .toolbar {
+  padding: 0.3rem 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.is-fullscreen .toolbar::-webkit-scrollbar { height: 0.4rem; }
+body.is-fullscreen .toolbar::-webkit-scrollbar-thumb {
+  background-color: var(--line);
+  border-radius: 0.2rem;
+}
+
+body.is-fullscreen .toolbar > * { flex: 0 0 auto; }
+
+/* =========================================================
+   7. CHẾ ĐỘ "RỘNG SÁT LỀ"
+   ========================================================= */
+body.is-max-width {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.is-max-width .page-header {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+body.is-max-width .toolbar {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+body.is-max-width .side-input {
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+}
+
+body.is-max-width .side-read {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.is-max-width #reader {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+/* =========================================================
+   8. BỐ CỤC CHÍNH
+   ========================================================= */
+.main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  transition: grid-template-columns 0.2s;
+}
+
+.main.reading-mode { grid-template-columns: 0 1fr; }
+
+.side-input {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.8rem;
+  border-right: 2px solid var(--line);
+  transition: opacity 0.2s;
+}
+
+.main.reading-mode .side-input {
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  padding: 0;
+  border-right: none;
+}
+
+.side-read {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+  scrollbar-gutter: stable;
+}
+
+/* =========================================================
+   9. Ô NHẬP
+   ========================================================= */
+#input,
+#rawInput {
+  width: 100%;
+  min-height: 100%;
+  border: none;
+  background-color: transparent;
+  color: var(--ink);
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.6;
+  word-break: normal;
+  overflow-wrap: break-word;
+  resize: none;
+  padding: 0;
+  display: block;
+}
+
+#input:empty::before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+  font-style: normal;
+  pointer-events: none;
+  display: block;
+  white-space: pre-line;
+  line-height: 1.7;
+}
+
+#input * {
+  color: inherit;
+  background-color: transparent;
+}
+
+#input img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem 0;
+}
+
+#input h1,
+#input h2,
+#input h3 {
+  text-align: left;
+  text-transform: none;
+  font-size: 1.3rem;
+  margin: 0.6rem 0 0.3rem;
+}
+
+#input ul,
+#input ol { padding-left: 1.5rem; margin: 0.4rem 0; }
+
+#input blockquote {
+  margin: 0.6rem 0;
+  padding: 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+#input pre {
+  background-color: transparent;
+  padding: 0;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+#input table,
+#input thead,
+#input tbody,
+#input tr,
+#input th,
+#input td,
+#input caption {
+  display: block;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  width: auto;
+}
+
+#input th,
+#input td { display: inline; }
+#input tr { margin: 0 0 0.4rem; }
+#input th::after,
+#input td::after { content: " "; }
+
+/* =========================================================
+   10. VÙNG ĐỌC
+   ========================================================= */
+#reader {
+  max-width: var(--reader-mw);
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: var(--reader-ff);
+  font-size: var(--reader-fs);
+  font-weight: normal;
+  line-height: var(--reader-lh);
+  color: var(--ink);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+#reader .article-title {
+  font-family: inherit;
+  font-size: 1.9em;
+  font-weight: bold;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+  color: var(--ink);
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+#reader .article-meta {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.75em;
+  font-weight: normal;
+  color: var(--muted);
+  margin: 0 0 2rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#reader .article-meta .dot { margin: 0 0.5em; opacity: 0.5; }
+
+#reader .article-body > *:first-child { margin-top: 0; }
+#reader .article-body > *:last-child { margin-bottom: 0; }
+
+#reader p { margin: 0 0 1.1em; }
+
+#reader h1,
+#reader h2,
+#reader h3,
+#reader h4,
+#reader h5,
+#reader h6 {
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 1.3;
+  color: var(--ink);
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+#reader h1 { font-size: 1.5em; margin: 1.5em 0 0.6em; }
+#reader h2 { font-size: 1.3em; margin: 1.4em 0 0.5em; }
+#reader h3 { font-size: 1.15em; margin: 1.2em 0 0.5em; }
+#reader h4 { font-size: 1em; margin: 1.1em 0 0.4em; }
+
+#reader h5,
+#reader h6 {
+  font-size: 0.9em;
+  margin: 1em 0 0.4em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+#reader a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  word-break: break-word;
+}
+
+#reader img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.2em auto;
+}
+
+#reader figure { margin: 1.2em 0; }
+
+#reader figcaption {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.75em;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+  margin-top: 0.4em;
+}
+
+#reader ul,
+#reader ol { margin: 0.6em 0 1.1em; padding-left: 1.6em; }
+
+#reader li { margin: 0.35em 0; }
+
+#reader blockquote {
+  margin: 1.2em 0;
+  padding: 0;
+  border: none;
+  color: var(--muted);
+  font-style: italic;
+}
+
+#reader blockquote p:last-child { margin-bottom: 0; }
+
+#reader hr {
+  border: none;
+  border-top: 2px solid var(--line);
+  margin: 2em auto;
+  width: 30%;
+}
+
+#reader table,
+#reader thead,
+#reader tbody,
+#reader tfoot,
+#reader tr,
+#reader th,
+#reader td,
+#reader caption,
+#reader col,
+#reader colgroup {
+  display: block;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  width: auto;
+  max-width: 100%;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: left;
+  vertical-align: baseline;
+}
+
+#reader tr { margin: 0 0 0.8em; }
+#reader th,
+#reader td { display: inline; }
+#reader th::after,
+#reader td::after { content: " "; }
+
+#reader code {
+  font-family: "Roboto Mono", Consolas, ui-monospace, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", monospace;
+  font-size: 0.9em;
+}
+
+#reader pre {
+  border: none;
+  padding: 0;
+  margin: 1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: "Roboto Mono", Consolas, ui-monospace, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", monospace;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+#reader pre code { font-size: 1em; }
+
+#reader details {
+  margin: 1em 0;
+  padding: 0;
+  border: none;
+  font-size: 0.95em;
+  color: var(--muted);
+}
+
+#reader summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--ink);
+}
+
+#reader mark {
+  background-color: #fff3a3;
+  color: #1a1a1a;
+  padding: 0 0.15em;
+}
+
+body.dark #reader mark {
+  background-color: #8a7a00;
+  color: #ffffff;
+}
+
+#reader b,
+#reader strong { font-weight: bold; }
+
+#reader i,
+#reader em { font-style: italic; }
+
+#reader u { text-decoration: underline; }
+
+#reader s,
+#reader del {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+#reader sub,
+#reader sup { font-size: 0.75em; line-height: 0; }
+
+#reader small {
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+#reader .blocked-media {
+  display: inline-block;
+  padding: 0 0.3em;
+  color: var(--muted);
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+#reader .placeholder {
+  text-align: center;
+  color: var(--muted);
+  padding: 3rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+#reader .placeholder .big {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#reader .placeholder .title {
+  font-size: 1.1rem;
+  color: var(--ink);
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+}
+
+#reader .placeholder .hint {
+  font-size: 0.9rem;
+  background-color: rgba(128, 128, 128, 0.08);
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  display: inline-block;
+  text-align: left;
+  line-height: 1.7;
+}
+
+#reader .placeholder .hint kbd {
+  background-color: rgba(128, 128, 128, 0.2);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+#reader .extract-note {
+  font-size: 0.85em;
+  color: var(--muted);
+  padding: 0;
+  border: none;
+  margin-bottom: 1.2em;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* =========================================================
+   11. DROP OVERLAY (chỉ desktop)
+   ========================================================= */
+.drop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(26, 26, 26, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.drop-overlay.is-visible { display: flex; }
+
+.drop-overlay-inner {
+  background-color: var(--paper);
+  color: var(--ink);
+  padding: 3rem 4rem;
+  border-radius: 1rem;
+  border: 3px dashed var(--accent);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.drop-overlay-hint {
+  display: block;
+  font-size: 1rem;
+  font-weight: normal;
+  color: var(--muted);
+  margin-top: 0.8rem;
+}
+
+/* =========================================================
+   12. NÚT CUỘN LÊN ĐẦU
+   ========================================================= */
+.scroll-top {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 100;
+  display: none;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0.4rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: bold;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--paper);
+  background-color: var(--ink);
+  border: none;
+  border-radius: 0.8rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+.scroll-top.is-visible {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-top:hover { background-color: var(--link); }
+.scroll-top:active { transform: scale(0.95); }
+
+/* =========================================================
+   13. MEDIA QUERIES — MOBILE (≤ 820px)
+   ========================================================= */
+@media (max-width: 820px) {
+  body {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+    padding: 0.5rem 0.5rem 5rem;
+  }
+
+  body.is-max-width { padding-left: 0; padding-right: 0; }
+
+  .page-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    margin: 0.3rem 0 0.5rem;
+  }
+
+  .page-header-side { display: none; }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    width: 100%;
+  }
+
+  .page-header .author {
+    font-size: 1rem;
+    width: 100%;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .mobile-only { display: inline-flex; }
+  .desktop-only { display: none; }
+
+  .toolbar {
+    padding: 0.5rem 0;
+    gap: 0.4rem;
+  }
+
+  .toolbar button,
+  .toolbar select {
+    min-height: 2.75rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .main {
+    display: block;
+    overflow: visible;
+  }
+
+  .side-input,
+  .side-read {
+    display: none;
+    overflow: visible;
+    padding: 1rem 0;
+    border: none;
+    min-height: 0;
+    opacity: 1;
+  }
+
+  .main[data-view="input"]:not(.reading-mode) .side-input { display: block; }
+  .main[data-view="read"] .side-read { display: block; }
+  .main.reading-mode .side-input { display: none; }
+  .main.reading-mode .side-read { display: block; }
+
+  #input,
+  #rawInput {
+    font-size: 1rem;
+    min-height: 60vh;
+  }
+
+  #reader {
+    padding: 1rem 0;
+  }
+
+  #reader .article-title { font-size: 1.5em; }
+
+  .scroll-top {
+    min-width: 3rem;
+    min-height: 3rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* =========================================================
+   14. MEDIA QUERIES — MÀN RẤT HẸP (≤ 480px)
+   ========================================================= */
+@media (max-width: 480px) {
+  .page-header h1 { font-size: 1.4rem; }
+  .page-header .author { font-size: 0.95rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="page-header-side" aria-hidden="true"></span>
+  <h1>Chế độ đọc</h1>
+  <p class="author">Dương Tấn Chánh</p>
+</header>
+
+<div class="toolbar">
+  <select id="fontSize" aria-label="Cỡ chữ">
+    <option value="1rem">Cỡ 1rem</option>
+    <option value="1.1rem">Cỡ 1.1rem</option>
+    <option value="1.2rem" selected>Cỡ 1.2rem</option>
+    <option value="1.3rem">Cỡ 1.3rem</option>
+    <option value="1.5rem">Cỡ 1.5rem</option>
+    <option value="1.75rem">Cỡ 1.75rem</option>
+  </select>
+
+  <select id="fontFamily" aria-label="Phông chữ">
+    <option value="Georgia, 'Times New Roman', 'Noto Serif', serif" selected>Serif hệ thống</option>
+    <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">Sans hệ thống</option>
+    <option value="'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">Noto Sans</option>
+    <option value="'Roboto Mono', Consolas, Menlo, Monaco, 'Liberation Mono', 'DejaVu Sans Mono', monospace">Roboto Mono</option>
+  </select>
+
+  <select id="lineHeight" aria-label="Giãn dòng">
+    <option value="1.55">Dòng 1.55</option>
+    <option value="1.75" selected>Dòng 1.75</option>
+    <option value="2">Dòng 2.0</option>
+  </select>
+
+  <select id="maxWidth" aria-label="Chiều rộng">
+    <option value="25rem">Rộng 400px</option>
+    <option value="37.5rem" selected>Rộng 600px</option>
+    <option value="50rem">Rộng 800px</option>
+    <option value="none">Rộng sát lề</option>
+  </select>
+
+  <span class="toolbar-spacer"></span>
+
+  <button id="viewBtn" class="mobile-only" type="button"
+          aria-label="Xem nội dung đã tách" title="Chuyển chế độ xem">Đọc</button>
+
+  <button id="pasteBtn" type="button"
+          aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
+
+  <button id="fileBtn" type="button"
+          aria-label="Chọn file từ máy" title="Chọn file .html, .htm, .txt">Chọn file</button>
+
+  <input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
+
+  <button id="toggleRaw" type="button"
+          aria-label="Xem HTML thô" title="Xem/sửa HTML gốc">HTML</button>
+
+  <button id="expandBtn" class="desktop-only" type="button"
+          aria-label="Bật chế độ toàn màn hình" title="Chỉ giữ thanh nút, ẩn tiêu đề">Toàn màn hình</button>
+
+  <button id="darkBtn" type="button"
+          aria-label="Chế độ tối" title="Chế độ tối">Tối</button>
+
+  <button id="cleanBtn" type="button"
+          aria-label="Xoá nội dung" title="Xoá nội dung">Xoá</button>
+
+  <button id="copyBtn" type="button"
+          aria-label="Copy bài viết" title="Chưa có nội dung để copy" disabled>Copy</button>
+</div>
+
+<div class="main" id="main" data-view="input">
+  <div class="side-input">
+    <div id="input" contenteditable="true" spellcheck="false"
+         autocorrect="off" autocapitalize="off"
+         data-placeholder="Dán nội dung vào đây
+
+Cách 1: Bấm nút Dán ở trên.
+Cách 2: Bấm nút Chọn file để mở file .html, .htm, .txt.
+Cách 3: Kéo thả file vào cửa sổ trình duyệt (máy tính).
+Cách 4: Nhấn giữ vào vùng này rồi chọn Paste.
+Cách 5: Nhấn Ctrl+V ở bất cứ đâu để thay thế toàn bộ.
+
+Cũng có thể gõ trực tiếp."></div>
+    <textarea id="rawInput" hidden placeholder="Dán hoặc chỉnh HTML thô vào đây..."
+              autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+  </div>
+  <div class="side-read"><div id="reader"></div></div>
+</div>
+
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-overlay-inner">
+    Thả file vào đây
+    <span class="drop-overlay-hint">Hỗ trợ .html, .htm, .txt (tối đa 5MB)</span>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTopBtn" type="button"
+        aria-label="Cuộn lên đầu">Lên<br>đầu</button>
+
+<script>
+/* =========================================================
+   THAM CHIẾU PHẦN TỬ
+   ========================================================= */
+const input          = document.getElementById('input');
+const rawInput       = document.getElementById('rawInput');
+const reader         = document.getElementById('reader');
+const main           = document.getElementById('main');
+const sideInput      = document.querySelector('.side-input');
+const sideRead       = document.querySelector('.side-read');
+const toggleRaw      = document.getElementById('toggleRaw');
+const expandBtn      = document.getElementById('expandBtn');
+const viewBtn        = document.getElementById('viewBtn');
+const pasteBtn       = document.getElementById('pasteBtn');
+const fileBtn        = document.getElementById('fileBtn');
+const fileInput      = document.getElementById('fileInput');
+const copyBtn        = document.getElementById('copyBtn');
+const darkBtn        = document.getElementById('darkBtn');
+const cleanBtn       = document.getElementById('cleanBtn');
+const scrollTopBtn   = document.getElementById('scrollTopBtn');
+const dropOverlay    = document.getElementById('dropOverlay');
+const fontSizeSel    = document.getElementById('fontSize');
+const fontFamilySel  = document.getElementById('fontFamily');
+const lineHeightSel  = document.getElementById('lineHeight');
+const maxWidthSel    = document.getElementById('maxWidth');
+const bodyEl         = document.body;
+const root           = document.documentElement;
+
+const isMobile  = () => window.matchMedia('(max-width: 820px)').matches;
+const isRawMode = () => toggleRaw.dataset.mode === 'raw';
+
+/* =========================================================
+   THEME COLOR
+   ========================================================= */
+function updateThemeColor() {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) return;
+  meta.setAttribute('content',
+    bodyEl.classList.contains('dark') ? '#1c1a17' : '#faf9f6');
+}
+
+/* =========================================================
+   HÀM NỀN TẢNG
+   ========================================================= */
+const BLANK_RE = /[\s\u00A0\u200B\u200C\u200D\uFEFF\u2060]+/g;
+function stripBlank(s) { return (s || '').replace(BLANK_RE, ''); }
+
+function looksLikeHTML(text) {
+  return /<\/?[a-z][\s\S]*>/i.test((text || '').trim());
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+}
+
+function safeURL(url) {
+  if (!url) return '';
+  const t = url.trim();
+  if (/^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(t)) return t;
+  if (/^data:image\/(png|jpe?g|gif|webp|svg\+xml);/i.test(t)) return t;
+  return '';
+}
+
+const ALLOWED_STYLE_PROPS = new Set([
+  'text-align', 'font-weight', 'font-style', 'text-decoration',
+  'text-transform', 'letter-spacing', 'list-style-type'
+]);
+
+function filterStyle(text) {
+  if (!text) return '';
+  const kept = [];
+  text.split(';').forEach(rule => {
+    const i = rule.indexOf(':');
+    if (i < 0) return;
+    const prop  = rule.slice(0, i).trim().toLowerCase();
+    const value = rule.slice(i + 1).trim();
+    if (!ALLOWED_STYLE_PROPS.has(prop)) return;
+    if (/expression|javascript:|url\s*\(/i.test(value)) return;
+    kept.push(prop + ': ' + value);
+  });
+  return kept.join('; ');
+}
+
+/* =========================================================
+   WHITELIST THẺ VÀ THUỘC TÍNH
+   ========================================================= */
+const ALLOWED_TAGS = new Set([
+  'p', 'div', 'section', 'article', 'figure', 'figcaption',
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'ul', 'ol', 'li', 'dl', 'dt', 'dd',
+  'blockquote', 'pre', 'hr', 'br',
+  'details', 'summary',
+  'a', 'span', 'strong', 'b', 'em', 'i', 'u', 's', 'del', 'ins', 'sub', 'sup',
+  'mark', 'small', 'code', 'kbd', 'samp', 'var', 'abbr', 'cite', 'q', 'time', 'address',
+  'img'
+]);
+
+const ALLOWED_ATTRS = {
+  '*':       new Set(['title', 'dir', 'lang']),
+  'a':       new Set(['href', 'name']),
+  'img':     new Set(['src', 'alt']),
+  'ol':      new Set(['start', 'type', 'reversed']),
+  'li':      new Set(['value']),
+  'time':    new Set(['datetime']),
+  'details': new Set(['open'])
+};
+
+const STRIP_WITH_CONTENT = new Set([
+  'script', 'style', 'noscript', 'template', 'iframe', 'object', 'embed',
+  'form', 'input', 'textarea', 'select', 'option', 'button',
+  'svg', 'math', 'canvas', 'video', 'audio', 'source', 'track',
+  'link', 'meta', 'base', 'title', 'head',
+  'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption', 'col', 'colgroup'
+]);
+
+/* =========================================================
+   KIỂM TRA NỘI DUNG NODE
+   ========================================================= */
+function hasVisibleContent(node) {
+  if (node.nodeType === 3) return stripBlank(node.textContent).length > 0;
+  if (node.nodeType !== 1) return false;
+
+  const tag = node.tagName;
+  if (['IMG', 'HR', 'VIDEO', 'AUDIO', 'IFRAME', 'TABLE',
+       'UL', 'OL', 'BLOCKQUOTE', 'PRE', 'FIGURE', 'DETAILS',
+       'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(tag)) return true;
+  if (tag === 'BR') return false;
+
+  if (stripBlank(node.textContent).length > 0) return true;
+  if (node.querySelector('img, hr, ul, ol, blockquote, pre, figure, details, table')) return true;
+  return false;
+}
+
+/* =========================================================
+   PHÁ BẢNG
+   ========================================================= */
+function flattenTables(rootEl) {
+  const tables = Array.from(rootEl.querySelectorAll('table')).reverse();
+  for (const t of tables) {
+    if (!t.isConnected) continue;
+
+    const frag = document.createDocumentFragment();
+    let rows = [];
+    try { rows = Array.from(t.rows); }
+    catch (e) { rows = Array.from(t.querySelectorAll('tr')); }
+
+    rows.forEach(tr => {
+      let cells = [];
+      try { cells = Array.from(tr.cells); }
+      catch (e) { cells = Array.from(tr.querySelectorAll('th, td')); }
+      if (!cells.length) return;
+
+      const p = document.createElement('p');
+      let hasContent = false;
+
+      cells.forEach(cell => {
+        const text = stripBlank(cell.textContent);
+        const hasRealMedia = !!cell.querySelector('img');
+        if (!text && !hasRealMedia) return;
+        if (hasContent) p.appendChild(document.createTextNode(' · '));
+        while (cell.firstChild) p.appendChild(cell.firstChild);
+        hasContent = true;
+      });
+
+      if (hasContent) frag.appendChild(p);
+    });
+
+    if (frag.childNodes.length) t.replaceWith(frag);
+    else t.remove();
+  }
+}
+
+function unwrapSingleChildWrappers(rootEl) {
+  let changed = true;
+  let loops = 0;
+  while (changed && loops++ < 4) {
+    changed = false;
+    rootEl.querySelectorAll('div, section, article').forEach(el => {
+      if (!el.isConnected) return;
+      const kids = Array.from(el.childNodes).filter(n =>
+        n.nodeType === 1 || (n.nodeType === 3 && stripBlank(n.textContent))
+      );
+      if (kids.length === 1 && kids[0].nodeType === 1) {
+        const parent = el.parentNode;
+        if (!parent) return;
+        parent.insertBefore(kids[0], el);
+        el.remove();
+        changed = true;
+      }
+    });
+  }
+}
+
+/* =========================================================
+   SANITIZE
+   ========================================================= */
+function sanitizeHTML(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  flattenTables(doc.body);
+
+  const all = Array.from(doc.body.querySelectorAll('*'));
+  for (const el of all) {
+    if (!el.isConnected) continue;
+    const tag = el.tagName.toLowerCase();
+
+    if (STRIP_WITH_CONTENT.has(tag)) { el.remove(); continue; }
+
+    if (!ALLOWED_TAGS.has(tag)) {
+      const parent = el.parentNode;
+      if (!parent) continue;
+      while (el.firstChild) parent.insertBefore(el.firstChild, el);
+      el.remove();
+      continue;
+    }
+
+    const allowed = new Set([
+      ...(ALLOWED_ATTRS['*'] || []),
+      ...(ALLOWED_ATTRS[tag] || [])
+    ]);
+
+    Array.from(el.attributes).forEach(attr => {
+      const name  = attr.name.toLowerCase();
+      const value = attr.value;
+
+      if (name.startsWith('on')) { el.removeAttribute(attr.name); return; }
+      if (name === 'class' || name === 'id') { el.removeAttribute(attr.name); return; }
+
+      if (name === 'style') {
+        const clean = filterStyle(value);
+        if (clean) el.setAttribute('style', clean);
+        else el.removeAttribute('style');
+        return;
+      }
+
+      if (!allowed.has(name)) { el.removeAttribute(attr.name); return; }
+
+      if (name === 'href' || name === 'src') {
+        const clean = safeURL(value);
+        if (clean) el.setAttribute(name, clean);
+        else el.removeAttribute(name);
+      }
+    });
+
+    if (tag === 'a' && el.hasAttribute('href')) {
+      el.setAttribute('target', '_blank');
+      el.setAttribute('rel', 'noopener noreferrer');
+    }
+
+    if (tag === 'img' && !el.hasAttribute('src')) {
+      const span = doc.createElement('span');
+      span.className = 'blocked-media';
+      span.textContent = '[ảnh]';
+      el.replaceWith(span);
+    }
+  }
+
+  unwrapSingleChildWrappers(doc.body);
+  return doc.body.innerHTML;
+}
+
+/* =========================================================
+   LỌC NHIỄU
+   ========================================================= */
+const NOISE_SELECTORS = [
+  'script', 'style', 'noscript', 'template', 'iframe', 'object', 'embed',
+  'nav', 'header', 'footer', 'aside',
+  '[role="navigation"]', '[role="banner"]', '[role="complementary"]',
+  '[role="search"]', '[role="menu"]', '[role="menubar"]', '[role="dialog"]',
+  'form', 'input', 'button', 'select', 'textarea', 'label',
+  'svg', 'canvas', 'video', 'audio', 'source', 'track',
+  'link', 'meta', 'base'
+].join(',');
+
+const NOISE_CLASS_RE = new RegExp(
+  '(^|[-_ ])(' +
+    'ad|ads|advert|advertisement|sponsor|sponsored|promo|banner|' +
+    'sidebar|side-bar|rail|' +
+    'menu|nav|navbar|navigation|breadcrumb|toolbar|topbar|' +
+    'comment|comments|comment-list|comment-form|disqus|' +
+    'social|share|sharing|share-bar|share-buttons|follow|' +
+    'related|recommend|recommended|more-from|read-next|read-more|' +
+    'newsletter|subscribe|signup|cta|call-to-action|' +
+    'cookie|consent|gdpr|privacy-banner|' +
+    'popup|modal|overlay|lightbox|' +
+    'masthead|site-header|site-footer|page-header|page-footer|' +
+    'widget|widgets|' +
+    'byline|author-info|author-box|author-bio|author-avatar|' +
+    'timestamp|publish-date|posted-on|date-published|' +
+    'tags|tag-list|post-tags|article-tags|' +
+    'rating|vote|votes|star-rating|' +
+    'print|email-this|save-this|bookmark|' +
+    'post-nav|prev-next|next-prev|pagination|pager|' +
+    'meta|meta-info|post-meta|article-meta-strip|' +
+    'skip-link|skip-to|screen-reader' +
+  ')([-_ ]|$)', 'i'
+);
+
+function removeNoise(doc) {
+  doc.querySelectorAll(NOISE_SELECTORS).forEach(el => el.remove());
+
+  doc.querySelectorAll('[class],[id]').forEach(el => {
+    if (!el.isConnected) return;
+    const cls = (typeof el.className === 'string') ? el.className : '';
+    if (NOISE_CLASS_RE.test(cls + ' ' + (el.id || ''))) el.remove();
+  });
+
+  let changed = true;
+  let loops = 0;
+  while (changed && loops++ < 8) {
+    changed = false;
+    doc.querySelectorAll('div, section, span, li, article, p, aside').forEach(el => {
+      if (!el.isConnected) return;
+      if (!hasVisibleContent(el)) { el.remove(); changed = true; }
+    });
+  }
+}
+
+/* =========================================================
+   CHẤM ĐIỂM VÀ CHỌN CONTAINER
+   ========================================================= */
+function scoreElement(el) {
+  const text = (el.textContent || '').trim();
+  const textLen = text.length;
+  if (textLen < 120) return 0;
+
+  let pScore = 0;
+  let pCount = 0;
+  el.querySelectorAll('p').forEach(p => {
+    const len = (p.textContent || '').trim().length;
+    if (len >= 30) { pScore += len; pCount++; }
+  });
+  const base = pScore > 0 ? pScore : textLen;
+
+  let linkLen = 0;
+  el.querySelectorAll('a').forEach(a => linkLen += (a.textContent || '').trim().length);
+  const linkDensity = textLen > 0 ? linkLen / textLen : 1;
+
+  const tag = el.tagName.toLowerCase();
+  let tagBoost = 1;
+  if (tag === 'article') tagBoost = 3.2;
+  else if (tag === 'main') tagBoost = 2.6;
+  else if (tag === 'section') tagBoost = 1.25;
+
+  const pBoost = 1 + Math.min(pCount, 12) * 0.05;
+  let score = base * tagBoost * pBoost;
+  score *= Math.max(0.04, 1 - linkDensity * 1.8);
+  return score;
+}
+
+function findMainContainer(doc) {
+  const cands = doc.body.querySelectorAll('article, main, [role="main"], section, div');
+  let best = null;
+  let bestScore = 0;
+  cands.forEach(el => {
+    const s = scoreElement(el);
+    if (s > bestScore) { bestScore = s; best = el; }
+  });
+  return best || doc.body;
+}
+
+function extractTitle(doc, mainEl) {
+  let h1 = mainEl.querySelector('h1') || doc.body.querySelector('h1');
+  if (h1) {
+    const t = h1.textContent.trim();
+    if (t.length >= 4 && t.length <= 300) { h1.remove(); return t; }
+  }
+
+  const og = doc.querySelector('meta[property="og:title"], meta[name="og:title"]');
+  if (og && og.getAttribute('content')) return og.getAttribute('content').trim();
+
+  const t = doc.querySelector('title');
+  if (t) {
+    let s = t.textContent.trim();
+    s = s.split(/\s+[|\-–—»·]\s+/)[0].trim();
+    if (s.length >= 4) return s;
+  }
+  return '';
+}
+
+function normalizeBreaks(rootEl) {
+  rootEl.querySelectorAll('*').forEach(el => {
+    let prevBr = false;
+    Array.from(el.childNodes).forEach(node => {
+      if (node.nodeType === 1 && node.tagName === 'BR') {
+        if (prevBr) node.remove(); else prevBr = true;
+      } else if (node.nodeType === 3) {
+        if (stripBlank(node.textContent)) prevBr = false;
+      } else if (node.nodeType === 1) {
+        prevBr = false;
+      }
+    });
+  });
+
+  rootEl.querySelectorAll('p, div, li, blockquote, h1, h2, h3, h4, h5, h6, article, section')
+    .forEach(el => {
+      while (el.lastChild) {
+        const last = el.lastChild;
+        if ((last.nodeType === 1 && last.tagName === 'BR') ||
+            (last.nodeType === 3 && !stripBlank(last.textContent))) last.remove();
+        else break;
+      }
+      while (el.firstChild) {
+        const first = el.firstChild;
+        if ((first.nodeType === 1 && first.tagName === 'BR') ||
+            (first.nodeType === 3 && !stripBlank(first.textContent))) first.remove();
+        else break;
+      }
+    });
+}
+
+function removeEmptyBlocks(rootEl) {
+  let changed = true;
+  let loops = 0;
+  while (changed && loops++ < 8) {
+    changed = false;
+    const blocks = Array.from(
+      rootEl.querySelectorAll('p, div, section, article, aside, span, li')
+    ).filter(el => el.isConnected).reverse();
+    for (const el of blocks) {
+      if (!hasVisibleContent(el)) { el.remove(); changed = true; }
+    }
+  }
+}
+
+function trimEdges(container) {
+  while (container.lastChild && !hasVisibleContent(container.lastChild)) {
+    container.lastChild.remove();
+  }
+  while (container.firstChild && !hasVisibleContent(container.firstChild)) {
+    container.firstChild.remove();
+  }
+}
+
+function countStats(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const words = (tmp.textContent || '').split(/\s+/)
+    .filter(w => /[\p{L}\p{N}]/u.test(w)).length;
+  const minutes = Math.max(1, Math.round(words / 220));
+  return { words, minutes };
+}
+
+function extractArticle(rawHTML) {
+  const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
+  removeNoise(doc);
+  const mainEl = findMainContainer(doc);
+  const title  = extractTitle(doc, mainEl);
+  const cleanHTML = sanitizeHTML(mainEl.innerHTML);
+
+  const wrap = document.createElement('div');
+  wrap.innerHTML = cleanHTML;
+  normalizeBreaks(wrap);
+  removeEmptyBlocks(wrap);
+  trimEdges(wrap);
+
+  let note = '';
+  if (stripBlank(wrap.textContent).length < 200) {
+    note = 'Không tìm thấy bài viết rõ ràng — hiển thị toàn bộ nội dung đọc được.';
+  }
+  return { title, bodyHTML: wrap.innerHTML, note };
+}
+
+function isEmptySource(src) {
+  if (!src || !src.trim()) return true;
+  try {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = src;
+    if (tmp.querySelector('img, hr, video, audio, iframe, table, pre, blockquote')) return false;
+    if (stripBlank(tmp.textContent)) return false;
+    return true;
+  } catch (e) {
+    return !stripBlank(src);
+  }
+}
+
+const EMPTY_EDITOR_RE = /^\s*(<br\s*\/?>|<div>\s*<br\s*\/?>\s*<\/div>|<p>\s*<br\s*\/?>\s*<\/p>|&nbsp;|\s)*\s*$/i;
+
+/* =========================================================
+   VIEW MODE
+   ========================================================= */
+function setView(view) {
+  if (view === 'input' && main.classList.contains('reading-mode')) {
+    main.classList.remove('reading-mode');
+    bodyEl.classList.remove('is-fullscreen');
+    expandBtn.classList.remove('active');
+    expandBtn.setAttribute('aria-label', 'Bật chế độ toàn màn hình');
+    expandBtn.title = 'Chỉ giữ thanh nút, ẩn tiêu đề';
+  }
+  main.dataset.view = view;
+
+  if (isMobile()) window.scrollTo(0, 0);
+
+  if (view === 'read') {
+    viewBtn.textContent = 'Sửa';
+    viewBtn.setAttribute('aria-label', 'Quay lại ô nhập');
+    viewBtn.title = 'Quay lại ô nhập';
+  } else {
+    viewBtn.textContent = 'Đọc';
+    viewBtn.setAttribute('aria-label', 'Xem nội dung đã tách');
+    viewBtn.title = 'Xem nội dung đã tách';
+  }
+  saveOpts();
+  updateScrollTopBtn();
+}
+
+viewBtn.addEventListener('click', () => {
+  const next = main.dataset.view === 'read' ? 'input' : 'read';
+  if (next === 'read' &&
+      document.activeElement &&
+      document.activeElement !== document.body) {
+    document.activeElement.blur();
+  }
+  setView(next);
+});
+
+/* =========================================================
+   CẬP NHẬT TRẠNG THÁI NÚT COPY
+   ========================================================= */
+function updateCopyState() {
+  const hasContent = !reader.querySelector('.placeholder')
+    && stripBlank(reader.textContent).length > 0;
+  copyBtn.disabled = !hasContent;
+  copyBtn.title = hasContent ? 'Copy bài viết' : 'Chưa có nội dung để copy';
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+let lastRenderSig = '';
+
+function render() {
+  const src = isRawMode() ? rawInput.value : input.innerHTML;
+
+  if (isEmptySource(src)) {
+    reader.innerHTML =
+      '<div class="placeholder">' +
+        '<span class="big">Chế độ đọc</span>' +
+        '<div class="title">Chưa có nội dung</div>' +
+        '<div>Dán văn bản hoặc mở file để bắt đầu.</div>' +
+        '<div class="hint">' +
+          '<b>Cách nhập:</b><br>' +
+          '• Bấm nút <kbd>Chọn file</kbd> để mở file .html, .htm, .txt<br>' +
+          '• Bấm nút <kbd>Dán</kbd> để lấy nội dung clipboard<br>' +
+          '• Nhấn giữ vào ô nhập rồi chọn <i>Paste</i><br>' +
+          '• Trên máy tính: <kbd>Ctrl</kbd>+<kbd>V</kbd> hoặc <kbd>⌘</kbd>+<kbd>V</kbd><br>' +
+          '• Kéo thả file vào cửa sổ trình duyệt' +
+        '</div>' +
+      '</div>';
+    updateCopyState();
+    lastRenderSig = '';
+
+    if (isMobile() && main.dataset.view === 'read') setView('input');
+    return;
+  }
+
+  let title = '';
+  let bodyHTML = '';
+  let note = '';
+
+  if (looksLikeHTML(src)) {
+    const r = extractArticle(src);
+    title = r.title;
+    bodyHTML = r.bodyHTML;
+    note = r.note;
+  } else {
+    bodyHTML = src.split(/\n\s*\n/)
+      .map(b => '<p>' + escapeHTML(b).replace(/\n/g, '<br>') + '</p>')
+      .join('');
+  }
+
+  const stats = countStats(bodyHTML);
+
+  let html = '';
+  if (title) {
+    html += '<h1 class="article-title">' + escapeHTML(title) + '</h1>';
+  }
+  html += '<div class="article-meta">' +
+            stats.words.toLocaleString('vi-VN') + ' từ' +
+            '<span class="dot">·</span>~' + stats.minutes + ' phút đọc' +
+          '</div>';
+  if (note) {
+    html += '<div class="extract-note">' + escapeHTML(note) + '</div>';
+  }
+  html += '<div class="article-body">' + bodyHTML + '</div>';
+
+  const sig = title + '\u0001' + bodyHTML;
+  const changed = sig !== lastRenderSig;
+  lastRenderSig = sig;
+
+  reader.innerHTML = html;
+
+  if (changed) {
+    if (sideRead) sideRead.scrollTop = 0;
+  }
+
+  updateCopyState();
+  updateScrollTopBtn();
+}
+
+let renderTimer = null;
+function renderDebounced() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(render, 120);
+}
+
+/* =========================================================
+   NHẬP LIỆU — 2 CHẾ ĐỘ
+   ========================================================= */
+function insertAtCursor(html, text) {
+  if (isRawMode()) {
+    const toInsert = (html && looksLikeHTML(html))
+      ? sanitizeHTML(html)
+      : escapeHTML(text).replace(/\r?\n/g, '\n');
+    const start = rawInput.selectionStart || 0;
+    const end   = rawInput.selectionEnd || 0;
+    const before = rawInput.value.slice(0, start);
+    const after  = rawInput.value.slice(end);
+    rawInput.value = before + toInsert + after;
+    rawInput.selectionStart = rawInput.selectionEnd = start + toInsert.length;
+    renderDebounced();
+    return;
+  }
+
+  let toInsert;
+  if (html && looksLikeHTML(html)) toInsert = sanitizeHTML(html);
+  else toInsert = escapeHTML(text).replace(/\r?\n/g, '<br>');
+
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !input.contains(sel.anchorNode)) {
+    input.focus();
+    const range = document.createRange();
+    range.selectNodeContents(input);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  try {
+    if (sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    const frag = range.createContextualFragment(toInsert);
+    const last = frag.lastChild;
+    range.insertNode(frag);
+    if (last) {
+      range.setStartAfter(last);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  } catch (err) {
+    input.insertAdjacentHTML('beforeend', toInsert);
+  }
+  renderDebounced();
+}
+
+function replaceContent(html, text) {
+  input.innerHTML = '';
+  rawInput.value = '';
+  lastRenderSig = '';
+
+  if (isRawMode()) {
+    const toInsert = (html && looksLikeHTML(html))
+      ? sanitizeHTML(html)
+      : escapeHTML(text).replace(/\r?\n/g, '\n');
+    rawInput.value = toInsert;
+  } else {
+    let toInsert;
+    if (html && looksLikeHTML(html)) toInsert = sanitizeHTML(html);
+    else toInsert = escapeHTML(text).replace(/\r?\n/g, '<br>');
+    input.innerHTML = toInsert;
+  }
+
+  render();
+}
+
+/* =========================================================
+   PASTE TRONG Ô NHẬP — NỐI VÀO CON TRỎ
+   ========================================================= */
+let composing = false;
+
+input.addEventListener('compositionstart', () => { composing = true; });
+input.addEventListener('compositionend', () => {
+  composing = false;
+  renderDebounced();
+});
+
+input.addEventListener('paste', e => {
+  if (!e.clipboardData) return;
+  e.preventDefault();
+
+  const html = e.clipboardData.getData('text/html');
+  const text = e.clipboardData.getData('text/plain');
+  insertAtCursor(html, text);
+
+  if (isMobile()) {
+    if (document.activeElement && document.activeElement !== document.body) {
+      document.activeElement.blur();
+    }
+    setTimeout(() => setView('read'), 180);
+  }
+});
+
+rawInput.addEventListener('paste', () => {
+  setTimeout(() => renderDebounced(), 0);
+});
+
+input.addEventListener('input', () => {
+  if (composing) return;
+  if (EMPTY_EDITOR_RE.test(input.innerHTML)) {
+    input.innerHTML = '';
+  }
+  renderDebounced();
+});
+
+rawInput.addEventListener('input', renderDebounced);
+
+/* =========================================================
+   PASTE TOÀN MÀN HÌNH — THAY THẾ
+   ========================================================= */
+document.addEventListener('paste', e => {
+  if (e.target === input || e.target === rawInput) return;
+
+  const ae = document.activeElement;
+  if (ae && ae !== bodyEl && ae !== input && ae !== rawInput) {
+    const tag = ae.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  }
+
+  if (!e.clipboardData) return;
+  e.preventDefault();
+
+  const html = e.clipboardData.getData('text/html');
+  const text = e.clipboardData.getData('text/plain');
+  if (!html && !text) return;
+
+  if (main.dataset.view === 'read') setView('input');
+
+  replaceContent(html, text);
+
+  if (isMobile()) {
+    if (document.activeElement && document.activeElement !== document.body) {
+      document.activeElement.blur();
+    }
+    setTimeout(() => setView('read'), 180);
+  }
+});
+
+/* =========================================================
+   NÚT DÁN — THAY THẾ
+   ========================================================= */
+let isPasting = false;
+
+pasteBtn.addEventListener('click', async () => {
+  if (isPasting) return;
+  isPasting = true;
+  pasteBtn.disabled = true;
+  pasteBtn.setAttribute('aria-busy', 'true');
+
+  try {
+    if (main.dataset.view === 'read') setView('input');
+
+    if (navigator.clipboard && navigator.clipboard.read) {
+      try {
+        const items = await navigator.clipboard.read();
+        let gotHTML = '';
+        let gotText = '';
+
+        for (const item of items) {
+          if (item.types.includes('text/html') && !gotHTML) {
+            try {
+              const blob = await item.getType('text/html');
+              gotHTML = await blob.text();
+            } catch (e) { /* bỏ qua */ }
+          }
+          if (item.types.includes('text/plain') && !gotText) {
+            try {
+              const blob = await item.getType('text/plain');
+              gotText = await blob.text();
+            } catch (e) { /* bỏ qua */ }
+          }
+        }
+
+        if (gotHTML || gotText) {
+          replaceContent(gotHTML, gotText);
+          if (isMobile()) {
+            if (document.activeElement && document.activeElement !== document.body) {
+              document.activeElement.blur();
+            }
+            setTimeout(() => setView('read'), 200);
+          }
+          return;
+        }
+      } catch (err) { /* bị từ chối, chuyển sang cách khác */ }
+    }
+
+    if (navigator.clipboard && navigator.clipboard.readText) {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text && text.trim()) {
+          replaceContent('', text);
+          if (isMobile()) {
+            if (document.activeElement && document.activeElement !== document.body) {
+              document.activeElement.blur();
+            }
+            setTimeout(() => setView('read'), 200);
+          }
+          return;
+        }
+      } catch (err) { /* tiếp tục fallback */ }
+    }
+
+    if (!isRawMode()) {
+      input.focus();
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(input);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } catch (e) { /* bỏ qua */ }
+    }
+
+    alert(
+      'Trình duyệt không cho phép đọc clipboard tự động.\n\n' +
+      'Hãy nhấn giữ vào ô nhập và chọn Paste, ' +
+      'hoặc dùng tổ hợp phím Ctrl+V / ⌘+V.'
+    );
+  } finally {
+    isPasting = false;
+    pasteBtn.disabled = false;
+    pasteBtn.removeAttribute('aria-busy');
+  }
+});
+
+/* =========================================================
+   CHỌN FILE — THAY THẾ
+   ========================================================= */
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_EXTS  = ['html', 'htm', 'txt'];
+let isReadingFile = false;
+
+fileBtn.addEventListener('click', () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  fileInput.value = '';
+  if (!file) return;
+  readFile(file);
+});
+
+function readFile(file) {
+  if (isReadingFile) return;
+
+  if (file.size > MAX_FILE_SIZE) {
+    alert('File quá lớn. Chỉ hỗ trợ file tối đa 5MB.');
+    return;
+  }
+
+  const name = (file.name || '').toLowerCase();
+  const dotIndex = name.lastIndexOf('.');
+  const ext = dotIndex >= 0 ? name.slice(dotIndex + 1) : '';
+
+  if (!ALLOWED_EXTS.includes(ext)) {
+    alert('Chỉ hỗ trợ file .html, .htm, .txt');
+    return;
+  }
+
+  isReadingFile = true;
+  fileBtn.disabled = true;
+  fileBtn.setAttribute('aria-busy', 'true');
+
+  const fileReader = new FileReader();
+
+  fileReader.onerror = () => {
+    alert('Không đọc được file. Vui lòng thử lại.');
+    isReadingFile = false;
+    fileBtn.disabled = false;
+    fileBtn.removeAttribute('aria-busy');
+  };
+
+  fileReader.onload = () => {
+    const content = fileReader.result || '';
+    if (main.dataset.view === 'read') setView('input');
+    replaceContent(content, content);
+    if (isMobile()) setTimeout(() => setView('read'), 200);
+
+    isReadingFile = false;
+    fileBtn.disabled = false;
+    fileBtn.removeAttribute('aria-busy');
+  };
+
+  fileReader.readAsText(file, 'UTF-8');
+}
+
+/* =========================================================
+   KÉO THẢ FILE (chỉ desktop) — THAY THẾ
+   ========================================================= */
+let dragCounter = 0;
+
+function isFileDrag(e) {
+  if (!e.dataTransfer) return false;
+  const types = e.dataTransfer.types;
+  if (!types) return false;
+  return Array.from(types).includes('Files');
+}
+
+document.addEventListener('dragenter', e => {
+  if (isMobile()) return;
+  if (!isFileDrag(e)) return;
+  e.preventDefault();
+  dragCounter++;
+  dropOverlay.classList.add('is-visible');
+});
+
+document.addEventListener('dragover', e => {
+  if (isMobile()) return;
+  if (!isFileDrag(e)) return;
+  e.preventDefault();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+});
+
+document.addEventListener('dragleave', e => {
+  if (isMobile()) return;
+  if (!isFileDrag(e)) return;
+  dragCounter--;
+  if (dragCounter <= 0) {
+    dragCounter = 0;
+    dropOverlay.classList.remove('is-visible');
+  }
+});
+
+document.addEventListener('drop', e => {
+  if (isMobile()) return;
+  if (!isFileDrag(e)) return;
+  e.preventDefault();
+  dragCounter = 0;
+  dropOverlay.classList.remove('is-visible');
+
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length > 0) {
+    readFile(files[0]);
+  }
+});
+
+/* =========================================================
+   HTML THÔ ↔ WYSIWYG
+   ========================================================= */
+toggleRaw.addEventListener('click', () => {
+  const isRaw = isRawMode();
+  if (isRaw) {
+    input.innerHTML = sanitizeHTML(rawInput.value);
+    rawInput.hidden = true;
+    input.hidden = false;
+    toggleRaw.dataset.mode = '';
+    toggleRaw.classList.remove('active');
+  } else {
+    rawInput.value = input.innerHTML;
+    input.hidden = true;
+    rawInput.hidden = false;
+    toggleRaw.dataset.mode = 'raw';
+    toggleRaw.classList.add('active');
+  }
+  render();
+});
+
+/* =========================================================
+   TUỲ CHỌN — LƯU VÀ KHÔI PHỤC
+   ========================================================= */
+const OPTS_KEY = 'readerOptsDTC';
+let savedView = 'input';
+
+function saveOpts() {
+  try {
+    localStorage.setItem(OPTS_KEY, JSON.stringify({
+      fontSize:   fontSizeSel.value,
+      fontFamily: fontFamilySel.value,
+      lineHeight: lineHeightSel.value,
+      maxWidth:   maxWidthSel.value,
+      dark:       bodyEl.classList.contains('dark'),
+      expanded:   main.classList.contains('reading-mode'),
+      view:       main.dataset.view
+    }));
+  } catch (e) { /* chế độ riêng tư — bỏ qua */ }
+}
+
+function loadOpts() {
+  try {
+    const o = JSON.parse(localStorage.getItem(OPTS_KEY) || '{}');
+    if (o.fontSize)   fontSizeSel.value   = o.fontSize;
+    if (o.fontFamily) fontFamilySel.value = o.fontFamily;
+    if (o.lineHeight) lineHeightSel.value = o.lineHeight;
+    if (o.maxWidth)   maxWidthSel.value   = o.maxWidth;
+
+    if (o.dark) {
+      bodyEl.classList.add('dark');
+      darkBtn.textContent = 'Sáng';
+    }
+
+    if (o.expanded && !isMobile()) {
+      main.classList.add('reading-mode');
+      bodyEl.classList.add('is-fullscreen');
+      expandBtn.classList.add('active');
+      expandBtn.setAttribute('aria-label', 'Thoát chế độ toàn màn hình');
+      expandBtn.title = 'Hiện lại tiêu đề';
+    }
+
+    if (o.view === 'read' || o.view === 'input') {
+      savedView = o.view;
+    }
+  } catch (e) { /* bỏ qua */ }
+}
+
+function applyStyles() {
+  root.style.setProperty('--reader-fs', fontSizeSel.value);
+  root.style.setProperty('--reader-ff', fontFamilySel.value);
+  root.style.setProperty('--reader-lh', lineHeightSel.value);
+  root.style.setProperty('--reader-mw', maxWidthSel.value);
+  bodyEl.classList.toggle('is-max-width', maxWidthSel.value === 'none');
+  saveOpts();
+}
+
+[fontSizeSel, fontFamilySel, lineHeightSel, maxWidthSel].forEach(sel => {
+  sel.addEventListener('change', applyStyles);
+});
+
+/* =========================================================
+   NÚT CHỨC NĂNG
+   ========================================================= */
+darkBtn.addEventListener('click', () => {
+  bodyEl.classList.toggle('dark');
+  const isDark = bodyEl.classList.contains('dark');
+  darkBtn.textContent = isDark ? 'Sáng' : 'Tối';
+  darkBtn.setAttribute('aria-label', isDark ? 'Chế độ sáng' : 'Chế độ tối');
+  updateThemeColor();
+  saveOpts();
+});
+
+expandBtn.addEventListener('click', () => {
+  const on = !main.classList.contains('reading-mode');
+  main.classList.toggle('reading-mode', on);
+  bodyEl.classList.toggle('is-fullscreen', on);
+  expandBtn.classList.toggle('active', on);
+  expandBtn.setAttribute('aria-label', on ? 'Thoát chế độ toàn màn hình' : 'Bật chế độ toàn màn hình');
+  expandBtn.title = on ? 'Hiện lại tiêu đề' : 'Chỉ giữ thanh nút, ẩn tiêu đề';
+  if (on) setView('read');
+  saveOpts();
+  updateScrollTopBtn();
+});
+
+cleanBtn.addEventListener('click', () => {
+  input.innerHTML = '';
+  rawInput.value = '';
+  lastRenderSig = '';
+  render();
+  setView('input');
+  if (!isRawMode()) input.focus();
+  else rawInput.focus();
+});
+
+/* =========================================================
+   COPY BÀI VIẾT
+   ========================================================= */
+async function copyRich(html, text) {
+  try {
+    if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html':  new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([text], { type: 'text/plain' })
+        })
+      ]);
+      return true;
+    }
+  } catch (e) { /* chuyển sang fallback */ }
+
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '-9999px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+copyBtn.addEventListener('click', async () => {
+  if (copyBtn.disabled) return;
+  copyBtn.disabled = true;
+  copyBtn.setAttribute('aria-busy', 'true');
+
+  try {
+    const titleEl = reader.querySelector('.article-title');
+    const bodyElm = reader.querySelector('.article-body');
+    const html = (titleEl ? titleEl.outerHTML : '') + (bodyElm ? bodyElm.outerHTML : '');
+    const text = reader.innerText;
+
+    if (!text.trim()) {
+      alert('Chưa có nội dung để copy.');
+      return;
+    }
+
+    const ok = await copyRich(html, text);
+    if (ok) alert('Đã copy bài viết!');
+    else alert('Trình duyệt không cho phép copy. Hãy bôi đen và giữ để chọn.');
+  } finally {
+    copyBtn.removeAttribute('aria-busy');
+    updateCopyState();
+  }
+});
+
+/* =========================================================
+   NÚT CUỘN LÊN ĐẦU — HIỆN Ở MỌI CHẾ ĐỘ
+   Đọc scroll từ nhiều nguồn để tương thích mọi trình duyệt.
+   ========================================================= */
+const SCROLL_THRESHOLD = 300;
+
+function getCurrentScrollTop() {
+  /* Trên mobile, body có overflow: auto → body là scroll container.
+     Trên một số trình duyệt, documentElement mới là scroll container.
+     Trên desktop, scroll xảy ra ở .side-input / .side-read.
+     Lấy max của tất cả các nguồn để chắc chắn. */
+  let maxTop = 0;
+
+  const candidates = [
+    window.scrollY,
+    window.pageYOffset,
+    document.documentElement ? document.documentElement.scrollTop : 0,
+    document.body ? document.body.scrollTop : 0,
+    sideInput ? sideInput.scrollTop : 0,
+    sideRead ? sideRead.scrollTop : 0
+  ];
+
+  for (const v of candidates) {
+    if (typeof v === 'number' && v > maxTop) maxTop = v;
+  }
+  return maxTop;
+}
+
+function updateScrollTopBtn() {
+  const y = getCurrentScrollTop();
+  if (y > SCROLL_THRESHOLD) scrollTopBtn.classList.add('is-visible');
+  else scrollTopBtn.classList.remove('is-visible');
+}
+
+/* Gắn listener với capture:true trên document — bắt mọi sự kiện scroll
+   từ bất kỳ element nào (window, documentElement, body, .side-read...). */
+document.addEventListener('scroll', updateScrollTopBtn, { passive: true, capture: true });
+
+/* Dự phòng: gắn trực tiếp lên window và 2 khung cuộn.
+   Trường hợp browser cũ không hỗ trợ capture option. */
+window.addEventListener('scroll', updateScrollTopBtn, { passive: true });
+if (sideInput) sideInput.addEventListener('scroll', updateScrollTopBtn, { passive: true });
+if (sideRead)  sideRead.addEventListener('scroll', updateScrollTopBtn, { passive: true });
+
+/* Khi bấm nút — cuộn tất cả các container có thể có về đầu */
+scrollTopBtn.addEventListener('click', () => {
+  /* Cuộn window (bắt cả documentElement và body) */
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    window.scrollTo(0, 0);
+  }
+
+  /* Cuộn trực tiếp documentElement và body cho chắc */
+  if (document.documentElement) document.documentElement.scrollTop = 0;
+  if (document.body) document.body.scrollTop = 0;
+
+  /* Cuộn 2 khung desktop */
+  if (sideInput) {
+    try { sideInput.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch (e) { sideInput.scrollTop = 0; }
+  }
+  if (sideRead) {
+    try { sideRead.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch (e) { sideRead.scrollTop = 0; }
+  }
+});
+
+/* =========================================================
+   XỬ LÝ XOAY MÀN HÌNH
+   ========================================================= */
+window.addEventListener('resize', () => {
+  if (isMobile()) {
+    if (main.classList.contains('reading-mode')) {
+      main.classList.remove('reading-mode');
+      bodyEl.classList.remove('is-fullscreen');
+      expandBtn.classList.remove('active');
+      saveOpts();
+    }
+  } else {
+    if (main.dataset.view === 'read' && !main.classList.contains('reading-mode')) {
+      setView('input');
+    }
+  }
+  updateScrollTopBtn();
+});
+
+/* =========================================================
+   KHỞI TẠO
+   ========================================================= */
+loadOpts();
+applyStyles();
+updateThemeColor();
+render();
+
+if (savedView === 'read' && !reader.querySelector('.placeholder')) {
+  setView('read');
+} else {
+  setView('input');
+}
+
+updateScrollTopBtn();
+
+if (isMobile() && !reader.querySelector('.article-body')) {
+  setTimeout(() => {
+    if (!isRawMode()) {
+      input.focus();
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(input);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } catch (e) { /* bỏ qua */ }
+    }
+  }, 300);
+}
+</script>
+
+</body>
+</html>
