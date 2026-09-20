@@ -46,6 +46,7 @@ body {
   --reader-lh: 1.75;
   --reader-mw: 37.5rem;
   --reader-ff: Georgia, "Times New Roman", "Noto Serif", serif;
+  --svg-max-size: 12rem;
   --paper: #faf9f6;
   --ink: #1a1a1a;
   --line: #e6e1d6;
@@ -77,13 +78,12 @@ body {
   overflow: hidden;
 }
 
-/* Khoá scroll nền khi modal mở (#1) */
 body.modal-open {
   overflow: hidden !important;
 }
 
 /* =========================================================
-   4. TOPBAR WRAPPER
+   4. TOPBAR
    ========================================================= */
 .topbar {
   flex: 0 0 auto;
@@ -309,6 +309,14 @@ body.is-max-width #reader {
   margin: 0.5rem 0;
 }
 
+#input img[src$=".svg"],
+#input img[src*=".svg?"],
+#input img[src*=".svg#"],
+#input img[src^="data:image/svg+xml"] {
+  max-width: min(100%, var(--svg-max-size));
+  max-height: var(--svg-max-size);
+}
+
 #input h1,
 #input h2,
 #input h3 {
@@ -441,6 +449,14 @@ body.is-max-width #reader {
   height: auto;
   display: block;
   margin: 1.2em auto;
+}
+
+#reader img[src$=".svg"],
+#reader img[src*=".svg?"],
+#reader img[src*=".svg#"],
+#reader img[src^="data:image/svg+xml"] {
+  max-width: min(100%, var(--svg-max-size));
+  max-height: var(--svg-max-size);
 }
 
 #reader figure { margin: 1.2em 0; }
@@ -668,8 +684,7 @@ body.dark #reader mark {
 }
 
 /* =========================================================
-   MODAL THÔNG BÁO — thay thế alert() mặc định
-   Fix #4: dùng visibility + pointer-events để transition chạy
+   13. MODAL THÔNG BÁO
    ========================================================= */
 .modal-overlay {
   position: fixed;
@@ -751,11 +766,8 @@ body.dark .modal-icon.warning { color: #ffb74d; }
   text-align: left;
 }
 
-.modal-message:last-child {
-  margin-bottom: 0;
-}
+.modal-message:last-child { margin-bottom: 0; }
 
-/* Fix #5: 2 nút cho confirm dialog */
 .modal-actions {
   display: flex;
   gap: 0.7rem;
@@ -783,13 +795,9 @@ body.dark .modal-icon.warning { color: #ffb74d; }
 }
 
 .modal-btn:hover,
-.modal-btn:focus-visible {
-  opacity: 0.85;
-}
+.modal-btn:focus-visible { opacity: 0.85; }
 
-.modal-btn:active {
-  opacity: 0.75;
-}
+.modal-btn:active { opacity: 0.75; }
 
 .modal-btn-cancel {
   color: var(--ink);
@@ -804,34 +812,29 @@ body.dark .modal-icon.warning { color: #ffb74d; }
 }
 
 /* =========================================================
-   13. NÚT NỔI
+   14. NÚT NỔI
    ========================================================= */
 .floating-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-width: 3rem;
   min-height: 3rem;
   padding: 0.4rem 0.7rem;
-
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: bold;
   line-height: 1.15;
   text-align: center;
-
   color: var(--paper);
   background-color: var(--ink);
   border: none;
   border-radius: 0.8rem;
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.25);
-
   cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-
   transition: none;
 }
 
@@ -849,7 +852,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Đọc/Sửa)
+   15. CỤM NÚT GÓC DƯỚI TRÁI
    ========================================================= */
 .bottom-left {
   display: none;
@@ -860,7 +863,6 @@ button.floating-btn:active {
   gap: 0.5rem;
 }
 
-/* Nút Đọc/Sửa có nhãn 2 dòng dạng "Sửa ▶ Đọc" */
 #viewBtn {
   font-size: 0.85rem;
   line-height: 1.15;
@@ -868,7 +870,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   15. BACKDROP
+   16. BACKDROP
    ========================================================= */
 .menu-backdrop {
   display: none;
@@ -883,7 +885,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   16. MEDIA QUERIES — MOBILE (≤ 820px)
+   17. MEDIA QUERIES — MOBILE (≤ 820px)
    ========================================================= */
 @media (max-width: 820px) {
   body {
@@ -894,9 +896,7 @@ button.floating-btn:active {
     padding: 0 0 5rem;
   }
 
-  body.menu-open {
-    overflow: hidden;
-  }
+  body.menu-open { overflow: hidden; }
 
   .bottom-left { display: flex; }
 
@@ -909,25 +909,19 @@ button.floating-btn:active {
     right: 0;
     bottom: 0;
     z-index: 300;
-
     max-height: 88vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-
     background-color: var(--paper);
     border-top: 2px solid var(--line);
     border-radius: 1rem 1rem 0 0;
     box-shadow: 0 -0.3rem 0.8rem rgba(0, 0, 0, 0.15);
-
     padding: 0.6rem 0.6rem max(0.6rem, env(safe-area-inset-bottom));
-
     transform: translateY(105%);
     transition: transform 0.25s ease-out;
   }
 
-  .topbar.is-open {
-    transform: translateY(0);
-  }
+  .topbar.is-open { transform: translateY(0); }
 
   body.menu-open .menu-backdrop { display: block; }
 
@@ -1002,22 +996,15 @@ button.floating-btn:active {
     opacity: 1;
   }
 
-  .side-input {
-    padding: 0 0.8rem 1rem;
-  }
-
-  .side-read {
-    padding: 0 0 1rem;
-  }
+  .side-input { padding: 0 0.8rem 1rem; }
+  .side-read { padding: 0 0 1rem; }
 
   .main[data-view="input"]:not(.reading-mode) .side-input { display: block; }
   .main[data-view="read"] .side-read { display: block; }
   .main.reading-mode .side-input { display: none; }
   .main.reading-mode .side-read { display: block; }
 
-  #reader {
-    padding-top: 0;
-  }
+  #reader { padding-top: 0; }
 
   #input {
     font-size: 1rem;
@@ -1031,7 +1018,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   17. MEDIA QUERIES — MÀN RẤT HẸP (≤ 480px)
+   18. MEDIA QUERIES — MÀN RẤT HẸP (≤ 480px)
    ========================================================= */
 @media (max-width: 480px) {
   .page-header h1 { font-size: 1.2rem; }
@@ -1046,12 +1033,10 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   18. KIỂU IN — @media print
+   19. KIỂU IN
    ========================================================= */
 @media print {
-  @page {
-    margin: 2cm;
-  }
+  @page { margin: 2cm; }
 
   html,
   body {
@@ -1107,6 +1092,14 @@ button.floating-btn:active {
     background: transparent !important;
     background-color: transparent !important;
     color: #000000 !important;
+  }
+
+  #reader img[src$=".svg"],
+  #reader img[src*=".svg?"],
+  #reader img[src*=".svg#"],
+  #reader img[src^="data:image/svg+xml"] {
+    max-width: min(100%, 12rem) !important;
+    max-height: 12rem !important;
   }
 
   #reader a {
@@ -1310,28 +1303,25 @@ const shareBtn       = document.getElementById('shareBtn');
 const bodyEl         = document.body;
 const root           = document.documentElement;
 
-/* Modal thông báo */
-const modalOverlay  = document.getElementById('modalOverlay');
-const modalIcon     = document.getElementById('modalIcon');
-const modalTitle    = document.getElementById('modalTitle');
-const modalMsg      = document.getElementById('modalMsg');
-const modalBtn      = document.getElementById('modalBtn');
+const modalOverlay   = document.getElementById('modalOverlay');
+const modalIcon      = document.getElementById('modalIcon');
+const modalTitle     = document.getElementById('modalTitle');
+const modalMsg       = document.getElementById('modalMsg');
+const modalBtn       = document.getElementById('modalBtn');
 const modalCancelBtn = document.getElementById('modalCancelBtn');
 
 const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
 
+/* Hằng số SVG — dùng chung cho copy, export, in */
+const SVG_MAX_SIZE = '12rem';
+const SVG_MAX_WIDTH_CSS = 'min(100%, ' + SVG_MAX_SIZE + ')';
+
 /* =========================================================
    MODAL THÔNG BÁO
-   Fix #1: khoá scroll nền khi modal mở
-   Fix #2: lưu & khôi phục focus
-   Fix #3: focus trap (xử lý trong document keydown)
-   Fix #4: animation chạy mượt (CSS đã sửa)
-   Fix #5: hỗ trợ 2 nút cho confirm dialog
-   Fix #7: gọi onClose/onCancel ngay, không setTimeout
    ========================================================= */
-let modalAutoTimer   = null;
-let modalOnConfirm   = null;
-let modalOnCancel    = null;
+let modalAutoTimer     = null;
+let modalOnConfirm     = null;
+let modalOnCancel      = null;
 let modalPreviousFocus = null;
 
 const MODAL_ICONS = {
@@ -1356,7 +1346,6 @@ function showMessage(message, opts) {
   const cancelLabel  = opts.cancelLabel || '';
   const autoDismiss  = opts.autoDismiss || 0;
 
-  /* Reset timer và callback cũ */
   if (modalAutoTimer) {
     clearTimeout(modalAutoTimer);
     modalAutoTimer = null;
@@ -1364,12 +1353,10 @@ function showMessage(message, opts) {
   modalOnConfirm = opts.onClose || null;
   modalOnCancel  = opts.onCancel || null;
 
-  /* Fix #2: lưu focus hiện tại */
   modalPreviousFocus = (document.activeElement && document.activeElement !== bodyEl)
     ? document.activeElement
     : null;
 
-  /* Nội dung */
   modalIcon.textContent = MODAL_ICONS[type] || MODAL_ICONS.info;
   modalIcon.className   = 'modal-icon ' + type;
 
@@ -1384,7 +1371,6 @@ function showMessage(message, opts) {
   modalMsg.textContent  = message || '';
   modalBtn.textContent  = buttonLabel;
 
-  /* Fix #5: nút Cancel chỉ hiện khi có cancelLabel */
   if (cancelLabel) {
     modalCancelBtn.textContent   = cancelLabel;
     modalCancelBtn.style.display = '';
@@ -1393,12 +1379,9 @@ function showMessage(message, opts) {
     modalCancelBtn.style.display = 'none';
   }
 
-  /* Fix #1: khoá scroll nền */
   bodyEl.classList.add('modal-open');
-
   modalOverlay.classList.add('is-visible');
 
-  /* Focus nút OK sau khi modal render */
   setTimeout(() => {
     try { modalBtn.focus(); } catch (e) { /* bỏ qua */ }
   }, 60);
@@ -1408,7 +1391,6 @@ function showMessage(message, opts) {
   }
 }
 
-/* action: 'confirm' (mặc định) hoặc 'cancel' */
 function hideModal(action) {
   if (!modalOverlay.classList.contains('is-visible')) return;
 
@@ -1420,7 +1402,6 @@ function hideModal(action) {
   modalOverlay.classList.remove('is-visible');
   bodyEl.classList.remove('modal-open');
 
-  /* Fix #2: khôi phục focus */
   if (modalPreviousFocus &&
       modalPreviousFocus.isConnected &&
       typeof modalPreviousFocus.focus === 'function' &&
@@ -1429,7 +1410,6 @@ function hideModal(action) {
   }
   modalPreviousFocus = null;
 
-  /* Fix #7: gọi callback ngay, không setTimeout */
   const isCancel = (action === 'cancel');
   const cb = isCancel ? modalOnCancel : modalOnConfirm;
   modalOnConfirm = null;
@@ -1447,7 +1427,6 @@ modalOverlay.addEventListener('click', e => {
   if (e.target === modalOverlay) hideModal('cancel');
 });
 
-/* Fix #3: focus trap */
 function trapFocus(e) {
   const focusables = [];
   if (modalCancelBtn.style.display !== 'none') focusables.push(modalCancelBtn);
@@ -1459,7 +1438,6 @@ function trapFocus(e) {
   const last   = focusables[focusables.length - 1];
   const active = document.activeElement;
 
-  /* Chỉ 1 nút → luôn giữ focus ở nút đó */
   if (focusables.length === 1) {
     e.preventDefault();
     first.focus();
@@ -1497,18 +1475,11 @@ menuBtn.addEventListener('click', openMenu);
 menuCloseBtn.addEventListener('click', closeMenu);
 menuBackdrop.addEventListener('click', closeMenu);
 
-/* =========================================================
-   KEYDOWN TOÀN CỤC
-   Fix #3: focus trap cho modal
-   Fix #10: Escape trong modal gọi preventDefault
-   ========================================================= */
 document.addEventListener('keydown', e => {
-  /* Escape */
   if (e.key === 'Escape') {
     if (modalOverlay.classList.contains('is-visible')) {
       e.preventDefault();
       e.stopPropagation();
-      /* Nếu có nút Cancel → hành động là cancel; ngược lại là confirm */
       if (modalCancelBtn.style.display !== 'none') {
         hideModal('cancel');
       } else {
@@ -1522,7 +1493,6 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  /* Tab — focus trap */
   if (e.key === 'Tab' && modalOverlay.classList.contains('is-visible')) {
     trapFocus(e);
   }
@@ -1565,10 +1535,27 @@ function safeURL(url) {
   return '';
 }
 
+function isSVGSource(src) {
+  if (!src) return false;
+  const s = String(src).toLowerCase().trim();
+  return s.startsWith('data:image/svg+xml') || s.indexOf('.svg') !== -1;
+}
+
+function applySVGLimitToImages(rootEl) {
+  rootEl.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src') || '';
+    if (isSVGSource(src)) {
+      img.style.maxWidth = SVG_MAX_WIDTH_CSS;
+      img.style.maxHeight = SVG_MAX_SIZE;
+    }
+  });
+}
+
 const ALLOWED_STYLE_PROPS = new Set([
   'text-align', 'font-weight', 'font-style', 'text-decoration',
   'text-transform', 'letter-spacing', 'list-style-type',
-  'font-family', 'font-size', 'line-height'
+  'font-family', 'font-size', 'line-height',
+  'max-width', 'max-height'
 ]);
 
 function filterStyle(text) {
@@ -1603,7 +1590,7 @@ const ALLOWED_TAGS = new Set([
 const ALLOWED_ATTRS = {
   '*':       new Set(['title', 'dir', 'lang', 'style']),
   'a':       new Set(['href', 'name']),
-  'img':     new Set(['src', 'alt']),
+  'img':     new Set(['src', 'alt', 'width', 'height']),
   'ol':      new Set(['start', 'type', 'reversed']),
   'li':      new Set(['value']),
   'time':    new Set(['datetime']),
@@ -1738,6 +1725,16 @@ function sanitizeHTML(html) {
       }
 
       if (!allowed.has(name)) { el.removeAttribute(attr.name); return; }
+
+      if (tag === 'img' && (name === 'width' || name === 'height')) {
+        const num = parseInt(value, 10);
+        if (!Number.isFinite(num) || num <= 0 || num > 4096) {
+          el.removeAttribute(attr.name);
+        } else {
+          el.setAttribute(name, String(num));
+        }
+        return;
+      }
 
       if (name === 'href' || name === 'src') {
         const clean = safeURL(value);
@@ -2019,7 +2016,6 @@ viewBtn.addEventListener('click', () => {
 /* =========================================================
    CẬP NHẬT TRẠNG THÁI NÚT
    ========================================================= */
-/* Fix #8: cache hasReadableContent theo lastRenderSig */
 let _hasContentCache    = null;
 let _hasContentCacheSig = '';
 
@@ -2076,7 +2072,6 @@ function render() {
         '</div>' +
       '</div>';
     lastRenderSig = '';
-    /* Fix #8: invalidate cache */
     _hasContentCache    = null;
     _hasContentCacheSig = '';
     updateActionButtons();
@@ -2121,7 +2116,6 @@ function render() {
 
   reader.innerHTML = html;
 
-  /* Fix #8: invalidate cache sau khi đổi nội dung */
   _hasContentCache    = null;
   _hasContentCacheSig = '';
 
@@ -2337,7 +2331,6 @@ input.addEventListener('paste', e => {
   }
 });
 
-/* Fix #6: bỏ reset innerHTML — để browser tự xử lý space đầu dòng */
 input.addEventListener('input', () => {
   if (composing) return;
   renderDebounced();
@@ -2346,7 +2339,6 @@ input.addEventListener('input', () => {
 
 /* =========================================================
    PASTE TOÀN MÀN HÌNH — THAY THẾ
-   Fix #9: bỏ check thừa `ae !== input`
    ========================================================= */
 document.addEventListener('paste', e => {
   if (e.target === input || (e.target && input.contains(e.target))) return;
@@ -2631,7 +2623,6 @@ expandBtn.addEventListener('click', () => {
   saveOpts();
 });
 
-/* Fix #5: Xoá có confirm */
 cleanBtn.addEventListener('click', () => {
   const hasAnything = hasReadableContent() || stripBlank(input.innerHTML).length > 0;
   if (!hasAnything) {
@@ -2744,7 +2735,7 @@ exportTxtBtn.addEventListener('click', () => {
 });
 
 /* =========================================================
-   XUẤT HTML — THEO ĐÚNG TÙY CHỌN HIỆN CÓ
+   XUẤT HTML — theo tùy chọn hiện tại
    ========================================================= */
 exportHtmlBtn.addEventListener('click', () => {
   if (!hasReadableContent()) return;
@@ -2822,6 +2813,10 @@ exportHtmlBtn.addEventListener('click', () => {
     '  word-break: break-word;',
     '}',
     'img { max-width: 100%; height: auto; display: block; margin: 1.2em auto; }',
+    'img[src$=".svg"], img[src*=".svg?"], img[src*=".svg#"], img[src^="data:image/svg+xml"] {',
+    '  max-width: min(100%, ' + SVG_MAX_SIZE + ');',
+    '  max-height: ' + SVG_MAX_SIZE + ';',
+    '}',
     'figure { margin: 1.2em 0; }',
     'figcaption {',
     '  font-family: inherit;',
@@ -2988,9 +2983,6 @@ async function copyRich(html, text) {
   }
 }
 
-/* =========================================================
-   LẤY FONT NAME CHÍNH — CHO WORD
-   ========================================================= */
 function getPrimaryFontName(stack) {
   if (!stack) return 'serif';
   const first = (stack.split(',')[0] || '').trim().replace(/^['"]+|['"]+$/g, '');
@@ -3002,9 +2994,6 @@ function getPrimaryFontName(stack) {
   return map[first] || first;
 }
 
-/* =========================================================
-   XÂY HTML KHI COPY — THEO TÙY CHỌN ĐANG CHỌN
-   ========================================================= */
 function buildCopyWithReaderOptions() {
   const titleEl = reader.querySelector('.article-title');
   const bodyElm = reader.querySelector('.article-body');
@@ -3029,6 +3018,8 @@ function buildCopyWithReaderOptions() {
     if (MONO_TAGS.has(el.tagName)) return;
     el.style.fontFamily = ffCSS;
   });
+
+  applySVGLimitToImages(clone);
 
   clone.style.fontFamily = ffCSS;
   clone.style.fontSize = fs;
