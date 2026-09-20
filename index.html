@@ -41,7 +41,7 @@ body {
    2. VARIABLES
    ========================================================= */
 :root {
-  --reader-fs: 1.2rem;
+  --reader-fs: 1.5rem;
   --reader-lh: 1.75;
   --reader-mw: 37.5rem;
   --reader-ff: Georgia, "Times New Roman", "Noto Serif", serif;
@@ -77,9 +77,17 @@ body {
 }
 
 /* =========================================================
-   4. HEADER
+   4. TOPBAR WRAPPER
+   ========================================================= */
+.topbar {
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   5. HEADER
    ========================================================= */
 .page-header {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -87,7 +95,6 @@ body {
   gap: 0.2rem 0.8rem;
   margin: 0.3rem 0 0.5rem;
   padding: 0 0.5rem;
-  flex: 0 0 auto;
 }
 
 .page-header-side {
@@ -118,12 +125,16 @@ body {
   white-space: nowrap;
 }
 
+.menu-close {
+  display: none;
+}
+
 h2 { font-size: 1.3rem; font-weight: bold; margin: 1rem 0 0.5rem; }
 h3 { font-size: 1.2rem; font-weight: bold; margin: 1rem 0 0.5rem; }
 h4 { font-size: 1.1rem; font-weight: bold; margin: 1rem 0 0.5rem; }
 
 /* =========================================================
-   5. TOOLBAR
+   6. TOOLBAR
    ========================================================= */
 .toolbar {
   display: flex;
@@ -132,7 +143,6 @@ h4 { font-size: 1.1rem; font-weight: bold; margin: 1rem 0 0.5rem; }
   align-items: center;
   padding: 0.5rem;
   border-bottom: 2px solid var(--line);
-  flex: 0 0 auto;
 }
 
 .toolbar-spacer { flex: 1 1 auto; }
@@ -165,6 +175,7 @@ select {
 }
 
 select:hover { border-bottom-color: var(--muted); }
+select:disabled { opacity: 0.5; cursor: not-allowed; }
 
 button:hover:not(:disabled) { background-color: rgba(128, 128, 128, 0.12); }
 button.active { color: var(--link); font-weight: bold; }
@@ -182,12 +193,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 .desktop-only { display: inline-flex; }
 
 /* =========================================================
-   6. CHẾ ĐỘ TOÀN MÀN HÌNH (desktop)
+   7. CHẾ ĐỘ TOÀN MÀN HÌNH (desktop)
    ========================================================= */
-body.is-fullscreen .page-header { display: none; }
+body.is-fullscreen .topbar { display: none; }
 
 body.is-fullscreen .toolbar {
-  padding: 0.3rem 0.5rem;
   flex-wrap: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -202,7 +212,7 @@ body.is-fullscreen .toolbar::-webkit-scrollbar-thumb {
 body.is-fullscreen .toolbar > * { flex: 0 0 auto; }
 
 /* =========================================================
-   7. CHẾ ĐỘ "RỘNG SÁT LỀ"
+   8. CHẾ ĐỘ "RỘNG SÁT LỀ"
    ========================================================= */
 body.is-max-width #reader {
   max-width: none;
@@ -211,7 +221,7 @@ body.is-max-width #reader {
 }
 
 /* =========================================================
-   8. BỐ CỤC CHÍNH
+   9. BỐ CỤC CHÍNH
    ========================================================= */
 .main {
   flex: 1 1 auto;
@@ -247,10 +257,9 @@ body.is-max-width #reader {
 }
 
 /* =========================================================
-   9. Ô NHẬP
+   10. Ô NHẬP
    ========================================================= */
-#input,
-#rawInput {
+#input {
   width: 100%;
   min-height: 100%;
   border: none;
@@ -263,7 +272,6 @@ body.is-max-width #reader {
   line-height: 1.6;
   word-break: normal;
   overflow-wrap: break-word;
-  resize: none;
   padding: 0;
   display: block;
 }
@@ -339,7 +347,7 @@ body.is-max-width #reader {
 #input td::after { content: " "; }
 
 /* =========================================================
-   10. VÙNG ĐỌC
+   11. VÙNG ĐỌC
    ========================================================= */
 #reader {
   max-width: var(--reader-mw);
@@ -616,7 +624,7 @@ body.dark #reader mark {
 }
 
 /* =========================================================
-   11. DROP OVERLAY (chỉ desktop)
+   12. DROP OVERLAY (chỉ desktop)
    ========================================================= */
 .drop-overlay {
   position: fixed;
@@ -654,22 +662,16 @@ body.dark #reader mark {
 }
 
 /* =========================================================
-   12. NÚT CUỘN LÊN ĐẦU — LUÔN HIỆN
-   Đơn giản: chỉ display: inline-flex cố định, không ẩn/hiện.
+   13. NÚT NỔI
    ========================================================= */
-.scroll-top {
-  position: fixed;
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  right: max(1rem, env(safe-area-inset-right));
-  z-index: 100;
-
+.floating-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   min-width: 3rem;
   min-height: 3rem;
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 0.7rem;
 
   font-family: inherit;
   font-size: 0.85rem;
@@ -688,14 +690,51 @@ body.dark #reader mark {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 
-  transition: background-color 0.12s;
+  transition: none;
 }
 
-.scroll-top:hover { background-color: var(--link); }
-.scroll-top:active { background-color: var(--link); }
+button.floating-btn:hover,
+button.floating-btn:active {
+  background-color: var(--ink);
+  color: var(--paper);
+}
+
+.scroll-top {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 100;
+}
 
 /* =========================================================
-   13. MEDIA QUERIES — MOBILE (≤ 820px)
+   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Dán) — chỉ mobile
+   ========================================================= */
+.bottom-left {
+  display: none;
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
+  z-index: 100;
+  gap: 0.5rem;
+}
+
+/* =========================================================
+   15. BACKDROP (chỉ hiện trên mobile khi menu mở)
+   ========================================================= */
+.menu-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 290;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   16. MEDIA QUERIES — MOBILE (≤ 820px)
    ========================================================= */
 @media (max-width: 820px) {
   body {
@@ -706,40 +745,96 @@ body.dark #reader mark {
     padding: 0.5rem 0 5rem;
   }
 
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  .bottom-left { display: flex; }
+
+  body.menu-open .bottom-left,
+  body.menu-open .scroll-top { display: none; }
+
+  .topbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 300;
+
+    max-height: 88vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    background-color: var(--paper);
+    border-top: 2px solid var(--line);
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -0.3rem 0.8rem rgba(0, 0, 0, 0.15);
+
+    padding: 0.6rem 0.6rem max(0.6rem, env(safe-area-inset-bottom));
+
+    transform: translateY(105%);
+    transition: transform 0.25s ease-out;
+  }
+
+  .topbar.is-open {
+    transform: translateY(0);
+  }
+
+  body.menu-open .menu-backdrop { display: block; }
+
   .page-header {
     flex-direction: column;
-    align-items: center;
-    gap: 0.2rem;
-    margin: 0.3rem 0 0.5rem;
-    padding: 0 0.5rem;
+    align-items: flex-start;
+    gap: 0.1rem;
+    margin: 0 0 0.4rem;
+    padding: 0 0 0.2rem;
+    padding-right: 2.4rem;
   }
 
   .page-header-side { display: none; }
 
   .page-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    text-align: left;
     width: 100%;
   }
 
   .page-header .author {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    text-align: left;
     width: 100%;
-    text-align: center;
     white-space: normal;
   }
 
-  .mobile-only { display: inline-flex; }
-  .desktop-only { display: none; }
+  .menu-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--ink);
+    background-color: rgba(128, 128, 128, 0.12);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
 
   .toolbar {
-    padding: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: none;
     gap: 0.4rem;
   }
 
   .toolbar button,
   .toolbar select {
-    min-height: 2.75rem;
-    padding: 0.6rem 0.9rem;
+    min-height: 2.6rem;
+    padding: 0.55rem 0.85rem;
     font-size: 0.95rem;
   }
 
@@ -770,89 +865,119 @@ body.dark #reader mark {
   .main.reading-mode .side-input { display: none; }
   .main.reading-mode .side-read { display: block; }
 
-  #input,
-  #rawInput {
+  #input {
     font-size: 1rem;
     min-height: 60vh;
   }
 
   #reader .article-title { font-size: 1.5em; }
+
+  .desktop-only { display: none; }
+  .mobile-only { display: inline-flex; }
 }
 
 /* =========================================================
-   14. MEDIA QUERIES — MÀN RẤT HẸP (≤ 480px)
+   17. MEDIA QUERIES — MÀN RẤT HẸP (≤ 480px)
    ========================================================= */
 @media (max-width: 480px) {
-  .page-header h1 { font-size: 1.4rem; }
-  .page-header .author { font-size: 0.95rem; }
+  .page-header h1 { font-size: 1.2rem; }
+  .page-header .author { font-size: 0.9rem; }
 }
 </style>
 </head>
 <body>
 
-<header class="page-header">
-  <span class="page-header-side" aria-hidden="true"></span>
-  <h1>Chế độ đọc</h1>
-  <p class="author">Dương Tấn Chánh</p>
-</header>
+<div class="menu-backdrop" id="menuBackdrop"></div>
 
-<div class="toolbar">
-  <select id="fontSize" aria-label="Cỡ chữ">
-    <option value="1rem">Cỡ 1rem</option>
-    <option value="1.1rem">Cỡ 1.1rem</option>
-    <option value="1.2rem" selected>Cỡ 1.2rem</option>
-    <option value="1.3rem">Cỡ 1.3rem</option>
-    <option value="1.5rem">Cỡ 1.5rem</option>
-    <option value="1.75rem">Cỡ 1.75rem</option>
-  </select>
-
-  <select id="fontFamily" aria-label="Phông chữ">
-    <option value="Georgia, 'Times New Roman', 'Noto Serif', serif" selected>Serif hệ thống</option>
-    <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">Sans hệ thống</option>
-    <option value="'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">Noto Sans</option>
-    <option value="'Roboto Mono', Consolas, Menlo, Monaco, 'Liberation Mono', 'DejaVu Sans Mono', monospace">Roboto Mono</option>
-  </select>
-
-  <select id="lineHeight" aria-label="Giãn dòng">
-    <option value="1.55">Dòng 1.55</option>
-    <option value="1.75" selected>Dòng 1.75</option>
-    <option value="2">Dòng 2.0</option>
-  </select>
-
-  <select id="maxWidth" aria-label="Chiều rộng">
-    <option value="25rem">Rộng 400px</option>
-    <option value="37.5rem" selected>Rộng 600px</option>
-    <option value="50rem">Rộng 800px</option>
-    <option value="none">Rộng sát lề</option>
-  </select>
-
-  <span class="toolbar-spacer"></span>
-
-  <button id="viewBtn" class="mobile-only" type="button"
-          aria-label="Xem nội dung đã tách" title="Chuyển chế độ xem">Đọc</button>
-
-  <button id="pasteBtn" type="button"
+<div class="bottom-left" id="bottomLeft">
+  <button class="floating-btn" id="menuBtn" type="button"
+          aria-label="Mở menu tuỳ chọn" title="Mở menu">Menu</button>
+  <button class="floating-btn" id="pasteFloatBtn" type="button"
           aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
+</div>
 
-  <button id="fileBtn" type="button"
-          aria-label="Chọn file từ máy" title="Chọn file .html, .htm, .txt">Chọn file</button>
+<div class="topbar" id="topbar">
 
-  <input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
+  <header class="page-header">
+    <span class="page-header-side" aria-hidden="true"></span>
+    <h1>Chế độ đọc</h1>
+    <p class="author">Dương Tấn Chánh</p>
+    <button class="menu-close" id="menuCloseBtn" type="button"
+            aria-label="Đóng menu" title="Đóng menu">✕</button>
+  </header>
 
-  <button id="toggleRaw" type="button"
-          aria-label="Xem HTML thô" title="Xem/sửa HTML gốc">HTML</button>
+  <div class="toolbar">
+    <select id="fontSize" aria-label="Cỡ chữ">
+      <option value="1rem">Cỡ 1rem</option>
+      <option value="1.1rem">Cỡ 1.1rem</option>
+      <option value="1.2rem">Cỡ 1.2rem</option>
+      <option value="1.3rem">Cỡ 1.3rem</option>
+      <option value="1.5rem" selected>Cỡ 1.5rem</option>
+      <option value="1.75rem">Cỡ 1.75rem</option>
+      <option value="2rem">Cỡ 2rem</option>
+    </select>
 
-  <button id="expandBtn" class="desktop-only" type="button"
-          aria-label="Bật chế độ toàn màn hình" title="Chỉ giữ thanh nút, ẩn tiêu đề">Toàn màn hình</button>
+    <select id="fontFamily" aria-label="Phông chữ">
+      <option value="Georgia, 'Times New Roman', 'Noto Serif', serif" selected>Serif hệ thống</option>
+      <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">Sans hệ thống</option>
+      <option value="'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">Noto Sans</option>
+      <option value="'Roboto Mono', Consolas, Menlo, Monaco, 'Liberation Mono', 'DejaVu Sans Mono', monospace">Roboto Mono</option>
+    </select>
 
-  <button id="darkBtn" type="button"
-          aria-label="Chế độ tối" title="Chế độ tối">Tối</button>
+    <select id="lineHeight" aria-label="Giãn dòng">
+      <option value="1.55">Dòng 1.55</option>
+      <option value="1.75" selected>Dòng 1.75</option>
+      <option value="2">Dòng 2.0</option>
+    </select>
 
-  <button id="cleanBtn" type="button"
-          aria-label="Xoá nội dung" title="Xoá nội dung">Xoá</button>
+    <select id="maxWidth" aria-label="Chiều rộng">
+      <option value="25rem">Rộng 400px</option>
+      <option value="37.5rem" selected>Rộng 600px</option>
+      <option value="50rem">Rộng 800px</option>
+      <option value="none">Rộng sát lề</option>
+    </select>
 
-  <button id="copyBtn" type="button"
-          aria-label="Copy bài viết" title="Chưa có nội dung để copy" disabled>Copy</button>
+    <select id="paperColor" aria-label="Màu nền">
+      <option value="#faf9f6" selected>Nền ngà</option>
+      <option value="#ffffff">Nền trắng</option>
+      <option value="#fdf6e3">Nền vàng nhạt</option>
+      <option value="#e8f0e8">Nền xanh nhạt</option>
+      <option value="#f5ebe8">Nền hồng nhạt</option>
+      <option value="#f0f0f0">Nền xám nhạt</option>
+      <option value="dark">Nền đen (chữ sáng)</option>
+    </select>
+
+    <span class="toolbar-spacer"></span>
+
+    <button id="pasteBtn" type="button"
+            aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
+
+    <button id="fileBtn" type="button"
+            aria-label="Chọn file từ máy" title="Chọn file .html, .htm, .txt">Chọn file</button>
+
+    <input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
+
+    <button id="viewBtn" class="mobile-only" type="button"
+            aria-label="Xem nội dung đã tách" title="Chuyển chế độ xem">Đọc</button>
+
+    <button id="copyBtn" type="button"
+            aria-label="Copy bài viết" title="Chưa có nội dung để copy" disabled>Copy</button>
+
+    <button id="shareBtn" class="mobile-only" type="button"
+            aria-label="Chia sẻ bài viết" title="Chia sẻ bài viết">Chia sẻ</button>
+
+    <button id="exportTxtBtn" type="button"
+            aria-label="Tải file TXT" title="Tải nội dung thành file .txt">Tải TXT</button>
+
+    <button id="exportHtmlBtn" type="button"
+            aria-label="Tải file HTML" title="Tải nội dung thành file .html">Tải HTML</button>
+
+    <button id="cleanBtn" type="button"
+            aria-label="Xoá nội dung" title="Xoá nội dung">Xoá</button>
+
+    <button id="expandBtn" class="desktop-only" type="button"
+            aria-label="Bật chế độ toàn màn hình" title="Chỉ giữ thanh nút, ẩn tiêu đề">Toàn màn hình</button>
+  </div>
 </div>
 
 <div class="main" id="main" data-view="input">
@@ -861,15 +986,13 @@ body.dark #reader mark {
          autocorrect="off" autocapitalize="off"
          data-placeholder="Dán nội dung vào đây
 
-Cách 1: Bấm nút Dán ở trên.
-Cách 2: Bấm nút Chọn file để mở file .html, .htm, .txt.
+Cách 1: Bấm nút Dán ở góc dưới trái.
+Cách 2: Bấm nút Menu, chọn Chọn file để mở file .html, .htm, .txt.
 Cách 3: Kéo thả file vào cửa sổ trình duyệt (máy tính).
 Cách 4: Nhấn giữ vào vùng này rồi chọn Paste.
 Cách 5: Nhấn Ctrl+V ở bất cứ đâu để thay thế toàn bộ.
 
 Cũng có thể gõ trực tiếp."></div>
-    <textarea id="rawInput" hidden placeholder="Dán hoặc chỉnh HTML thô vào đây..."
-              autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
   </div>
   <div class="side-read"><div id="reader"></div></div>
 </div>
@@ -881,7 +1004,7 @@ Cũng có thể gõ trực tiếp."></div>
   </div>
 </div>
 
-<button class="scroll-top" id="scrollTopBtn" type="button"
+<button class="floating-btn scroll-top" id="scrollTopBtn" type="button"
         aria-label="Cuộn lên đầu">Lên<br>đầu</button>
 
 <script>
@@ -889,19 +1012,22 @@ Cũng có thể gõ trực tiếp."></div>
    THAM CHIẾU PHẦN TỬ
    ========================================================= */
 const input          = document.getElementById('input');
-const rawInput       = document.getElementById('rawInput');
 const reader         = document.getElementById('reader');
 const main           = document.getElementById('main');
 const sideInput      = document.querySelector('.side-input');
 const sideRead       = document.querySelector('.side-read');
-const toggleRaw      = document.getElementById('toggleRaw');
+const topbar         = document.getElementById('topbar');
+const menuBtn        = document.getElementById('menuBtn');
+const menuCloseBtn   = document.getElementById('menuCloseBtn');
+const menuBackdrop   = document.getElementById('menuBackdrop');
+const bottomLeft     = document.getElementById('bottomLeft');
+const pasteFloatBtn  = document.getElementById('pasteFloatBtn');
 const expandBtn      = document.getElementById('expandBtn');
 const viewBtn        = document.getElementById('viewBtn');
 const pasteBtn       = document.getElementById('pasteBtn');
 const fileBtn        = document.getElementById('fileBtn');
 const fileInput      = document.getElementById('fileInput');
 const copyBtn        = document.getElementById('copyBtn');
-const darkBtn        = document.getElementById('darkBtn');
 const cleanBtn       = document.getElementById('cleanBtn');
 const scrollTopBtn   = document.getElementById('scrollTopBtn');
 const dropOverlay    = document.getElementById('dropOverlay');
@@ -909,11 +1035,38 @@ const fontSizeSel    = document.getElementById('fontSize');
 const fontFamilySel  = document.getElementById('fontFamily');
 const lineHeightSel  = document.getElementById('lineHeight');
 const maxWidthSel    = document.getElementById('maxWidth');
+const paperColorSel  = document.getElementById('paperColor');
+const exportTxtBtn   = document.getElementById('exportTxtBtn');
+const exportHtmlBtn  = document.getElementById('exportHtmlBtn');
+const shareBtn       = document.getElementById('shareBtn');
 const bodyEl         = document.body;
 const root           = document.documentElement;
 
-const isMobile  = () => window.matchMedia('(max-width: 820px)').matches;
-const isRawMode = () => toggleRaw.dataset.mode === 'raw';
+const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
+
+/* =========================================================
+   MENU MOBILE
+   ========================================================= */
+function openMenu() {
+  if (!isMobile()) return;
+  bodyEl.classList.add('menu-open');
+  topbar.classList.add('is-open');
+}
+
+function closeMenu() {
+  bodyEl.classList.remove('menu-open');
+  topbar.classList.remove('is-open');
+}
+
+menuBtn.addEventListener('click', openMenu);
+menuCloseBtn.addEventListener('click', closeMenu);
+menuBackdrop.addEventListener('click', closeMenu);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && bodyEl.classList.contains('menu-open')) {
+    closeMenu();
+  }
+});
 
 /* =========================================================
    THEME COLOR
@@ -921,8 +1074,11 @@ const isRawMode = () => toggleRaw.dataset.mode === 'raw';
 function updateThemeColor() {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (!meta) return;
-  meta.setAttribute('content',
-    bodyEl.classList.contains('dark') ? '#1c1a17' : '#faf9f6');
+  if (bodyEl.classList.contains('dark')) {
+    meta.setAttribute('content', '#1c1a17');
+  } else {
+    meta.setAttribute('content', paperColorSel.value);
+  }
 }
 
 /* =========================================================
@@ -1398,16 +1554,30 @@ viewBtn.addEventListener('click', () => {
     document.activeElement.blur();
   }
   setView(next);
+  closeMenu();
 });
 
 /* =========================================================
-   CẬP NHẬT TRẠNG THÁI NÚT COPY
+   CẬP NHẬT TRẠNG THÁI NÚT
    ========================================================= */
-function updateCopyState() {
-  const hasContent = !reader.querySelector('.placeholder')
-    && stripBlank(reader.textContent).length > 0;
-  copyBtn.disabled = !hasContent;
-  copyBtn.title = hasContent ? 'Copy bài viết' : 'Chưa có nội dung để copy';
+function hasReadableContent() {
+  return !reader.querySelector('.placeholder')
+      && stripBlank(reader.textContent).length > 0;
+}
+
+function updateActionButtons() {
+  const has = hasReadableContent();
+  copyBtn.disabled = !has;
+  copyBtn.title = has ? 'Copy bài viết' : 'Chưa có nội dung để copy';
+
+  exportTxtBtn.disabled = !has;
+  exportTxtBtn.title = has ? 'Tải nội dung thành file .txt' : 'Chưa có nội dung để tải';
+
+  exportHtmlBtn.disabled = !has;
+  exportHtmlBtn.title = has ? 'Tải nội dung thành file .html' : 'Chưa có nội dung để tải';
+
+  shareBtn.disabled = !has;
+  shareBtn.title = has ? 'Chia sẻ bài viết' : 'Chưa có nội dung để chia sẻ';
 }
 
 /* =========================================================
@@ -1416,7 +1586,7 @@ function updateCopyState() {
 let lastRenderSig = '';
 
 function render() {
-  const src = isRawMode() ? rawInput.value : input.innerHTML;
+  const src = input.innerHTML;
 
   if (isEmptySource(src)) {
     reader.innerHTML =
@@ -1426,14 +1596,13 @@ function render() {
         '<div>Dán văn bản hoặc mở file để bắt đầu.</div>' +
         '<div class="hint">' +
           '<b>Cách nhập:</b><br>' +
-          '• Bấm nút <kbd>Chọn file</kbd> để mở file .html, .htm, .txt<br>' +
-          '• Bấm nút <kbd>Dán</kbd> để lấy nội dung clipboard<br>' +
-          '• Nhấn giữ vào ô nhập rồi chọn <i>Paste</i><br>' +
-          '• Trên máy tính: <kbd>Ctrl</kbd>+<kbd>V</kbd> hoặc <kbd>⌘</kbd>+<kbd>V</kbd><br>' +
-          '• Kéo thả file vào cửa sổ trình duyệt' +
+          '• Bấm nút <kbd>Dán</kbd> ở góc dưới trái để lấy clipboard<br>' +
+          '• Bấm nút <kbd>Menu</kbd> để chọn file hoặc tuỳ chỉnh<br>' +
+          '• Kéo thả file vào cửa sổ trình duyệt (máy tính)<br>' +
+          '• Trên máy tính: <kbd>Ctrl</kbd>+<kbd>V</kbd> hoặc <kbd>⌘</kbd>+<kbd>V</kbd>' +
         '</div>' +
       '</div>';
-    updateCopyState();
+    updateActionButtons();
     lastRenderSig = '';
 
     if (isMobile() && main.dataset.view === 'read') setView('input');
@@ -1480,7 +1649,7 @@ function render() {
     if (sideRead) sideRead.scrollTop = 0;
   }
 
-  updateCopyState();
+  updateActionButtons();
 }
 
 let renderTimer = null;
@@ -1490,29 +1659,17 @@ function renderDebounced() {
 }
 
 /* =========================================================
-   NHẬP LIỆU
+   CHÈN VÀO Ô NHẬP TẠI VỊ TRÍ CON TRỎ
    ========================================================= */
 function insertAtCursor(html, text) {
-  if (isRawMode()) {
-    const toInsert = (html && looksLikeHTML(html))
-      ? sanitizeHTML(html)
-      : escapeHTML(text).replace(/\r?\n/g, '\n');
-    const start = rawInput.selectionStart || 0;
-    const end   = rawInput.selectionEnd || 0;
-    const before = rawInput.value.slice(0, start);
-    const after  = rawInput.value.slice(end);
-    rawInput.value = before + toInsert + after;
-    rawInput.selectionStart = rawInput.selectionEnd = start + toInsert.length;
-    renderDebounced();
-    return;
-  }
-
   let toInsert;
   if (html && looksLikeHTML(html)) toInsert = sanitizeHTML(html);
   else toInsert = escapeHTML(text).replace(/\r?\n/g, '<br>');
 
   const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0 || !input.contains(sel.anchorNode)) {
+  if (!sel) return;
+
+  if (sel.rangeCount === 0 || !input.contains(sel.anchorNode)) {
     input.focus();
     const range = document.createRange();
     range.selectNodeContents(input);
@@ -1540,25 +1697,136 @@ function insertAtCursor(html, text) {
   renderDebounced();
 }
 
+/* =========================================================
+   THAY THẾ TOÀN BỘ NỘI DUNG
+   ========================================================= */
 function replaceContent(html, text) {
   input.innerHTML = '';
-  rawInput.value = '';
   lastRenderSig = '';
 
-  if (isRawMode()) {
-    const toInsert = (html && looksLikeHTML(html))
-      ? sanitizeHTML(html)
-      : escapeHTML(text).replace(/\r?\n/g, '\n');
-    rawInput.value = toInsert;
-  } else {
-    let toInsert;
-    if (html && looksLikeHTML(html)) toInsert = sanitizeHTML(html);
-    else toInsert = escapeHTML(text).replace(/\r?\n/g, '<br>');
-    input.innerHTML = toInsert;
-  }
+  let toInsert;
+  if (html && looksLikeHTML(html)) toInsert = sanitizeHTML(html);
+  else toInsert = escapeHTML(text).replace(/\r?\n/g, '<br>');
+  input.innerHTML = toInsert;
 
+  resetScrollBtn();
+  saveContentNow();
   render();
+  setView('read');
+  closeMenu();
 }
+
+/* =========================================================
+   LƯU NỘI DUNG VÀO LOCALSTORAGE
+   ========================================================= */
+const CONTENT_KEY = 'readerContentDTC';
+let saveContentTimer = null;
+
+function saveContentNow() {
+  try {
+    localStorage.setItem(CONTENT_KEY, input.innerHTML);
+  } catch (e) { /* bỏ qua */ }
+}
+
+function saveContentDebounced() {
+  clearTimeout(saveContentTimer);
+  saveContentTimer = setTimeout(saveContentNow, 10000);
+}
+
+function loadContent() {
+  try {
+    return localStorage.getItem(CONTENT_KEY) || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function clearContent() {
+  try { localStorage.removeItem(CONTENT_KEY); } catch (e) { /* bỏ qua */ }
+}
+
+window.addEventListener('beforeunload', saveContentNow);
+window.addEventListener('pagehide', saveContentNow);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveContentNow();
+});
+
+/* =========================================================
+   NÚT "LÊN ĐẦU" / "QUAY LẠI"
+   ========================================================= */
+let savedScrollPos = null;
+
+function captureScrollPos() {
+  return {
+    windowY:      window.scrollY || window.pageYOffset || 0,
+    sideInputTop: sideInput ? sideInput.scrollTop : 0,
+    sideReadTop:  sideRead  ? sideRead.scrollTop  : 0
+  };
+}
+
+function restoreScrollPos(pos) {
+  if (!pos) return;
+
+  try { window.scrollTo({ top: pos.windowY, behavior: 'smooth' }); }
+  catch (e) { window.scrollTo(0, pos.windowY); }
+
+  if (sideInput && pos.sideInputTop > 0) {
+    try { sideInput.scrollTo({ top: pos.sideInputTop, behavior: 'smooth' }); }
+    catch (e) { sideInput.scrollTop = pos.sideInputTop; }
+  }
+  if (sideRead && pos.sideReadTop > 0) {
+    try { sideRead.scrollTo({ top: pos.sideReadTop, behavior: 'smooth' }); }
+    catch (e) { sideRead.scrollTop = pos.sideReadTop; }
+  }
+}
+
+function scrollToTop() {
+  try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  catch (e) { window.scrollTo(0, 0); }
+
+  if (document.documentElement) document.documentElement.scrollTop = 0;
+  if (document.body) document.body.scrollTop = 0;
+
+  if (sideInput) {
+    try { sideInput.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch (e) { sideInput.scrollTop = 0; }
+  }
+  if (sideRead) {
+    try { sideRead.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch (e) { sideRead.scrollTop = 0; }
+  }
+}
+
+function setScrollBtnMode(mode) {
+  if (mode === 'back') {
+    scrollTopBtn.innerHTML = 'Quay<br>lại';
+    scrollTopBtn.setAttribute('aria-label', 'Quay lại vị trí cũ');
+    scrollTopBtn.title = 'Quay lại vị trí cũ';
+  } else {
+    scrollTopBtn.innerHTML = 'Lên<br>đầu';
+    scrollTopBtn.setAttribute('aria-label', 'Cuộn lên đầu');
+    scrollTopBtn.title = 'Cuộn lên đầu';
+  }
+}
+
+function resetScrollBtn() {
+  savedScrollPos = null;
+  setScrollBtnMode('top');
+}
+
+scrollTopBtn.addEventListener('click', () => {
+  scrollTopBtn.blur();
+
+  if (savedScrollPos) {
+    restoreScrollPos(savedScrollPos);
+    savedScrollPos = null;
+    setScrollBtnMode('top');
+  } else {
+    savedScrollPos = captureScrollPos();
+    scrollToTop();
+    setScrollBtnMode('back');
+  }
+});
 
 /* =========================================================
    PASTE TRONG Ô NHẬP
@@ -1569,6 +1837,7 @@ input.addEventListener('compositionstart', () => { composing = true; });
 input.addEventListener('compositionend', () => {
   composing = false;
   renderDebounced();
+  saveContentDebounced();
 });
 
 input.addEventListener('paste', e => {
@@ -1578,6 +1847,7 @@ input.addEventListener('paste', e => {
   const html = e.clipboardData.getData('text/html');
   const text = e.clipboardData.getData('text/plain');
   insertAtCursor(html, text);
+  saveContentDebounced();
 
   if (isMobile()) {
     if (document.activeElement && document.activeElement !== document.body) {
@@ -1587,28 +1857,23 @@ input.addEventListener('paste', e => {
   }
 });
 
-rawInput.addEventListener('paste', () => {
-  setTimeout(() => renderDebounced(), 0);
-});
-
 input.addEventListener('input', () => {
   if (composing) return;
   if (EMPTY_EDITOR_RE.test(input.innerHTML)) {
     input.innerHTML = '';
   }
   renderDebounced();
+  saveContentDebounced();
 });
 
-rawInput.addEventListener('input', renderDebounced);
-
 /* =========================================================
-   PASTE TOÀN MÀN HÌNH
+   PASTE TOÀN MÀN HÌNH — THAY THẾ
    ========================================================= */
 document.addEventListener('paste', e => {
-  if (e.target === input || e.target === rawInput) return;
+  if (e.target === input) return;
 
   const ae = document.activeElement;
-  if (ae && ae !== bodyEl && ae !== input && ae !== rawInput) {
+  if (ae && ae !== bodyEl && ae !== input) {
     const tag = ae.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
   }
@@ -1620,32 +1885,29 @@ document.addEventListener('paste', e => {
   const text = e.clipboardData.getData('text/plain');
   if (!html && !text) return;
 
-  if (main.dataset.view === 'read') setView('input');
-
   replaceContent(html, text);
 
   if (isMobile()) {
     if (document.activeElement && document.activeElement !== document.body) {
       document.activeElement.blur();
     }
-    setTimeout(() => setView('read'), 180);
   }
 });
 
 /* =========================================================
-   NÚT DÁN
+   XỬ LÝ DÁN — dùng chung cho nút trong menu và nút nổi
    ========================================================= */
 let isPasting = false;
 
-pasteBtn.addEventListener('click', async () => {
+async function handlePasteClick() {
   if (isPasting) return;
   isPasting = true;
   pasteBtn.disabled = true;
+  pasteFloatBtn.disabled = true;
   pasteBtn.setAttribute('aria-busy', 'true');
+  pasteFloatBtn.setAttribute('aria-busy', 'true');
 
   try {
-    if (main.dataset.view === 'read') setView('input');
-
     if (navigator.clipboard && navigator.clipboard.read) {
       try {
         const items = await navigator.clipboard.read();
@@ -1669,12 +1931,6 @@ pasteBtn.addEventListener('click', async () => {
 
         if (gotHTML || gotText) {
           replaceContent(gotHTML, gotText);
-          if (isMobile()) {
-            if (document.activeElement && document.activeElement !== document.body) {
-              document.activeElement.blur();
-            }
-            setTimeout(() => setView('read'), 200);
-          }
           return;
         }
       } catch (err) { /* bị từ chối */ }
@@ -1685,27 +1941,9 @@ pasteBtn.addEventListener('click', async () => {
         const text = await navigator.clipboard.readText();
         if (text && text.trim()) {
           replaceContent('', text);
-          if (isMobile()) {
-            if (document.activeElement && document.activeElement !== document.body) {
-              document.activeElement.blur();
-            }
-            setTimeout(() => setView('read'), 200);
-          }
           return;
         }
       } catch (err) { /* tiếp tục fallback */ }
-    }
-
-    if (!isRawMode()) {
-      input.focus();
-      try {
-        const range = document.createRange();
-        range.selectNodeContents(input);
-        range.collapse(false);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      } catch (e) { /* bỏ qua */ }
     }
 
     alert(
@@ -1716,9 +1954,14 @@ pasteBtn.addEventListener('click', async () => {
   } finally {
     isPasting = false;
     pasteBtn.disabled = false;
+    pasteFloatBtn.disabled = false;
     pasteBtn.removeAttribute('aria-busy');
+    pasteFloatBtn.removeAttribute('aria-busy');
   }
-});
+}
+
+pasteBtn.addEventListener('click', handlePasteClick);
+pasteFloatBtn.addEventListener('click', handlePasteClick);
 
 /* =========================================================
    CHỌN FILE
@@ -1770,9 +2013,7 @@ function readFile(file) {
 
   fileReader.onload = () => {
     const content = fileReader.result || '';
-    if (main.dataset.view === 'read') setView('input');
     replaceContent(content, content);
-    if (isMobile()) setTimeout(() => setView('read'), 200);
 
     isReadingFile = false;
     fileBtn.disabled = false;
@@ -1783,7 +2024,7 @@ function readFile(file) {
 }
 
 /* =========================================================
-   KÉO THẢ FILE
+   KÉO THẢ FILE (chỉ desktop)
    ========================================================= */
 let dragCounter = 0;
 
@@ -1833,27 +2074,6 @@ document.addEventListener('drop', e => {
 });
 
 /* =========================================================
-   HTML THÔ ↔ WYSIWYG
-   ========================================================= */
-toggleRaw.addEventListener('click', () => {
-  const isRaw = isRawMode();
-  if (isRaw) {
-    input.innerHTML = sanitizeHTML(rawInput.value);
-    rawInput.hidden = true;
-    input.hidden = false;
-    toggleRaw.dataset.mode = '';
-    toggleRaw.classList.remove('active');
-  } else {
-    rawInput.value = input.innerHTML;
-    input.hidden = true;
-    rawInput.hidden = false;
-    toggleRaw.dataset.mode = 'raw';
-    toggleRaw.classList.add('active');
-  }
-  render();
-});
-
-/* =========================================================
    TUỲ CHỌN
    ========================================================= */
 const OPTS_KEY = 'readerOptsDTC';
@@ -1866,7 +2086,7 @@ function saveOpts() {
       fontFamily: fontFamilySel.value,
       lineHeight: lineHeightSel.value,
       maxWidth:   maxWidthSel.value,
-      dark:       bodyEl.classList.contains('dark'),
+      paperColor: paperColorSel.value,
       expanded:   main.classList.contains('reading-mode'),
       view:       main.dataset.view
     }));
@@ -1880,11 +2100,7 @@ function loadOpts() {
     if (o.fontFamily) fontFamilySel.value = o.fontFamily;
     if (o.lineHeight) lineHeightSel.value = o.lineHeight;
     if (o.maxWidth)   maxWidthSel.value   = o.maxWidth;
-
-    if (o.dark) {
-      bodyEl.classList.add('dark');
-      darkBtn.textContent = 'Sáng';
-    }
+    if (o.paperColor) paperColorSel.value = o.paperColor;
 
     if (o.expanded && !isMobile()) {
       main.classList.add('reading-mode');
@@ -1906,25 +2122,28 @@ function applyStyles() {
   root.style.setProperty('--reader-lh', lineHeightSel.value);
   root.style.setProperty('--reader-mw', maxWidthSel.value);
   bodyEl.classList.toggle('is-max-width', maxWidthSel.value === 'none');
+  applyPaper();
   saveOpts();
 }
 
-[fontSizeSel, fontFamilySel, lineHeightSel, maxWidthSel].forEach(sel => {
+function applyPaper() {
+  if (paperColorSel.value === 'dark') {
+    bodyEl.classList.add('dark');
+    updateThemeColor();
+  } else {
+    bodyEl.classList.remove('dark');
+    root.style.setProperty('--paper', paperColorSel.value);
+    updateThemeColor();
+  }
+}
+
+[fontSizeSel, fontFamilySel, lineHeightSel, maxWidthSel, paperColorSel].forEach(sel => {
   sel.addEventListener('change', applyStyles);
 });
 
 /* =========================================================
    NÚT CHỨC NĂNG
    ========================================================= */
-darkBtn.addEventListener('click', () => {
-  bodyEl.classList.toggle('dark');
-  const isDark = bodyEl.classList.contains('dark');
-  darkBtn.textContent = isDark ? 'Sáng' : 'Tối';
-  darkBtn.setAttribute('aria-label', isDark ? 'Chế độ sáng' : 'Chế độ tối');
-  updateThemeColor();
-  saveOpts();
-});
-
 expandBtn.addEventListener('click', () => {
   const on = !main.classList.contains('reading-mode');
   main.classList.toggle('reading-mode', on);
@@ -1938,12 +2157,143 @@ expandBtn.addEventListener('click', () => {
 
 cleanBtn.addEventListener('click', () => {
   input.innerHTML = '';
-  rawInput.value = '';
   lastRenderSig = '';
+  clearContent();
+  resetScrollBtn();
   render();
   setView('input');
-  if (!isRawMode()) input.focus();
-  else rawInput.focus();
+  closeMenu();
+  setTimeout(() => input.focus(), 120);
+});
+
+/* =========================================================
+   XUẤT FILE
+   ========================================================= */
+function slugify(s) {
+  return (s || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'bai-viet';
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function getArticleTitle() {
+  const el = reader.querySelector('.article-title');
+  return el ? el.textContent.trim() : 'Bài viết';
+}
+
+function getArticleBodyHTML() {
+  const el = reader.querySelector('.article-body');
+  return el ? el.innerHTML : '';
+}
+
+exportTxtBtn.addEventListener('click', () => {
+  if (!hasReadableContent()) return;
+  const title = getArticleTitle();
+  const text = reader.innerText.trim();
+  downloadFile(text, slugify(title) + '.txt', 'text/plain');
+  closeMenu();
+});
+
+exportHtmlBtn.addEventListener('click', () => {
+  if (!hasReadableContent()) return;
+
+  const title = getArticleTitle();
+  const bodyHTML = getArticleBodyHTML();
+
+  const fullHTML =
+    '<!DOCTYPE html>\n' +
+    '<html lang="vi">\n' +
+    '<head>\n' +
+    '<meta charset="UTF-8">\n' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+    '<title>' + escapeHTML(title) + '</title>\n' +
+    '<style>\n' +
+    'body { font-family: Georgia, "Times New Roman", serif; font-size: 1.2rem; line-height: 1.75; max-width: 37.5rem; margin: 0 auto; padding: 1rem; color: #1a1a1a; background: #faf9f6; word-break: normal; overflow-wrap: break-word; }\n' +
+    'h1, h2, h3, h4, h5, h6 { line-height: 1.3; }\n' +
+    'h1 { font-size: 1.5em; margin: 1.5em 0 0.6em; }\n' +
+    'h2 { font-size: 1.3em; margin: 1.4em 0 0.5em; }\n' +
+    'h3 { font-size: 1.15em; margin: 1.2em 0 0.5em; }\n' +
+    'p { margin: 0 0 1.1em; }\n' +
+    'a { color: #b04a00; }\n' +
+    'img { max-width: 100%; height: auto; display: block; margin: 1.2em auto; }\n' +
+    'blockquote { margin: 1.2em 0; padding: 0; color: #666; font-style: italic; }\n' +
+    'hr { border: none; border-top: 2px solid #e6e1d6; margin: 2em auto; width: 30%; }\n' +
+    'pre, code { font-family: monospace; }\n' +
+    'table { border-collapse: collapse; width: 100%; }\n' +
+    'th, td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }\n' +
+    '</style>\n' +
+    '</head>\n' +
+    '<body>\n' +
+    '<h1>' + escapeHTML(title) + '</h1>\n' +
+    bodyHTML + '\n' +
+    '</body>\n' +
+    '</html>';
+
+  downloadFile(fullHTML, slugify(title) + '.html', 'text/html');
+  closeMenu();
+});
+
+/* =========================================================
+   CHIA SẺ (MOBILE)
+   ========================================================= */
+shareBtn.addEventListener('click', async () => {
+  if (!hasReadableContent()) return;
+
+  const title = getArticleTitle();
+  let text = reader.innerText.trim();
+
+  if (!text) {
+    alert('Chưa có nội dung để chia sẻ.');
+    return;
+  }
+
+  const MAX_LEN = 10000;
+  if (text.length > MAX_LEN) {
+    text = text.slice(0, MAX_LEN) + '…';
+  }
+
+  closeMenu();
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: title, text: text });
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      alert('Đã copy nội dung vào clipboard (trình duyệt không hỗ trợ chia sẻ trực tiếp).');
+    } else {
+      alert('Trình duyệt không hỗ trợ chia sẻ hoặc copy tự động.');
+    }
+  } catch (e) {
+    alert('Không chia sẻ được.');
+  }
 });
 
 /* =========================================================
@@ -2002,30 +2352,8 @@ copyBtn.addEventListener('click', async () => {
     else alert('Trình duyệt không cho phép copy. Hãy bôi đen và giữ để chọn.');
   } finally {
     copyBtn.removeAttribute('aria-busy');
-    updateCopyState();
-  }
-});
-
-/* =========================================================
-   NÚT CUỘN LÊN ĐẦU — LUÔN HIỆN
-   Chỉ cuộn khi click, không quan tâm vị trí hiện tại.
-   ========================================================= */
-scrollTopBtn.addEventListener('click', () => {
-  scrollTopBtn.blur();
-
-  try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  catch (e) { window.scrollTo(0, 0); }
-
-  if (document.documentElement) document.documentElement.scrollTop = 0;
-  if (document.body) document.body.scrollTop = 0;
-
-  if (sideInput) {
-    try { sideInput.scrollTo({ top: 0, behavior: 'smooth' }); }
-    catch (e) { sideInput.scrollTop = 0; }
-  }
-  if (sideRead) {
-    try { sideRead.scrollTo({ top: 0, behavior: 'smooth' }); }
-    catch (e) { sideRead.scrollTop = 0; }
+    updateActionButtons();
+    closeMenu();
   }
 });
 
@@ -2044,6 +2372,7 @@ window.addEventListener('resize', () => {
     if (main.dataset.view === 'read' && !main.classList.contains('reading-mode')) {
       setView('input');
     }
+    closeMenu();
   }
 });
 
@@ -2051,8 +2380,15 @@ window.addEventListener('resize', () => {
    KHỞI TẠO
    ========================================================= */
 loadOpts();
+
+(function restoreContent() {
+  const saved = loadContent();
+  if (!saved) return;
+  input.innerHTML = saved;
+  lastRenderSig = '';
+})();
+
 applyStyles();
-updateThemeColor();
 render();
 
 if (savedView === 'read' && !reader.querySelector('.placeholder')) {
@@ -2063,17 +2399,17 @@ if (savedView === 'read' && !reader.querySelector('.placeholder')) {
 
 if (isMobile() && !reader.querySelector('.article-body')) {
   setTimeout(() => {
-    if (!isRawMode()) {
-      input.focus();
-      try {
-        const range = document.createRange();
-        range.selectNodeContents(input);
-        range.collapse(false);
-        const sel = window.getSelection();
+    input.focus();
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(input);
+      range.collapse(false);
+      const sel = window.getSelection();
+      if (sel) {
         sel.removeAllRanges();
         sel.addRange(range);
-      } catch (e) { /* bỏ qua */ }
-    }
+      }
+    } catch (e) { /* bỏ qua */ }
   }, 300);
 }
 </script>
