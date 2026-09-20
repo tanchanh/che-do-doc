@@ -654,10 +654,8 @@ body.dark #reader mark {
 }
 
 /* =========================================================
-   12. NÚT CUỘN LÊN ĐẦU
-   - LUÔN display: inline-flex (không toggle display)
-   - Ẩn/hiện bằng opacity + visibility → không mất nền
-   - Không dùng will-change/backface-visibility (gây bug trên Safari)
+   12. NÚT CUỘN LÊN ĐẦU — LUÔN HIỆN
+   Đơn giản: chỉ display: inline-flex cố định, không ẩn/hiện.
    ========================================================= */
 .scroll-top {
   position: fixed;
@@ -690,28 +688,11 @@ body.dark #reader mark {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 
-  /* Trạng thái ẩn mặc định */
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-
-  transition: background-color 0.15s, opacity 0.2s, visibility 0.2s;
-}
-
-.scroll-top.is-visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+  transition: background-color 0.12s;
 }
 
 .scroll-top:hover { background-color: var(--link); }
 .scroll-top:active { background-color: var(--link); }
-
-.scroll-top:focus { outline: none; }
-.scroll-top:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 0.15rem;
-}
 
 /* =========================================================
    13. MEDIA QUERIES — MOBILE (≤ 820px)
@@ -796,12 +777,6 @@ body.dark #reader mark {
   }
 
   #reader .article-title { font-size: 1.5em; }
-
-  .scroll-top {
-    min-width: 3rem;
-    min-height: 3rem;
-    font-size: 0.85rem;
-  }
 }
 
 /* =========================================================
@@ -1413,7 +1388,6 @@ function setView(view) {
     viewBtn.title = 'Xem nội dung đã tách';
   }
   saveOpts();
-  updateScrollTopBtn();
 }
 
 viewBtn.addEventListener('click', () => {
@@ -1507,7 +1481,6 @@ function render() {
   }
 
   updateCopyState();
-  updateScrollTopBtn();
 }
 
 let renderTimer = null;
@@ -1961,7 +1934,6 @@ expandBtn.addEventListener('click', () => {
   expandBtn.title = on ? 'Hiện lại tiêu đề' : 'Chỉ giữ thanh nút, ẩn tiêu đề';
   if (on) setView('read');
   saveOpts();
-  updateScrollTopBtn();
 });
 
 cleanBtn.addEventListener('click', () => {
@@ -2035,40 +2007,10 @@ copyBtn.addEventListener('click', async () => {
 });
 
 /* =========================================================
-   NÚT CUỘN LÊN ĐẦU
+   NÚT CUỘN LÊN ĐẦU — LUÔN HIỆN
+   Chỉ cuộn khi click, không quan tâm vị trí hiện tại.
    ========================================================= */
-const SCROLL_THRESHOLD = 300;
-
-function getCurrentScrollTop() {
-  let maxTop = 0;
-  const candidates = [
-    window.scrollY,
-    window.pageYOffset,
-    document.documentElement ? document.documentElement.scrollTop : 0,
-    document.body ? document.body.scrollTop : 0,
-    sideInput ? sideInput.scrollTop : 0,
-    sideRead ? sideRead.scrollTop : 0
-  ];
-  for (const v of candidates) {
-    if (typeof v === 'number' && v > maxTop) maxTop = v;
-  }
-  return maxTop;
-}
-
-function updateScrollTopBtn() {
-  const y = getCurrentScrollTop();
-  if (y > SCROLL_THRESHOLD) scrollTopBtn.classList.add('is-visible');
-  else scrollTopBtn.classList.remove('is-visible');
-}
-
-document.addEventListener('scroll', updateScrollTopBtn, { passive: true, capture: true });
-window.addEventListener('scroll', updateScrollTopBtn, { passive: true });
-if (sideInput) sideInput.addEventListener('scroll', updateScrollTopBtn, { passive: true });
-if (sideRead)  sideRead.addEventListener('scroll', updateScrollTopBtn, { passive: true });
-
 scrollTopBtn.addEventListener('click', () => {
-  /* KHÔNG ẩn nút thủ công — để scroll event tự nhiên ẩn khi tới đầu.
-     Tránh toggle display liên tục gây mất nền. */
   scrollTopBtn.blur();
 
   try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -2103,7 +2045,6 @@ window.addEventListener('resize', () => {
       setView('input');
     }
   }
-  updateScrollTopBtn();
 });
 
 /* =========================================================
@@ -2119,8 +2060,6 @@ if (savedView === 'read' && !reader.querySelector('.placeholder')) {
 } else {
   setView('input');
 }
-
-updateScrollTopBtn();
 
 if (isMobile() && !reader.querySelector('.article-body')) {
   setTimeout(() => {
