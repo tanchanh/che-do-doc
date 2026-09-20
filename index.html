@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#faf9f6">
 <title>Chế Độ Đọc - Dương Tấn Chánh</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,6 +75,11 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+}
+
+/* Khoá scroll nền khi modal mở (#1) */
+body.modal-open {
+  overflow: hidden !important;
 }
 
 /* =========================================================
@@ -662,6 +668,142 @@ body.dark #reader mark {
 }
 
 /* =========================================================
+   MODAL THÔNG BÁO — thay thế alert() mặc định
+   Fix #4: dùng visibility + pointer-events để transition chạy
+   ========================================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1.5rem;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out, visibility 0s 0.2s;
+}
+
+.modal-overlay.is-visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.2s ease-out, visibility 0s 0s;
+}
+
+.modal-card {
+  position: relative;
+  background-color: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.4);
+  padding: 2.2rem 2.4rem 1.8rem;
+  max-width: 34rem;
+  width: 100%;
+  text-align: center;
+  transform: translateY(0.6rem) scale(0.97);
+  transition: transform 0.2s ease-out;
+}
+
+.modal-overlay.is-visible .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.modal-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin: 0 0 1rem;
+  display: block;
+  font-weight: bold;
+}
+
+.modal-icon.info    { color: var(--accent); }
+.modal-icon.success { color: #2e7d32; }
+.modal-icon.error   { color: #c62828; }
+.modal-icon.warning { color: #ef6c00; }
+
+body.dark .modal-icon.info    { color: var(--accent); }
+body.dark .modal-icon.success { color: #81c784; }
+body.dark .modal-icon.error   { color: #ef5350; }
+body.dark .modal-icon.warning { color: #ffb74d; }
+
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  line-height: 1.3;
+  margin: 0 0 0.8rem;
+  color: var(--ink);
+}
+
+.modal-message {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink);
+  margin: 0 0 1.6rem;
+  white-space: pre-line;
+  word-break: break-word;
+  text-align: left;
+}
+
+.modal-message:last-child {
+  margin-bottom: 0;
+}
+
+/* Fix #5: 2 nút cho confirm dialog */
+.modal-actions {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.modal-btn {
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0.85rem 2rem;
+  min-width: 8rem;
+  color: var(--paper);
+  background-color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0.6rem;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: opacity 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.modal-btn:hover,
+.modal-btn:focus-visible {
+  opacity: 0.85;
+}
+
+.modal-btn:active {
+  opacity: 0.75;
+}
+
+.modal-btn-cancel {
+  color: var(--ink);
+  background-color: transparent;
+  border-color: var(--line);
+}
+
+.modal-btn-cancel:hover,
+.modal-btn-cancel:focus-visible {
+  background-color: rgba(128, 128, 128, 0.12);
+  opacity: 1;
+}
+
+/* =========================================================
    13. NÚT NỔI
    ========================================================= */
 .floating-btn {
@@ -894,6 +1036,13 @@ button.floating-btn:active {
 @media (max-width: 480px) {
   .page-header h1 { font-size: 1.2rem; }
   .page-header .author { font-size: 0.9rem; }
+
+  .modal-overlay { padding: 1rem; }
+  .modal-card { padding: 1.8rem 1.5rem 1.4rem; }
+  .modal-icon { font-size: 2.4rem; }
+  .modal-title { font-size: 1.25rem; }
+  .modal-message { font-size: 1rem; }
+  .modal-btn { font-size: 1rem; padding: 0.75rem 1.5rem; min-width: 6rem; }
 }
 
 /* =========================================================
@@ -921,7 +1070,8 @@ button.floating-btn:active {
   .menu-backdrop,
   .bottom-left,
   .scroll-top,
-  .drop-overlay {
+  .drop-overlay,
+  .modal-overlay {
     display: none !important;
   }
 
@@ -1110,6 +1260,19 @@ Cũng có thể gõ trực tiếp."></div>
   </div>
 </div>
 
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true"
+     aria-labelledby="modalTitle" aria-describedby="modalMsg">
+  <div class="modal-card" role="document">
+    <span class="modal-icon" id="modalIcon" aria-hidden="true"></span>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <p class="modal-message" id="modalMsg"></p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="modalCancelBtn" type="button" style="display:none;">Huỷ</button>
+      <button class="modal-btn" id="modalBtn" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
 <button class="floating-btn scroll-top" id="scrollTopBtn" type="button"
         aria-label="Cuộn lên đầu">Lên<br>đầu</button>
 
@@ -1147,7 +1310,174 @@ const shareBtn       = document.getElementById('shareBtn');
 const bodyEl         = document.body;
 const root           = document.documentElement;
 
+/* Modal thông báo */
+const modalOverlay  = document.getElementById('modalOverlay');
+const modalIcon     = document.getElementById('modalIcon');
+const modalTitle    = document.getElementById('modalTitle');
+const modalMsg      = document.getElementById('modalMsg');
+const modalBtn      = document.getElementById('modalBtn');
+const modalCancelBtn = document.getElementById('modalCancelBtn');
+
 const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
+
+/* =========================================================
+   MODAL THÔNG BÁO
+   Fix #1: khoá scroll nền khi modal mở
+   Fix #2: lưu & khôi phục focus
+   Fix #3: focus trap (xử lý trong document keydown)
+   Fix #4: animation chạy mượt (CSS đã sửa)
+   Fix #5: hỗ trợ 2 nút cho confirm dialog
+   Fix #7: gọi onClose/onCancel ngay, không setTimeout
+   ========================================================= */
+let modalAutoTimer   = null;
+let modalOnConfirm   = null;
+let modalOnCancel    = null;
+let modalPreviousFocus = null;
+
+const MODAL_ICONS = {
+  info:    'ℹ',
+  success: '✓',
+  error:   '✕',
+  warning: '⚠'
+};
+
+const MODAL_DEFAULT_TITLES = {
+  info:    'Thông báo',
+  success: 'Thành công',
+  error:   'Lỗi',
+  warning: 'Cảnh báo'
+};
+
+function showMessage(message, opts) {
+  opts = opts || {};
+  const type         = opts.type || 'info';
+  const title        = (opts.title !== undefined) ? opts.title : (MODAL_DEFAULT_TITLES[type] || 'Thông báo');
+  const buttonLabel  = opts.buttonLabel || 'OK';
+  const cancelLabel  = opts.cancelLabel || '';
+  const autoDismiss  = opts.autoDismiss || 0;
+
+  /* Reset timer và callback cũ */
+  if (modalAutoTimer) {
+    clearTimeout(modalAutoTimer);
+    modalAutoTimer = null;
+  }
+  modalOnConfirm = opts.onClose || null;
+  modalOnCancel  = opts.onCancel || null;
+
+  /* Fix #2: lưu focus hiện tại */
+  modalPreviousFocus = (document.activeElement && document.activeElement !== bodyEl)
+    ? document.activeElement
+    : null;
+
+  /* Nội dung */
+  modalIcon.textContent = MODAL_ICONS[type] || MODAL_ICONS.info;
+  modalIcon.className   = 'modal-icon ' + type;
+
+  if (title) {
+    modalTitle.textContent   = title;
+    modalTitle.style.display = '';
+  } else {
+    modalTitle.textContent   = '';
+    modalTitle.style.display = 'none';
+  }
+
+  modalMsg.textContent  = message || '';
+  modalBtn.textContent  = buttonLabel;
+
+  /* Fix #5: nút Cancel chỉ hiện khi có cancelLabel */
+  if (cancelLabel) {
+    modalCancelBtn.textContent   = cancelLabel;
+    modalCancelBtn.style.display = '';
+  } else {
+    modalCancelBtn.textContent   = '';
+    modalCancelBtn.style.display = 'none';
+  }
+
+  /* Fix #1: khoá scroll nền */
+  bodyEl.classList.add('modal-open');
+
+  modalOverlay.classList.add('is-visible');
+
+  /* Focus nút OK sau khi modal render */
+  setTimeout(() => {
+    try { modalBtn.focus(); } catch (e) { /* bỏ qua */ }
+  }, 60);
+
+  if (autoDismiss > 0) {
+    modalAutoTimer = setTimeout(() => hideModal('confirm'), autoDismiss);
+  }
+}
+
+/* action: 'confirm' (mặc định) hoặc 'cancel' */
+function hideModal(action) {
+  if (!modalOverlay.classList.contains('is-visible')) return;
+
+  if (modalAutoTimer) {
+    clearTimeout(modalAutoTimer);
+    modalAutoTimer = null;
+  }
+
+  modalOverlay.classList.remove('is-visible');
+  bodyEl.classList.remove('modal-open');
+
+  /* Fix #2: khôi phục focus */
+  if (modalPreviousFocus &&
+      modalPreviousFocus.isConnected &&
+      typeof modalPreviousFocus.focus === 'function' &&
+      !modalPreviousFocus.disabled) {
+    try { modalPreviousFocus.focus(); } catch (e) { /* bỏ qua */ }
+  }
+  modalPreviousFocus = null;
+
+  /* Fix #7: gọi callback ngay, không setTimeout */
+  const isCancel = (action === 'cancel');
+  const cb = isCancel ? modalOnCancel : modalOnConfirm;
+  modalOnConfirm = null;
+  modalOnCancel  = null;
+
+  if (typeof cb === 'function') {
+    try { cb(); } catch (e) { /* bỏ qua */ }
+  }
+}
+
+modalBtn.addEventListener('click', () => hideModal('confirm'));
+modalCancelBtn.addEventListener('click', () => hideModal('cancel'));
+
+modalOverlay.addEventListener('click', e => {
+  if (e.target === modalOverlay) hideModal('cancel');
+});
+
+/* Fix #3: focus trap */
+function trapFocus(e) {
+  const focusables = [];
+  if (modalCancelBtn.style.display !== 'none') focusables.push(modalCancelBtn);
+  focusables.push(modalBtn);
+
+  if (focusables.length === 0) return;
+
+  const first  = focusables[0];
+  const last   = focusables[focusables.length - 1];
+  const active = document.activeElement;
+
+  /* Chỉ 1 nút → luôn giữ focus ở nút đó */
+  if (focusables.length === 1) {
+    e.preventDefault();
+    first.focus();
+    return;
+  }
+
+  if (e.shiftKey) {
+    if (active === first || !focusables.includes(active)) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else {
+    if (active === last || !focusables.includes(active)) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+}
 
 /* =========================================================
    MENU MOBILE
@@ -1167,9 +1497,34 @@ menuBtn.addEventListener('click', openMenu);
 menuCloseBtn.addEventListener('click', closeMenu);
 menuBackdrop.addEventListener('click', closeMenu);
 
+/* =========================================================
+   KEYDOWN TOÀN CỤC
+   Fix #3: focus trap cho modal
+   Fix #10: Escape trong modal gọi preventDefault
+   ========================================================= */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && bodyEl.classList.contains('menu-open')) {
-    closeMenu();
+  /* Escape */
+  if (e.key === 'Escape') {
+    if (modalOverlay.classList.contains('is-visible')) {
+      e.preventDefault();
+      e.stopPropagation();
+      /* Nếu có nút Cancel → hành động là cancel; ngược lại là confirm */
+      if (modalCancelBtn.style.display !== 'none') {
+        hideModal('cancel');
+      } else {
+        hideModal('confirm');
+      }
+      return;
+    }
+    if (bodyEl.classList.contains('menu-open')) {
+      closeMenu();
+    }
+    return;
+  }
+
+  /* Tab — focus trap */
+  if (e.key === 'Tab' && modalOverlay.classList.contains('is-visible')) {
+    trapFocus(e);
   }
 });
 
@@ -1212,7 +1567,8 @@ function safeURL(url) {
 
 const ALLOWED_STYLE_PROPS = new Set([
   'text-align', 'font-weight', 'font-style', 'text-decoration',
-  'text-transform', 'letter-spacing', 'list-style-type'
+  'text-transform', 'letter-spacing', 'list-style-type',
+  'font-family', 'font-size', 'line-height'
 ]);
 
 function filterStyle(text) {
@@ -1245,7 +1601,7 @@ const ALLOWED_TAGS = new Set([
 ]);
 
 const ALLOWED_ATTRS = {
-  '*':       new Set(['title', 'dir', 'lang']),
+  '*':       new Set(['title', 'dir', 'lang', 'style']),
   'a':       new Set(['href', 'name']),
   'img':     new Set(['src', 'alt']),
   'ol':      new Set(['start', 'type', 'reversed']),
@@ -1622,13 +1978,8 @@ function isEmptySource(src) {
   }
 }
 
-const EMPTY_EDITOR_RE = /^\s*(<br\s*\/?>|<div>\s*<br\s*\/?>\s*<\/div>|<p>\s*<br\s*\/?>\s*<\/p>|&nbsp;|\s)*\s*$/i;
-
 /* =========================================================
    VIEW MODE
-   Nút hiển thị "Trạng thái hiện tại ▶ Trạng thái sau":
-   - Đang Sửa  → "Sửa  ▶ Đọc"  (bấm để chuyển sang đọc)
-   - Đang Đọc  → "Đọc  ▶ Sửa"  (bấm để quay lại sửa)
    ========================================================= */
 function setView(view) {
   if (view === 'input' && main.classList.contains('reading-mode')) {
@@ -1668,15 +2019,26 @@ viewBtn.addEventListener('click', () => {
 /* =========================================================
    CẬP NHẬT TRẠNG THÁI NÚT
    ========================================================= */
+/* Fix #8: cache hasReadableContent theo lastRenderSig */
+let _hasContentCache    = null;
+let _hasContentCacheSig = '';
+
 function hasReadableContent() {
-  return !reader.querySelector('.placeholder')
+  const sig = lastRenderSig;
+  if (_hasContentCache !== null && _hasContentCacheSig === sig) {
+    return _hasContentCache;
+  }
+  const result = !reader.querySelector('.placeholder')
       && stripBlank(reader.textContent).length > 0;
+  _hasContentCache    = result;
+  _hasContentCacheSig = sig;
+  return result;
 }
 
 function updateActionButtons() {
   const has = hasReadableContent();
   copyBtn.disabled = !has;
-  copyBtn.title = has ? 'Copy bài viết' : 'Chưa có nội dung để copy';
+  copyBtn.title = has ? 'Copy bài viết theo định dạng đang chọn' : 'Chưa có nội dung để copy';
 
   printBtn.disabled = !has;
   printBtn.title = has ? 'In bài viết' : 'Chưa có nội dung để in';
@@ -1713,8 +2075,11 @@ function render() {
           '• Trên máy tính: <kbd>Ctrl</kbd>+<kbd>V</kbd> hoặc <kbd>⌘</kbd>+<kbd>V</kbd>' +
         '</div>' +
       '</div>';
-    updateActionButtons();
     lastRenderSig = '';
+    /* Fix #8: invalidate cache */
+    _hasContentCache    = null;
+    _hasContentCacheSig = '';
+    updateActionButtons();
 
     if (isMobile() && main.dataset.view === 'read') setView('input');
     return;
@@ -1755,6 +2120,10 @@ function render() {
   lastRenderSig = sig;
 
   reader.innerHTML = html;
+
+  /* Fix #8: invalidate cache sau khi đổi nội dung */
+  _hasContentCache    = null;
+  _hasContentCacheSig = '';
 
   if (changed) {
     if (sideRead) sideRead.scrollTop = 0;
@@ -1968,23 +2337,22 @@ input.addEventListener('paste', e => {
   }
 });
 
+/* Fix #6: bỏ reset innerHTML — để browser tự xử lý space đầu dòng */
 input.addEventListener('input', () => {
   if (composing) return;
-  if (EMPTY_EDITOR_RE.test(input.innerHTML)) {
-    input.innerHTML = '';
-  }
   renderDebounced();
   saveContentDebounced();
 });
 
 /* =========================================================
    PASTE TOÀN MÀN HÌNH — THAY THẾ
+   Fix #9: bỏ check thừa `ae !== input`
    ========================================================= */
 document.addEventListener('paste', e => {
-  if (e.target === input) return;
+  if (e.target === input || (e.target && input.contains(e.target))) return;
 
   const ae = document.activeElement;
-  if (ae && ae !== bodyEl && ae !== input) {
+  if (ae && ae !== bodyEl && !input.contains(ae)) {
     const tag = ae.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
   }
@@ -2055,10 +2423,10 @@ async function handlePasteClick() {
       } catch (err) { /* tiếp tục fallback */ }
     }
 
-    alert(
+    showMessage(
       'Trình duyệt không cho phép đọc clipboard tự động.\n\n' +
-      'Hãy nhấn giữ vào ô nhập và chọn Paste, ' +
-      'hoặc dùng tổ hợp phím Ctrl+V / ⌘+V.'
+      'Hãy nhấn giữ vào ô nhập và chọn Paste, hoặc dùng tổ hợp phím Ctrl+V / ⌘+V.',
+      { type: 'warning', title: 'Không đọc được clipboard' }
     );
   } finally {
     isPasting = false;
@@ -2091,7 +2459,8 @@ function readFile(file) {
   if (isReadingFile) return;
 
   if (file.size > MAX_FILE_SIZE) {
-    alert('File quá lớn. Chỉ hỗ trợ file tối đa 5MB.');
+    showMessage('File quá lớn. Chỉ hỗ trợ file tối đa 5MB.',
+      { type: 'error', title: 'File quá lớn' });
     return;
   }
 
@@ -2100,7 +2469,8 @@ function readFile(file) {
   const ext = dotIndex >= 0 ? name.slice(dotIndex + 1) : '';
 
   if (!ALLOWED_EXTS.includes(ext)) {
-    alert('Chỉ hỗ trợ file .html, .htm, .txt');
+    showMessage('Chỉ hỗ trợ file .html, .htm, .txt',
+      { type: 'error', title: 'Định dạng không hỗ trợ' });
     return;
   }
 
@@ -2111,7 +2481,8 @@ function readFile(file) {
   const fileReader = new FileReader();
 
   fileReader.onerror = () => {
-    alert('Không đọc được file. Vui lòng thử lại.');
+    showMessage('Không đọc được file. Vui lòng thử lại.',
+      { type: 'error', title: 'Lỗi đọc file' });
     isReadingFile = false;
     fileBtn.disabled = false;
     fileBtn.removeAttribute('aria-busy');
@@ -2260,15 +2631,33 @@ expandBtn.addEventListener('click', () => {
   saveOpts();
 });
 
+/* Fix #5: Xoá có confirm */
 cleanBtn.addEventListener('click', () => {
-  input.innerHTML = '';
-  lastRenderSig = '';
-  clearContent();
-  resetScrollBtn();
-  render();
-  setView('input');
-  closeMenu();
-  setTimeout(() => input.focus(), 120);
+  const hasAnything = hasReadableContent() || stripBlank(input.innerHTML).length > 0;
+  if (!hasAnything) {
+    closeMenu();
+    return;
+  }
+
+  showMessage(
+    'Bạn có chắc muốn xoá toàn bộ nội dung?\n\nThao tác này không thể hoàn tác.',
+    {
+      type: 'warning',
+      title: 'Xoá nội dung',
+      buttonLabel: 'Xoá',
+      cancelLabel: 'Huỷ',
+      onClose: () => {
+        input.innerHTML = '';
+        lastRenderSig = '';
+        clearContent();
+        resetScrollBtn();
+        render();
+        setView('input');
+        closeMenu();
+        setTimeout(() => input.focus(), 120);
+      }
+    }
+  );
 });
 
 /* =========================================================
@@ -2278,7 +2667,7 @@ printBtn.addEventListener('click', () => {
   if (printBtn.disabled) return;
 
   if (!hasReadableContent()) {
-    alert('Chưa có nội dung để in.');
+    showMessage('Chưa có nội dung để in.', { type: 'warning' });
     return;
   }
 
@@ -2288,7 +2677,8 @@ printBtn.addEventListener('click', () => {
     try {
       window.print();
     } catch (e) {
-      alert('Trình duyệt không hỗ trợ in. Hãy dùng Ctrl+P / ⌘+P.');
+      showMessage('Trình duyệt không hỗ trợ in. Hãy dùng Ctrl+P / ⌘+P.',
+        { type: 'error', title: 'Không in được' });
     }
   }, 200);
 });
@@ -2355,9 +2745,6 @@ exportTxtBtn.addEventListener('click', () => {
 
 /* =========================================================
    XUẤT HTML — THEO ĐÚNG TÙY CHỌN HIỆN CÓ
-   Đọc giá trị của 5 select và 2 biến CSS, sinh file HTML
-   có cấu hình giống hệt vùng đọc đang xem.
-   KHÔNG tự thêm tiêu đề — chỉ xuất đúng nội dung hiển thị.
    ========================================================= */
 exportHtmlBtn.addEventListener('click', () => {
   if (!hasReadableContent()) return;
@@ -2365,14 +2752,12 @@ exportHtmlBtn.addEventListener('click', () => {
   const title = getArticleTitle();
   const bodyHTML = getArticleBodyHTML();
 
-  /* Đọc tùy chọn hiện tại */
-  const fs = fontSizeSel.value;           // "1rem" → "2rem"
-  const ff = fontFamilySel.value;         // font-family đầy đủ
-  const lh = lineHeightSel.value;         // "1.55" / "1.75" / "2"
-  const mw = maxWidthSel.value;           // "25rem" / "37.5rem" / "50rem" / "none"
-  const paper = paperColorSel.value;      // mã hex hoặc "dark"
+  const fs = fontSizeSel.value;
+  const ff = fontFamilySel.value;
+  const lh = lineHeightSel.value;
+  const mw = maxWidthSel.value;
+  const paper = paperColorSel.value;
 
-  /* Xác định bảng màu theo tùy chọn nền */
   let bgColor, inkColor, lineColor, mutedColor, linkColor, markBg, markInk;
   if (paper === 'dark') {
     bgColor    = '#1c1a17';
@@ -2392,10 +2777,8 @@ exportHtmlBtn.addEventListener('click', () => {
     markInk    = '#1a1a1a';
   }
 
-  /* Khi "Rộng sát lề" → max-width: none */
   const maxWidthCSS = (mw === 'none') ? 'none' : mw;
 
-  /* Xây CSS theo tùy chọn */
   const css = [
     'html, body { margin: 0; padding: 0; }',
     'body {',
@@ -2504,9 +2887,6 @@ exportHtmlBtn.addEventListener('click', () => {
     'h1, h2, h3, h4, h5, h6 { page-break-after: avoid; }'
   ].join('\n');
 
-  /* Xây HTML đầy đủ.
-     LƯU Ý: KHÔNG chèn <h1> tiêu đề vào body —
-     chỉ xuất đúng nội dung đang hiển thị trong .article-body. */
   const fullHTML =
     '<!DOCTYPE html>\n' +
     '<html lang="vi">\n' +
@@ -2537,7 +2917,7 @@ shareBtn.addEventListener('click', async () => {
   let text = reader.innerText.trim();
 
   if (!text) {
-    alert('Chưa có nội dung để chia sẻ.');
+    showMessage('Chưa có nội dung để chia sẻ.', { type: 'warning' });
     return;
   }
 
@@ -2560,12 +2940,16 @@ shareBtn.addEventListener('click', async () => {
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
-      alert('Đã copy nội dung vào clipboard (trình duyệt không hỗ trợ chia sẻ trực tiếp).');
+      showMessage(
+        'Đã copy nội dung vào clipboard (trình duyệt không hỗ trợ chia sẻ trực tiếp).',
+        { type: 'success', autoDismiss: 3000 }
+      );
     } else {
-      alert('Trình duyệt không hỗ trợ chia sẻ hoặc copy tự động.');
+      showMessage('Trình duyệt không hỗ trợ chia sẻ hoặc copy tự động.',
+        { type: 'error' });
     }
   } catch (e) {
-    alert('Không chia sẻ được.');
+    showMessage('Không chia sẻ được.', { type: 'error' });
   }
 });
 
@@ -2604,25 +2988,95 @@ async function copyRich(html, text) {
   }
 }
 
+/* =========================================================
+   LẤY FONT NAME CHÍNH — CHO WORD
+   ========================================================= */
+function getPrimaryFontName(stack) {
+  if (!stack) return 'serif';
+  const first = (stack.split(',')[0] || '').trim().replace(/^['"]+|['"]+$/g, '');
+  const map = {
+    'system-ui':          'Segoe UI',
+    '-apple-system':      'Segoe UI',
+    'BlinkMacSystemFont': 'Segoe UI'
+  };
+  return map[first] || first;
+}
+
+/* =========================================================
+   XÂY HTML KHI COPY — THEO TÙY CHỌN ĐANG CHỌN
+   ========================================================= */
+function buildCopyWithReaderOptions() {
+  const titleEl = reader.querySelector('.article-title');
+  const bodyElm = reader.querySelector('.article-body');
+  if (!bodyElm) return '';
+
+  const fs = fontSizeSel.value;
+  const ff = fontFamilySel.value;
+  const lh = lineHeightSel.value;
+  const mw = maxWidthSel.value;
+  const maxWidthCSS = (mw === 'none') ? 'none' : mw;
+
+  const primaryFont = getPrimaryFontName(ff);
+  const ffCSS = '"' + primaryFont.replace(/"/g, '\\"') + '"';
+
+  const clone = bodyElm.cloneNode(true);
+
+  clone.removeAttribute('class');
+  clone.querySelectorAll('[class]').forEach(el => el.removeAttribute('class'));
+
+  const MONO_TAGS = new Set(['CODE', 'PRE', 'KBD', 'SAMP']);
+  clone.querySelectorAll('*').forEach(el => {
+    if (MONO_TAGS.has(el.tagName)) return;
+    el.style.fontFamily = ffCSS;
+  });
+
+  clone.style.fontFamily = ffCSS;
+  clone.style.fontSize = fs;
+  clone.style.lineHeight = lh;
+
+  let titleHTML = '';
+  if (titleEl) {
+    const t = titleEl.textContent.trim();
+    if (t) {
+      titleHTML =
+        '<h1 style="font-family: ' + ffCSS + '; font-size: 1.9em; ' +
+        'font-weight: bold; margin: 0 0 0.5em;">' +
+        escapeHTML(t) + '</h1>';
+    }
+  }
+
+  const wrapperStyle =
+    'font-family: ' + ffCSS + '; font-size: ' + fs + '; ' +
+    'line-height: ' + lh + '; max-width: ' + maxWidthCSS + ';';
+
+  return '<div style="' + wrapperStyle + '">' +
+           titleHTML +
+           clone.outerHTML +
+         '</div>';
+}
+
 copyBtn.addEventListener('click', async () => {
   if (copyBtn.disabled) return;
   copyBtn.disabled = true;
   copyBtn.setAttribute('aria-busy', 'true');
 
   try {
-    const titleEl = reader.querySelector('.article-title');
-    const bodyElm = reader.querySelector('.article-body');
-    const html = (titleEl ? titleEl.outerHTML : '') + (bodyElm ? bodyElm.outerHTML : '');
+    const html = buildCopyWithReaderOptions();
     const text = reader.innerText;
 
-    if (!text.trim()) {
-      alert('Chưa có nội dung để copy.');
+    if (!text.trim() || !html) {
+      showMessage('Chưa có nội dung để copy.', { type: 'warning' });
       return;
     }
 
     const ok = await copyRich(html, text);
-    if (ok) alert('Đã copy bài viết!');
-    else alert('Trình duyệt không cho phép copy. Hãy bôi đen và giữ để chọn.');
+    if (ok) {
+      showMessage('Đã copy bài viết theo định dạng đang chọn!',
+        { type: 'success', autoDismiss: 2500 });
+    } else {
+      showMessage('Trình duyệt không cho phép copy. Hãy bôi đen và giữ để chọn.',
+        { type: 'error' });
+    }
   } finally {
     copyBtn.removeAttribute('aria-busy');
     updateActionButtons();
