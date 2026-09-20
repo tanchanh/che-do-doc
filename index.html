@@ -25,7 +25,7 @@ html {
 
 body {
   margin: 0;
-  padding: 0.5rem 0;
+  padding: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 1.1rem;
   font-weight: normal;
@@ -77,10 +77,12 @@ body {
 }
 
 /* =========================================================
-   4. TOPBAR WRAPPER
+   4. TOPBAR WRAPPER — sát mép trên
    ========================================================= */
 .topbar {
   flex: 0 0 auto;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 /* =========================================================
@@ -93,7 +95,7 @@ body {
   align-items: baseline;
   justify-content: center;
   gap: 0.2rem 0.8rem;
-  margin: 0.3rem 0 0.5rem;
+  margin: 0 0 0.3rem;
   padding: 0 0.5rem;
 }
 
@@ -108,6 +110,8 @@ body {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.04rem;
+  line-height: 1;
+  padding-top: 1rem;
   margin: 0;
   flex: 0 0 auto;
   color: var(--ink);
@@ -118,6 +122,7 @@ body {
   font-weight: normal;
   font-style: normal;
   text-align: right;
+  line-height: 1.2;
   margin: 0;
   flex: 1 1 0;
   min-width: 0;
@@ -141,7 +146,7 @@ h4 { font-size: 1.1rem; font-weight: bold; margin: 1rem 0 0.5rem; }
   flex-wrap: wrap;
   gap: 0.4rem 0.6rem;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.35rem 0.5rem;
   border-bottom: 2px solid var(--line);
 }
 
@@ -195,7 +200,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 /* =========================================================
    7. CHẾ ĐỘ TOÀN MÀN HÌNH (desktop)
    ========================================================= */
-body.is-fullscreen .topbar { display: none; }
+body.is-fullscreen .page-header { display: none; }
 
 body.is-fullscreen .toolbar {
   flex-wrap: nowrap;
@@ -348,6 +353,9 @@ body.is-max-width #reader {
 
 /* =========================================================
    11. VÙNG ĐỌC
+   Toàn bộ phần tử trong vùng đọc kế thừa line-height
+   từ #reader. Không khai báo riêng cho tiêu đề, figcaption,
+   pre — tất cả đều dãn theo tùy chọn "Dòng".
    ========================================================= */
 #reader {
   max-width: var(--reader-mw);
@@ -366,7 +374,6 @@ body.is-max-width #reader {
   font-family: inherit;
   font-size: 1.9em;
   font-weight: bold;
-  line-height: 1.2;
   margin: 0 0 0.5rem;
   color: var(--ink);
   text-align: left;
@@ -399,7 +406,6 @@ body.is-max-width #reader {
 #reader h6 {
   font-family: inherit;
   font-weight: bold;
-  line-height: 1.3;
   color: var(--ink);
   text-align: left;
   text-transform: none;
@@ -441,7 +447,6 @@ body.is-max-width #reader {
   font-size: 0.75em;
   color: var(--muted);
   text-align: center;
-  line-height: 1.5;
   margin-top: 0.4em;
 }
 
@@ -509,7 +514,6 @@ body.is-max-width #reader {
   -webkit-overflow-scrolling: touch;
   font-family: "Roboto Mono", Consolas, ui-monospace, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", monospace;
   font-size: 0.9em;
-  line-height: 1.5;
 }
 
 #reader pre code { font-size: 1em; }
@@ -619,12 +623,11 @@ body.dark #reader mark {
   padding: 0;
   border: none;
   margin-bottom: 1.2em;
-  line-height: 1.5;
   font-style: italic;
 }
 
 /* =========================================================
-   12. DROP OVERLAY (chỉ desktop)
+   12. DROP OVERLAY
    ========================================================= */
 .drop-overlay {
   position: fixed;
@@ -707,7 +710,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Dán) — chỉ mobile
+   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Dán)
    ========================================================= */
 .bottom-left {
   display: none;
@@ -719,7 +722,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   15. BACKDROP (chỉ hiện trên mobile khi menu mở)
+   15. BACKDROP
    ========================================================= */
 .menu-backdrop {
   display: none;
@@ -742,7 +745,7 @@ button.floating-btn:active {
     height: auto;
     min-height: 100vh;
     overflow: auto;
-    padding: 0.5rem 0 5rem;
+    padding: 0 0 5rem;
   }
 
   body.menu-open {
@@ -797,6 +800,7 @@ button.floating-btn:active {
     font-size: 1.3rem;
     text-align: left;
     width: 100%;
+    padding-top: 0;
   }
 
   .page-header .author {
@@ -853,17 +857,21 @@ button.floating-btn:active {
   }
 
   .side-input {
-    padding: 1rem 0.8rem;
+    padding: 0 0.8rem 1rem;
   }
 
   .side-read {
-    padding: 1rem 0;
+    padding: 0 0 1rem;
   }
 
   .main[data-view="input"]:not(.reading-mode) .side-input { display: block; }
   .main[data-view="read"] .side-read { display: block; }
   .main.reading-mode .side-input { display: none; }
   .main.reading-mode .side-read { display: block; }
+
+  #reader {
+    padding-top: 0;
+  }
 
   #input {
     font-size: 1rem;
@@ -2129,12 +2137,11 @@ function applyStyles() {
 function applyPaper() {
   if (paperColorSel.value === 'dark') {
     bodyEl.classList.add('dark');
-    updateThemeColor();
   } else {
     bodyEl.classList.remove('dark');
     root.style.setProperty('--paper', paperColorSel.value);
-    updateThemeColor();
   }
+  updateThemeColor();
 }
 
 [fontSizeSel, fontFamilySel, lineHeightSel, maxWidthSel, paperColorSel].forEach(sel => {
