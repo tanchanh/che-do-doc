@@ -77,7 +77,7 @@ body {
 }
 
 /* =========================================================
-   4. TOPBAR WRAPPER — sát mép trên
+   4. TOPBAR WRAPPER
    ========================================================= */
 .topbar {
   flex: 0 0 auto;
@@ -353,9 +353,6 @@ body.is-max-width #reader {
 
 /* =========================================================
    11. VÙNG ĐỌC
-   Toàn bộ phần tử trong vùng đọc kế thừa line-height
-   từ #reader. Không khai báo riêng cho tiêu đề, figcaption,
-   pre — tất cả đều dãn theo tùy chọn "Dòng".
    ========================================================= */
 #reader {
   max-width: var(--reader-mw);
@@ -444,7 +441,7 @@ body.is-max-width #reader {
 
 #reader figcaption {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.75em;
+  font-size: 0.8em;
   color: var(--muted);
   text-align: center;
   margin-top: 0.4em;
@@ -710,7 +707,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Dán)
+   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Dán + Đọc/Sửa)
    ========================================================= */
 .bottom-left {
   display: none;
@@ -891,6 +888,100 @@ button.floating-btn:active {
   .page-header h1 { font-size: 1.2rem; }
   .page-header .author { font-size: 0.9rem; }
 }
+
+/* =========================================================
+   18. KIỂU IN — @media print
+   ========================================================= */
+@media print {
+  @page {
+    margin: 2cm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .topbar,
+  .side-input,
+  .menu-backdrop,
+  .bottom-left,
+  .scroll-top,
+  .drop-overlay {
+    display: none !important;
+  }
+
+  .main {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .side-read {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    padding: 0 !important;
+    scrollbar-gutter: auto !important;
+    background: #ffffff !important;
+  }
+
+  #reader {
+    display: block !important;
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #reader,
+  #reader * {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #000000 !important;
+  }
+
+  #reader a {
+    color: #000000 !important;
+    text-decoration: underline !important;
+  }
+
+  #reader tr,
+  #reader img,
+  #reader figure,
+  #reader pre {
+    page-break-inside: avoid;
+  }
+
+  #reader .article-title {
+    page-break-after: avoid;
+  }
+
+  #reader h1,
+  #reader h2,
+  #reader h3,
+  #reader h4,
+  #reader h5,
+  #reader h6 {
+    page-break-after: avoid;
+    color: #000000 !important;
+  }
+
+  #reader .placeholder {
+    display: none !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -902,6 +993,8 @@ button.floating-btn:active {
           aria-label="Mở menu tuỳ chọn" title="Mở menu">Menu</button>
   <button class="floating-btn" id="pasteFloatBtn" type="button"
           aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
+  <button class="floating-btn" id="viewBtn" type="button"
+          aria-label="Chuyển sang chế độ đọc" title="Chuyển sang chế độ đọc">→<br>Đọc</button>
 </div>
 
 <div class="topbar" id="topbar">
@@ -965,11 +1058,11 @@ button.floating-btn:active {
 
     <input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
 
-    <button id="viewBtn" class="mobile-only" type="button"
-            aria-label="Xem nội dung đã tách" title="Chuyển chế độ xem">Đọc</button>
-
     <button id="copyBtn" type="button"
             aria-label="Copy bài viết" title="Chưa có nội dung để copy" disabled>Copy</button>
+
+    <button id="printBtn" type="button"
+            aria-label="In bài viết" title="Chưa có nội dung để in" disabled>In</button>
 
     <button id="shareBtn" class="mobile-only" type="button"
             aria-label="Chia sẻ bài viết" title="Chia sẻ bài viết">Chia sẻ</button>
@@ -1028,7 +1121,6 @@ const topbar         = document.getElementById('topbar');
 const menuBtn        = document.getElementById('menuBtn');
 const menuCloseBtn   = document.getElementById('menuCloseBtn');
 const menuBackdrop   = document.getElementById('menuBackdrop');
-const bottomLeft     = document.getElementById('bottomLeft');
 const pasteFloatBtn  = document.getElementById('pasteFloatBtn');
 const expandBtn      = document.getElementById('expandBtn');
 const viewBtn        = document.getElementById('viewBtn');
@@ -1036,6 +1128,7 @@ const pasteBtn       = document.getElementById('pasteBtn');
 const fileBtn        = document.getElementById('fileBtn');
 const fileInput      = document.getElementById('fileInput');
 const copyBtn        = document.getElementById('copyBtn');
+const printBtn       = document.getElementById('printBtn');
 const cleanBtn       = document.getElementById('cleanBtn');
 const scrollTopBtn   = document.getElementById('scrollTopBtn');
 const dropOverlay    = document.getElementById('dropOverlay');
@@ -1529,6 +1622,9 @@ const EMPTY_EDITOR_RE = /^\s*(<br\s*\/?>|<div>\s*<br\s*\/?>\s*<\/div>|<p>\s*<br\
 
 /* =========================================================
    VIEW MODE
+   Nút viewBtn hiển thị HƯỚNG CHUYỂN ĐỔI kèm mũi tên:
+   - Đang Sửa  → "→ Đọc"  (bấm để sang chế độ đọc)
+   - Đang Đọc  → "← Sửa"  (bấm để quay về chế độ sửa)
    ========================================================= */
 function setView(view) {
   if (view === 'input' && main.classList.contains('reading-mode')) {
@@ -1543,13 +1639,15 @@ function setView(view) {
   if (isMobile()) window.scrollTo(0, 0);
 
   if (view === 'read') {
-    viewBtn.textContent = 'Sửa';
+    /* Đang ở chế độ Đọc → nút ghi "← Sửa" */
+    viewBtn.innerHTML = '←<br>Sửa';
     viewBtn.setAttribute('aria-label', 'Quay lại ô nhập');
     viewBtn.title = 'Quay lại ô nhập';
   } else {
-    viewBtn.textContent = 'Đọc';
-    viewBtn.setAttribute('aria-label', 'Xem nội dung đã tách');
-    viewBtn.title = 'Xem nội dung đã tách';
+    /* Đang ở chế độ Sửa → nút ghi "→ Đọc" */
+    viewBtn.innerHTML = '→<br>Đọc';
+    viewBtn.setAttribute('aria-label', 'Chuyển sang chế độ đọc');
+    viewBtn.title = 'Chuyển sang chế độ đọc';
   }
   saveOpts();
 }
@@ -1577,6 +1675,9 @@ function updateActionButtons() {
   const has = hasReadableContent();
   copyBtn.disabled = !has;
   copyBtn.title = has ? 'Copy bài viết' : 'Chưa có nội dung để copy';
+
+  printBtn.disabled = !has;
+  printBtn.title = has ? 'In bài viết' : 'Chưa có nội dung để in';
 
   exportTxtBtn.disabled = !has;
   exportTxtBtn.title = has ? 'Tải nội dung thành file .txt' : 'Chưa có nội dung để tải';
@@ -2171,6 +2272,39 @@ cleanBtn.addEventListener('click', () => {
   setView('input');
   closeMenu();
   setTimeout(() => input.focus(), 120);
+});
+
+/* =========================================================
+   IN BÀI VIẾT
+   ========================================================= */
+printBtn.addEventListener('click', () => {
+  if (printBtn.disabled) return;
+
+  if (!hasReadableContent()) {
+    alert('Chưa có nội dung để in.');
+    return;
+  }
+
+  closeMenu();
+
+  setTimeout(() => {
+    try {
+      window.print();
+    } catch (e) {
+      alert('Trình duyệt không hỗ trợ in. Hãy dùng Ctrl+P / ⌘+P.');
+    }
+  }, 200);
+});
+
+document.addEventListener('keydown', e => {
+  const isPrint = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p';
+  if (!isPrint) return;
+  if (!hasReadableContent()) return;
+  e.preventDefault();
+  closeMenu();
+  setTimeout(() => {
+    try { window.print(); } catch (err) { /* bỏ qua */ }
+  }, 100);
 });
 
 /* =========================================================
