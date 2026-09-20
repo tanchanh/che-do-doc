@@ -1,3 +1,73 @@
+# Chế Độ Đọc
+
+Một ứng dụng nhỏ gọn giúp bạn **đọc văn bản trên web thoải mái hơn** — loại bỏ quảng cáo, menu rối rắm, chỉ giữ lại nội dung chính và cho bạn toàn quyền điều chỉnh cách hiển thị.
+
+Được viết bởi **Dương Tấn Chánh**.
+
+---
+
+## Mục lục
+
+1. [Ứng dụng này dùng để làm gì?](#1-ứng-dụng-này-dùng-để-làm-gì)
+2. [Cách mở ứng dụng](#2-cách-mở-ứng-dụng)
+3. [Màn hình chính có gì?](#3-màn-hình-chính-có-gì)
+4. [Cách đưa nội dung vào](#4-cách-đưa-nội-dung-vào)
+5. [Chuyển giữa Sửa và Đọc](#5-chuyển-giữa-sửa-và-đọc)
+6. [Điều chỉnh cách hiển thị](#6-điều-chỉnh-cách-hiển-thị)
+7. [Các nút chức năng](#7-các-nút-chức-năng)
+8. [Nút "Lên đầu" và "Quay lại"](#8-nút-lên-đầu-và-quay-lại)
+9. [Sử dụng trên điện thoại](#9-sử-dụng-trên-điện-thoại)
+10. [Phím tắt](#10-phím-tắt)
+11. [Nội dung có được lưu lại không?](#11-nội-dung-có-được-lưu-lại-không)
+12. [Mẹo hay](#12-mẹo-hay)
+
+---
+
+## 1. Ứng dụng này dùng để làm gì?
+
+Khi bạn đọc một bài viết dài trên mạng, trang web thường có đủ thứ gây xao nhãng:
+
+- Quảng cáo nhấp nháy hai bên
+- Menu, thanh điều hướng, bài viết liên quan
+- Nút chia sẻ Facebook, bình luận
+- Đủ loại thông báo, popup
+
+**Chế Độ Đọc** giải quyết vấn đề đó. Bạn chỉ cần **dán nội dung vào**, ứng dụng sẽ:
+
+- Tự động lọc bỏ quảng cáo, menu, bình luận…
+- Trình bày lại văn bản sạch sẽ, dễ đọc
+- Cho bạn chỉnh cỡ chữ, màu nền, phông chữ theo ý thích
+
+---
+
+## 2. Cách mở ứng dụng
+
+Ứng dụng này là **một file duy nhất** (thường có tên `index.html`). Để mở:
+
+1. **Nhấp đúp** vào file đó, hoặc
+2. **Kéo thả** file vào cửa sổ trình duyệt (Chrome, Edge, Firefox, Safari…), hoặc
+3. **Nhấp chuột phải** vào file → **Mở bằng** → chọn trình duyệt bạn muốn
+
+Không cần cài đặt gì. Không cần kết nối mạng (trừ lần đầu để tải phông chữ đẹp).
+
+---
+
+## 3. Màn hình chính có gì?
+
+Khi mở lên, bạn sẽ thấy giao diện chia làm **2 phần**:
+
+```
+┌────────────────────┬────────────────────┐
+│                    │                    │
+│   Ô NHẬP           │   VÙNG ĐỌC         │
+│   (bên trái)       │   (bên phải)       │
+│                    │                    │
+│  Nơi bạn dán       │  Nơi hiển thị      │
+│  nội dung vào      │  nội dung sạch     │
+│                    │                    │
+└────────────────────┴────────────────────┘
+   Thanh công cụ ở trên cùng
+```
 
 - **Bên trái** là nơi bạn đưa nội dung vào
 - **Bên phải** là nơi đọc — văn bản đã được làm sạch, trình bày đẹp
