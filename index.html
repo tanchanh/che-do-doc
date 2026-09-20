@@ -23,8 +23,6 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
-/* Body: chỉ padding dọc, KHÔNG padding ngang.
-   Padding ngang được giao cho từng khối (header, toolbar, reader). */
 body {
   margin: 0;
   padding: 0.5rem 0;
@@ -79,7 +77,7 @@ body {
 }
 
 /* =========================================================
-   4. HEADER — H1 + TÁC GIẢ
+   4. HEADER
    ========================================================= */
 .page-header {
   display: flex;
@@ -205,8 +203,6 @@ body.is-fullscreen .toolbar > * { flex: 0 0 auto; }
 
 /* =========================================================
    7. CHẾ ĐỘ "RỘNG SÁT LỀ"
-   Chỉ bỏ max-width + margin auto của #reader.
-   Padding 1rem vẫn giữ nguyên như 400/600/800.
    ========================================================= */
 body.is-max-width #reader {
   max-width: none;
@@ -344,13 +340,11 @@ body.is-max-width #reader {
 
 /* =========================================================
    10. VÙNG ĐỌC
-   #reader padding 1rem cho MỌI chế độ 400/600/800/sát lề.
-   Đây là tầng padding duy nhất của vùng đọc.
    ========================================================= */
 #reader {
   max-width: var(--reader-mw);
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.6rem;
   font-family: var(--reader-ff);
   font-size: var(--reader-fs);
   font-weight: normal;
@@ -661,46 +655,66 @@ body.dark #reader mark {
 
 /* =========================================================
    12. NÚT CUỘN LÊN ĐẦU
+   - LUÔN display: inline-flex (không toggle display)
+   - Ẩn/hiện bằng opacity + visibility → không mất nền
+   - Không dùng will-change/backface-visibility (gây bug trên Safari)
    ========================================================= */
 .scroll-top {
   position: fixed;
   bottom: max(1rem, env(safe-area-inset-bottom));
   right: max(1rem, env(safe-area-inset-right));
   z-index: 100;
-  display: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   min-width: 3rem;
   min-height: 3rem;
   padding: 0.4rem 0.5rem;
+
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: bold;
   line-height: 1.15;
   text-align: center;
+
   color: var(--paper);
   background-color: var(--ink);
   border: none;
   border-radius: 0.8rem;
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.25);
+
   cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: background-color 0.15s, transform 0.15s;
+
+  /* Trạng thái ẩn mặc định */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition: background-color 0.15s, opacity 0.2s, visibility 0.2s;
 }
 
 .scroll-top.is-visible {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .scroll-top:hover { background-color: var(--link); }
-.scroll-top:active { transform: scale(0.95); }
+.scroll-top:active { background-color: var(--link); }
+
+.scroll-top:focus { outline: none; }
+.scroll-top:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0.15rem;
+}
 
 /* =========================================================
    13. MEDIA QUERIES — MOBILE (≤ 820px)
-   Vẫn giữ nguyên nguyên tắc: body không padding ngang,
-   #reader padding 1rem cho cả 4 chế độ.
    ========================================================= */
 @media (max-width: 820px) {
   body {
@@ -762,12 +776,10 @@ body.dark #reader mark {
     opacity: 1;
   }
 
-  /* Khung nhập có padding riêng vì #input không có padding */
   .side-input {
     padding: 1rem 0.8rem;
   }
 
-  /* Khung đọc: #reader bên trong có padding 1rem rồi */
   .side-read {
     padding: 1rem 0;
   }
@@ -983,7 +995,7 @@ function filterStyle(text) {
 }
 
 /* =========================================================
-   WHITELIST THẺ VÀ THUỘC TÍNH
+   WHITELIST
    ========================================================= */
 const ALLOWED_TAGS = new Set([
   'p', 'div', 'section', 'article', 'figure', 'figcaption',
@@ -1505,7 +1517,7 @@ function renderDebounced() {
 }
 
 /* =========================================================
-   NHẬP LIỆU — 2 CHẾ ĐỘ
+   NHẬP LIỆU
    ========================================================= */
 function insertAtCursor(html, text) {
   if (isRawMode()) {
@@ -1576,7 +1588,7 @@ function replaceContent(html, text) {
 }
 
 /* =========================================================
-   PASTE TRONG Ô NHẬP — NỐI VÀO CON TRỎ
+   PASTE TRONG Ô NHẬP
    ========================================================= */
 let composing = false;
 
@@ -1617,7 +1629,7 @@ input.addEventListener('input', () => {
 rawInput.addEventListener('input', renderDebounced);
 
 /* =========================================================
-   PASTE TOÀN MÀN HÌNH — THAY THẾ
+   PASTE TOÀN MÀN HÌNH
    ========================================================= */
 document.addEventListener('paste', e => {
   if (e.target === input || e.target === rawInput) return;
@@ -1648,7 +1660,7 @@ document.addEventListener('paste', e => {
 });
 
 /* =========================================================
-   NÚT DÁN — THAY THẾ
+   NÚT DÁN
    ========================================================= */
 let isPasting = false;
 
@@ -1692,7 +1704,7 @@ pasteBtn.addEventListener('click', async () => {
           }
           return;
         }
-      } catch (err) { /* bị từ chối, chuyển sang cách khác */ }
+      } catch (err) { /* bị từ chối */ }
     }
 
     if (navigator.clipboard && navigator.clipboard.readText) {
@@ -1736,7 +1748,7 @@ pasteBtn.addEventListener('click', async () => {
 });
 
 /* =========================================================
-   CHỌN FILE — THAY THẾ
+   CHỌN FILE
    ========================================================= */
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTS  = ['html', 'htm', 'txt'];
@@ -1798,7 +1810,7 @@ function readFile(file) {
 }
 
 /* =========================================================
-   KÉO THẢ FILE (chỉ desktop) — THAY THẾ
+   KÉO THẢ FILE
    ========================================================= */
 let dragCounter = 0;
 
@@ -1869,7 +1881,7 @@ toggleRaw.addEventListener('click', () => {
 });
 
 /* =========================================================
-   TUỲ CHỌN — LƯU VÀ KHÔI PHỤC
+   TUỲ CHỌN
    ========================================================= */
 const OPTS_KEY = 'readerOptsDTC';
 let savedView = 'input';
@@ -1885,7 +1897,7 @@ function saveOpts() {
       expanded:   main.classList.contains('reading-mode'),
       view:       main.dataset.view
     }));
-  } catch (e) { /* chế độ riêng tư — bỏ qua */ }
+  } catch (e) { /* bỏ qua */ }
 }
 
 function loadOpts() {
@@ -1976,7 +1988,7 @@ async function copyRich(html, text) {
       ]);
       return true;
     }
-  } catch (e) { /* chuyển sang fallback */ }
+  } catch (e) { /* fallback */ }
 
   try {
     const ta = document.createElement('textarea');
@@ -2055,6 +2067,10 @@ if (sideInput) sideInput.addEventListener('scroll', updateScrollTopBtn, { passiv
 if (sideRead)  sideRead.addEventListener('scroll', updateScrollTopBtn, { passive: true });
 
 scrollTopBtn.addEventListener('click', () => {
+  /* KHÔNG ẩn nút thủ công — để scroll event tự nhiên ẩn khi tới đầu.
+     Tránh toggle display liên tục gây mất nền. */
+  scrollTopBtn.blur();
+
   try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
   catch (e) { window.scrollTo(0, 0); }
 
