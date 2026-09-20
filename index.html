@@ -707,7 +707,7 @@ button.floating-btn:active {
 }
 
 /* =========================================================
-   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Dán + Đọc/Sửa)
+   14. CỤM NÚT GÓC DƯỚI TRÁI (Menu + Đọc/Sửa)
    ========================================================= */
 .bottom-left {
   display: none;
@@ -998,8 +998,6 @@ button.floating-btn:active {
 <div class="bottom-left" id="bottomLeft">
   <button class="floating-btn" id="menuBtn" type="button"
           aria-label="Mở menu tuỳ chọn" title="Mở menu">Menu</button>
-  <button class="floating-btn" id="pasteFloatBtn" type="button"
-          aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
   <button class="floating-btn" id="viewBtn" type="button"
           aria-label="Chuyển sang chế độ đọc" title="Chuyển sang chế độ đọc">Sửa<br>▶ Đọc</button>
 </div>
@@ -1094,7 +1092,7 @@ button.floating-btn:active {
          autocorrect="off" autocapitalize="off"
          data-placeholder="Dán nội dung vào đây
 
-Cách 1: Bấm nút Dán ở góc dưới trái.
+Cách 1: Bấm nút Dán trong Menu.
 Cách 2: Bấm nút Menu, chọn Chọn file để mở file .html, .htm, .txt.
 Cách 3: Kéo thả file vào cửa sổ trình duyệt (máy tính).
 Cách 4: Nhấn giữ vào vùng này rồi chọn Paste.
@@ -1128,7 +1126,6 @@ const topbar         = document.getElementById('topbar');
 const menuBtn        = document.getElementById('menuBtn');
 const menuCloseBtn   = document.getElementById('menuCloseBtn');
 const menuBackdrop   = document.getElementById('menuBackdrop');
-const pasteFloatBtn  = document.getElementById('pasteFloatBtn');
 const expandBtn      = document.getElementById('expandBtn');
 const viewBtn        = document.getElementById('viewBtn');
 const pasteBtn       = document.getElementById('pasteBtn');
@@ -1710,7 +1707,7 @@ function render() {
         '<div>Dán văn bản hoặc mở file để bắt đầu.</div>' +
         '<div class="hint">' +
           '<b>Cách nhập:</b><br>' +
-          '• Bấm nút <kbd>Dán</kbd> ở góc dưới trái để lấy clipboard<br>' +
+          '• Bấm nút <kbd>Menu</kbd> rồi chọn <kbd>Dán</kbd> để lấy clipboard<br>' +
           '• Bấm nút <kbd>Menu</kbd> để chọn file hoặc tuỳ chỉnh<br>' +
           '• Kéo thả file vào cửa sổ trình duyệt (máy tính)<br>' +
           '• Trên máy tính: <kbd>Ctrl</kbd>+<kbd>V</kbd> hoặc <kbd>⌘</kbd>+<kbd>V</kbd>' +
@@ -2009,7 +2006,7 @@ document.addEventListener('paste', e => {
 });
 
 /* =========================================================
-   XỬ LÝ DÁN — dùng chung cho nút trong menu và nút nổi
+   XỬ LÝ DÁN — nút Dán trong menu
    ========================================================= */
 let isPasting = false;
 
@@ -2017,9 +2014,7 @@ async function handlePasteClick() {
   if (isPasting) return;
   isPasting = true;
   pasteBtn.disabled = true;
-  pasteFloatBtn.disabled = true;
   pasteBtn.setAttribute('aria-busy', 'true');
-  pasteFloatBtn.setAttribute('aria-busy', 'true');
 
   try {
     if (navigator.clipboard && navigator.clipboard.read) {
@@ -2068,14 +2063,11 @@ async function handlePasteClick() {
   } finally {
     isPasting = false;
     pasteBtn.disabled = false;
-    pasteFloatBtn.disabled = false;
     pasteBtn.removeAttribute('aria-busy');
-    pasteFloatBtn.removeAttribute('aria-busy');
   }
 }
 
 pasteBtn.addEventListener('click', handlePasteClick);
-pasteFloatBtn.addEventListener('click', handlePasteClick);
 
 /* =========================================================
    CHỌN FILE
