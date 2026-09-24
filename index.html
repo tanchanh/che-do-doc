@@ -596,13 +596,13 @@ body.dark #reader mark {
   text-align: center;
   color: var(--muted);
   padding: 3rem 1rem;
-  font-size: 0.95rem;
+  font-size: max(0.85rem, calc(var(--reader-fs) * 0.65));
   line-height: 1.8;
 }
 
 #reader .placeholder .big {
   display: block;
-  font-size: 2rem;
+  font-size: 1.6em;
   font-weight: bold;
   margin-bottom: 1rem;
   opacity: 0.4;
@@ -611,14 +611,14 @@ body.dark #reader mark {
 }
 
 #reader .placeholder .title {
-  font-size: 1.1rem;
+  font-size: 1.15em;
   color: var(--ink);
   font-weight: bold;
   margin-bottom: 0.8rem;
 }
 
 #reader .placeholder .hint {
-  font-size: 0.9rem;
+  font-size: 0.95em;
   background-color: rgba(128, 128, 128, 0.08);
   padding: 0.8rem 1rem;
   border-radius: 0.5rem;
@@ -1312,7 +1312,6 @@ const modalCancelBtn = document.getElementById('modalCancelBtn');
 
 const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
 
-/* Hằng số SVG — dùng chung cho copy, export, in */
 const SVG_MAX_SIZE = '12rem';
 const SVG_MAX_WIDTH_CSS = 'min(100%, ' + SVG_MAX_SIZE + ')';
 
@@ -1551,10 +1550,14 @@ function applySVGLimitToImages(rootEl) {
   });
 }
 
+/* =========================================================
+   FIX: BỎ font-family, font-size, line-height khỏi whitelist
+   → Sanitizer không giữ chúng khi paste từ Word/HTML
+   → Cỡ chữ của #reader luôn thắng
+   ========================================================= */
 const ALLOWED_STYLE_PROPS = new Set([
   'text-align', 'font-weight', 'font-style', 'text-decoration',
   'text-transform', 'letter-spacing', 'list-style-type',
-  'font-family', 'font-size', 'line-height',
   'max-width', 'max-height'
 ]);
 
@@ -1684,6 +1687,24 @@ function unwrapSingleChildWrappers(rootEl) {
 }
 
 /* =========================================================
+   FIX: XOÁ INLINE FONT TRONG SANITIZE
+   Bước 2 bảo vệ — loại bỏ mọi inline font-size/font-family/
+   line-height còn sót (kể cả khi browser parse không chuẩn).
+   ========================================================= */
+function stripInlineFontStyles(rootEl) {
+  rootEl.querySelectorAll('[style]').forEach(el => {
+    if (!el.style) return;
+    el.style.removeProperty('font-size');
+    el.style.removeProperty('font-family');
+    el.style.removeProperty('line-height');
+    el.style.removeProperty('font');
+
+    /* Nếu style attribute rỗng thì xoá luôn */
+    if (!el.getAttribute('style')) el.removeAttribute('style');
+  });
+}
+
+/* =========================================================
    SANITIZE
    ========================================================= */
 function sanitizeHTML(html) {
@@ -1755,6 +1776,9 @@ function sanitizeHTML(html) {
       el.replaceWith(span);
     }
   }
+
+  /* BƯỚC 2: Xoá mọi inline font còn sót */
+  stripInlineFontStyles(doc.body);
 
   unwrapSingleChildWrappers(doc.body);
   return doc.body.innerHTML;
@@ -1933,6 +1957,33 @@ function trimEdges(container) {
   }
 }
 
+/* Bọc text phẳng trong <p> khi không có block element */
+function wrapLooseTextInParagraphs(rootEl) {
+  const hasBlock = rootEl.querySelector(
+    'p, div, section, article, h1, h2, h3, h4, h5, h6, ' +
+    'ul, ol, blockquote, pre, figure, details, hr'
+  );
+  if (hasBlock) return;
+
+  const html = rootEl.innerHTML;
+  if (!stripBlank(html)) return;
+
+  const parts = html.split(/(?:<br\s*\/?>\s*){2,}/i);
+
+  const wrapped = parts
+    .map(part => {
+      const cleaned = part
+        .replace(/^(?:\s*<br\s*\/?>\s*)+/i, '')
+        .replace(/(?:\s*<br\s*\/?>\s*)+$/i, '')
+        .trim();
+      return cleaned ? '<p>' + cleaned + '</p>' : '';
+    })
+    .filter(Boolean)
+    .join('');
+
+  if (wrapped) rootEl.innerHTML = wrapped;
+}
+
 function countStats(html) {
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
@@ -1951,6 +2002,7 @@ function extractArticle(rawHTML) {
 
   const wrap = document.createElement('div');
   wrap.innerHTML = cleanHTML;
+  wrapLooseTextInParagraphs(wrap);
   normalizeBreaks(wrap);
   removeEmptyBlocks(wrap);
   trimEdges(wrap);
@@ -2124,6 +2176,9 @@ function render() {
   }
 
   updateActionButtons();
+
+  /* Áp lại style sau khi render để đảm bảo inline style không bị mất */
+  applyReaderInlineStyle();
 }
 
 let renderTimer = null;
@@ -2585,12 +2640,44 @@ function loadOpts() {
   } catch (e) { /* bỏ qua */ }
 }
 
+/* Áp inline style trực tiếp trên #reader */
+function applyReaderInlineStyle() {
+  const fsVal = fontSizeSel.value;
+  const ffVal = fontFamilySel.value;
+  const lhVal = lineHeightSel.value;
+
+  if (reader) {
+    reader.style.setProperty('font-size', fsVal, 'important');
+    reader.style.setProperty('font-family', ffVal, 'important');
+    reader.style.setProperty('line-height', lhVal, 'important');
+  }
+}
+
 function applyStyles() {
-  root.style.setProperty('--reader-fs', fontSizeSel.value);
-  root.style.setProperty('--reader-ff', fontFamilySel.value);
-  root.style.setProperty('--reader-lh', lineHeightSel.value);
-  root.style.setProperty('--reader-mw', maxWidthSel.value);
-  bodyEl.classList.toggle('is-max-width', maxWidthSel.value === 'none');
+  const fsVal = fontSizeSel.value;
+  const ffVal = fontFamilySel.value;
+  const lhVal = lineHeightSel.value;
+  const mwVal = maxWidthSel.value;
+
+  root.style.setProperty('--reader-fs', fsVal);
+  root.style.setProperty('--reader-ff', ffVal);
+  root.style.setProperty('--reader-lh', lhVal);
+  root.style.setProperty('--reader-mw', mwVal);
+
+  applyReaderInlineStyle();
+
+  let styleEl = document.getElementById('reader-dynamic-style');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'reader-dynamic-style';
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent =
+    '#reader { font-size: ' + fsVal + ' !important; ' +
+              'font-family: ' + ffVal + ' !important; ' +
+              'line-height: ' + lhVal + ' !important; }';
+
+  bodyEl.classList.toggle('is-max-width', mwVal === 'none');
   applyPaper();
   saveOpts();
 }
@@ -2994,6 +3081,11 @@ function getPrimaryFontName(stack) {
   return map[first] || first;
 }
 
+/* =========================================================
+   XÂY HTML KHI COPY — theo tùy chọn đang chọn
+   Font-size được áp inline ở đây, KHÔNG dựa vào whitelist
+   của sanitizer (vì sanitizer đã xoá font khỏi whitelist).
+   ========================================================= */
 function buildCopyWithReaderOptions() {
   const titleEl = reader.querySelector('.article-title');
   const bodyElm = reader.querySelector('.article-body');
