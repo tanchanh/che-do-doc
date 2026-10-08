@@ -1,383 +1,85 @@
-# Chế Độ Đọc
-
-Một ứng dụng nhỏ gọn giúp bạn **đọc văn bản trên web thoải mái hơn** — loại bỏ quảng cáo, menu rối rắm, chỉ giữ lại nội dung chính và cho bạn toàn quyền điều chỉnh cách hiển thị.
-
-Được viết bởi **Dương Tấn Chánh**.
+# Hướng Dẫn Sử Dụng: Chế Độ Đọc
+**Tác giả: Dương Tấn Chánh**
 
 ---
 
-## Mục lục
+## 1. Giới Thiệu Tổng Quan
+**Chế Độ Đọc** là công cụ chuyển đổi văn bản và bài viết trên web thành giao diện đọc sách chuyên nghiệp, thanh lịch và không có quảng cáo, thanh công cụ thừa hay định dạng lộn xộn... 
 
-1. [Ứng dụng này dùng để làm gì?](#1-ứng-dụng-này-dùng-để-làm-gì)
-2. [Cách mở ứng dụng](#2-cách-mở-ứng-dụng)
-3. [Màn hình chính có gì?](#3-màn-hình-chính-có-gì)
-4. [Cách đưa nội dung vào](#4-cách-đưa-nội-dung-vào)
-5. [Chuyển giữa Sửa và Đọc](#5-chuyển-giữa-sửa-và-đọc)
-6. [Điều chỉnh cách hiển thị](#6-điều-chỉnh-cách-hiển-thị)
-7. [Các nút chức năng](#7-các-nút-chức-năng)
-8. [Nút "Lên đầu" và "Quay lại"](#8-nút-lên-đầu-và-quay-lại)
-9. [Sử dụng trên điện thoại](#9-sử-dụng-trên-điện-thoại)
-10. [Phím tắt](#10-phím-tắt)
-11. [Nội dung có được lưu lại không?](#11-nội-dung-có-được-lưu-lại-không)
-12. [Mẹo hay](#12-mẹo-hay)
+Phần mềm được thiết kế theo phong cách tối giản tuyệt đối (Zen Mode): toàn bộ màn hình dành trọn vẹn cho việc đọc và viết bài, không có thanh công cụ cố định che khuất tầm nhìn.
 
 ---
 
-## 1. Ứng dụng này dùng để làm gì?
+## 2. Giao Diện & Thao Tác Cơ Bản
 
-Khi bạn đọc một bài viết dài trên mạng, trang web thường có đủ thứ gây xao nhãng:
+Ngay trên màn hình chính, bạn có thể điều khiển toàn bộ ứng dụng chỉ với 3 nút bấm nổi tiện lợi:
 
-- Quảng cáo nhấp nháy hai bên
-- Menu, thanh điều hướng, bài viết liên quan
-- Nút chia sẻ Facebook, bình luận
-- Đủ loại thông báo, popup
-
-**Chế Độ Đọc** giải quyết vấn đề đó. Bạn chỉ cần **dán nội dung vào**, ứng dụng sẽ:
-
-- Tự động lọc bỏ quảng cáo, menu, bình luận…
-- Trình bày lại văn bản sạch sẽ, dễ đọc
-- Cho bạn chỉnh cỡ chữ, màu nền, phông chữ theo ý thích
-
----
-
-## 2. Cách mở ứng dụng
-
-Ứng dụng này là **một file duy nhất** (thường có tên `index.html`). Để mở:
-
-1. **Nhấp đúp** vào file đó, hoặc
-2. **Kéo thả** file vào cửa sổ trình duyệt (Chrome, Edge, Firefox, Safari…), hoặc
-3. **Nhấp chuột phải** vào file → **Mở bằng** → chọn trình duyệt bạn muốn
-
-Không cần cài đặt gì. Không cần kết nối mạng (trừ lần đầu để tải phông chữ đẹp).
+* **Nút `[Tuỳ Chọn]` (Góc dưới bên trái):** 
+  * Mở bảng điều khiển trung tâm (chứa toàn bộ công cụ định dạng, mở file, in ấn, xuất bài viết).
+  * Khi mới mở phần mềm, bảng này sẽ tự động trượt lên để bạn dễ dàng bắt đầu ngay.
+  * Để đóng bảng, bạn chỉ cần bấm nút `✕`, bấm ra khoảng trống bên ngoài hoặc nhấn phím `Escape` (`Esc`).
+* **Nút `[Sửa ▶ Đọc]` / `[Đọc ▶ Sửa]` (Góc dưới bên trái):**
+  * **Sửa:** Màn hình để bạn gõ văn bản, sửa câu chữ hoặc dán nội dung thô.
+  * **Đọc:** Màn hình bài đọc hoàn chỉnh đã được lọc sạch tạp âm, căn chỉnh kiểu chữ, lề sách và giãn dòng chuẩn mực.
+* **Nút `[Cuộn lên đầu]` (Góc dưới bên phải):**
+  * Bấm một chạm để cuộn mượt mà lên đầu trang.
+  * Khi vừa cuộn lên đầu, nút sẽ chuyển thành mũi tên quay lại để bạn bấm trở về đúng vị trí đang đọc dở trước đó.
 
 ---
 
-## 3. Màn hình chính có gì?
+## 3. Các Cách Đưa Nội Dung Vào Phần Mềm
 
-Khi mở lên, bạn sẽ thấy giao diện chia làm **2 phần**:
+Bạn có thể đưa bài viết vào phần mềm bằng 4 cách cực kỳ đơn giản:
 
-```
-┌────────────────────┬────────────────────┐
-│                    │                    │
-│   Ô NHẬP           │   VÙNG ĐỌC         │
-│   (bên trái)       │   (bên phải)       │
-│                    │                    │
-│  Nơi bạn dán       │  Nơi hiển thị      │
-│  nội dung vào      │  nội dung sạch     │
-│                    │                    │
-└────────────────────┴────────────────────┘
-   Thanh công cụ ở trên cùng
-```
-
-- **Bên trái** là nơi bạn đưa nội dung vào
-- **Bên phải** là nơi đọc — văn bản đã được làm sạch, trình bày đẹp
-
-Trên **điện thoại**, hai phần này sẽ hiện lần lượt, không cùng lúc.
+1. **Gõ trực tiếp:** Bấm chuyển sang chế độ **Sửa** và gõ văn bản bình thường.
+2. **Dán nhanh từ bộ nhớ tạm (Clipboard):** 
+   * Mở **Tuỳ Chọn** $\rightarrow$ Bấm nút **`Dán`**.
+   * Hoặc dùng tổ hợp phím tắt quen thuộc: `Ctrl + V` (trên Windows) hoặc `⌘ + V` (trên Mac).
+3. **Mở file từ máy:** 
+   * Mở **Tuỳ Chọn** $\rightarrow$ Bấm **`Chọn file`** $\rightarrow$ Chọn tập tin `.html`, `.htm` hoặc `.txt` từ máy của bạn (hỗ trợ tập tin dung lượng lên đến 5MB).
+4. **Kéo thả chuột (Dành cho máy tính):** 
+   * Kéo tập tin bài viết từ màn hình máy tính và thả thẳng vào cửa sổ trình duyệt.
 
 ---
 
-## 4. Cách đưa nội dung vào
+## 4. Tuỳ Chỉnh Trải Nghiệm Đọc Sách
 
-Bạn có **5 cách** để đưa nội dung vào ứng dụng. Chọn cách nào cũng được, tuỳ thói quen:
+Mọi thiết lập về thị giác đều nằm gọn trong nhóm **Định dạng** của bảng **Tuỳ Chọn**:
 
-### Cách 1 — Bấm nút "Dán"
+* **Cỡ chữ (`A−` và `A+`):** Tăng hoặc giảm kích thước chữ theo 9 nấc (từ vừa vặn đến cực lớn). Tính năng này phóng to/thu nhỏ đồng bộ cho cả màn hình Sửa lẫn màn hình Đọc.
+* **Phông chữ:** Lựa chọn giữa các kiểu chữ chất lượng cao:
+  * *Serif hệ thống:* Chữ có chân cổ điển, trang trọng như đọc sách in truyền thống.
+  * *Sans hệ thống / Noto Sans:* Chữ không chân hiện đại, rõ nét, dễ đọc trên màn hình điện thoại.
+  * *Roboto Mono:* Chữ đơn khoảng dành cho lập trình viên hoặc văn bản kỹ thuật.
+* **Giãn dòng:** Chọn khoảng cách giữa các dòng chữ: *Dòng chặt*, *Dòng vừa* (khuyên dùng) hoặc *Dòng thoáng*.
+* **Chiều rộng bài viết:** Tuỳ chỉnh độ rộng trang sách: *Hẹp*, *Vừa*, *Rộng* hoặc *Sát lề* (tràn toàn màn hình).
+* **Màu nền giấy đọc:** Chọn màu nền dịu mắt theo sở thích (Nền ngà, Nền trắng, Nền vàng nhạt, Xanh nhạt, Hồng nhạt, Xám nhạt).
+* **Nền tối (Dark Mode):** Chuyển toàn bộ nền sang màu tối và chữ sáng để đọc sách ban đêm không mỏi mắt.
 
-1. Vào trang web có bài viết bạn muốn đọc
-2. Bôi đen toàn bộ bài viết (hoặc nhấn `Ctrl+A`)
-3. Nhấn `Ctrl+C` để sao chép
-4. Quay lại ứng dụng, bấm nút **Menu** → chọn **Dán**
-
-Ứng dụng sẽ tự lấy nội dung từ clipboard và hiển thị.
-
-### Cách 2 — Dán trực tiếp
-
-- Nhấn `Ctrl+V` (Windows) hoặc `⌘+V` (Mac) **ở bất cứ đâu** trong cửa sổ ứng dụng
-- Hoặc **nhấp chuột phải** vào ô nhập bên trái → chọn **Dán**
-
-### Cách 3 — Chọn file từ máy
-
-1. Bấm nút **Menu** → chọn **Chọn file**
-2. Chọn file bạn muốn mở — hỗ trợ các định dạng:
-   - `.html`, `.htm` — trang web đã lưu
-   - `.txt` — văn bản thuần
-
-### Cách 4 — Kéo thả file (chỉ trên máy tính)
-
-- Kéo file từ Desktop/thư mục vào cửa sổ ứng dụng
-- Ứng dụng sẽ tự động đọc và hiển thị
-
-### Cách 5 — Gõ trực tiếp
-
-- Bấm vào ô nhập bên trái và gõ văn bản như bình thường
-- Hữu ích khi bạn muốn ghi chú nhanh một đoạn văn
+> **Khung xem trước 2 dòng (Live Preview):**
+> Nằm ở đáy bảng Tuỳ Chọn hiển thị tức thì chữ mẫu tiếng Việt và ngày tháng hiện tại. Khi bạn đổi phông chữ, bấm A+/A- hay đổi màu nền, khung này sẽ thay đổi ngay lập tức để bạn ưng ý trước khi đóng bảng.
 
 ---
 
-## 5. Chuyển giữa Sửa và Đọc
+## 5. Xuất Bản, Sao Chép & In Ấn
 
-Góc dưới bên trái có **2 nút nổi**:
+Nhóm **Hành động** ở đầu bảng Tuỳ Chọn cung cấp đầy đủ công cụ làm việc với bài viết:
 
-- **Menu** — mở thanh công cụ (trên máy tính thanh công cụ luôn hiện sẵn)
-- **Sửa ▶ Đọc** — chuyển đổi giữa chế độ nhập và chế độ đọc
-
-Nút này hiển thị trạng thái bạn **đang ở** và trạng thái bạn **sẽ chuyển đến**:
-
-| Nút hiển thị | Nghĩa là | Bấm vào sẽ… |
-|---|---|---|
-| **Sửa ▶ Đọc** | Bạn đang ở chế độ Sửa | Chuyển sang chế độ Đọc |
-| **Đọc ▶ Sửa** | Bạn đang ở chế độ Đọc | Quay về chế độ Sửa |
-
-Trên **máy tính**, khi ở chế độ Đọc, ô nhập sẽ tự ẩn đi để bạn có nhiều không gian đọc hơn.
-
----
-
-## 6. Điều chỉnh cách hiển thị
-
-Trong thanh công cụ có **5 lựa chọn** giúp bạn tuỳ chỉnh cách hiển thị. Mọi thay đổi được lưu tự động cho lần sau.
-
-### Cỡ chữ
-
-Từ **1rem** (nhỏ) đến **2rem** (rất lớn). Chọn cỡ bạn thấy thoải mái nhất.
-
-- Cỡ 1rem → chữ nhỏ, phù hợp màn hình rộng
-- Cỡ 1.5rem → cỡ mặc định, cân bằng
-- Cỡ 2rem → chữ lớn, tốt cho người mắt yếu
-
-### Phông chữ
-
-4 lựa chọn:
-
-- **Serif hệ thống** — kiểu chữ có chân, truyền thống, dễ đọc văn dài (mặc định)
-- **Sans hệ thống** — kiểu chữ không chân, hiện đại, gọn gàng
-- **Noto Sans** — không chân, hỗ trợ tiếng Việt rất tốt
-- **Roboto Mono** — kiểu chữ đều, giống code, phù hợp tài liệu kỹ thuật
-
-### Giãn dòng
-
-- **Dòng 1.55** — các dòng sát nhau
-- **Dòng 1.75** — mặc định, dễ đọc
-- **Dòng 2.0** — các dòng thoáng, tốt cho người mới đọc lâu
-
-### Chiều rộng
-
-- **Rộng 400px** — hẹp, dễ tập trung, đọc nhanh
-- **Rộng 600px** — mặc định
-- **Rộng 800px** — rộng hơn
-- **Rộng sát lề** — dùng toàn bộ chiều rộng màn hình
-
-### Màu nền
-
-7 lựa chọn:
-
-- **Nền ngà** — màu kem nhẹ, dịu mắt (mặc định)
-- **Nền trắng** — sáng, phù hợp ban ngày
-- **Nền vàng nhạt** — ấm, giảm mỏi mắt
-- **Nền xanh nhạt** — mát mẻ
-- **Nền hồng nhạt** — nhẹ nhàng
-- **Nền xám nhạt** — trung tính
-- **Nền đen (chữ sáng)** — chế độ tối, tốt cho ban đêm
+* **Nút `Copy` (Sao chép định dạng cao cấp):**
+  * Sao chép bài viết giữ nguyên 100% định dạng (tiêu đề to, in đậm, in nghiêng, phông chữ, màu sắc và hình ảnh).
+  * Khi dán sang **Microsoft Word, Google Docs, Apple Notes hay Email**, bài viết sẽ giữ nguyên nét đẹp như bạn đang thấy trên màn hình.
+* **Nút `In`:**
+  * Định dạng bài viết sang bản in giấy tiêu chuẩn (nền trắng, chữ đen sắc nét, tự động ẩn toàn bộ nút bấm và canh trang đẹp mắt).
+  * Hỗ trợ phím tắt: `Ctrl + P` (Windows) hoặc `⌘ + P` (Mac).
+* **Nút `Xuất` (Mở danh mục lựa chọn):**
+  * **Tải TXT:** Lưu nội dung thành tập tin văn bản thuần `.txt` gọn nhẹ.
+  * **Tải HTML:** Lưu thành tập tin `.html` độc lập. Bạn có thể mở đọc lại trên bất kỳ trình duyệt nào mà không cần kết nối mạng.
+  * **Chia sẻ:** Gửi nhanh bài viết qua các ứng dụng trên máy (Zalo, Messenger, Tin nhắn, AirDrop, Gmail...).
+* **Nút `Xoá`:** Làm sạch toàn bộ nội dung để chuẩn bị cho bài viết mới (có hộp thoại hỏi lại để tránh vô tình bấm nhầm).
 
 ---
 
-## 7. Các nút chức năng
+## 6. Tính Năng An Toàn & Tự Động Lưu
 
-### Dán
-
-Lấy nội dung từ clipboard và hiển thị. (Xem lại [mục 4](#4-cách-đưa-nội-dung-vào)).
-
-### Chọn file
-
-Mở file `.html`, `.htm`, hoặc `.txt` từ máy của bạn. File tối đa **5MB**.
-
-### Copy
-
-Sao chép bài viết để dán sang nơi khác (Word, Google Docs, Gmail…).
-
-- Ứng dụng sẽ **giữ nguyên định dạng bạn đang chọn** — phông chữ, cỡ chữ, giãn dòng
-- **Không** sao chép màu nền và màu chữ của ứng dụng — khi dán vào Word, chữ sẽ theo màu của Word (thường là đen trên nền trắng)
-- Nhờ vậy dán vào đâu cũng đẹp
-
-### In
-
-In bài viết ra giấy. Bạn có thể:
-
-- Bấm nút **In** trong thanh công cụ, hoặc
-- Nhấn `Ctrl+P` (`⌘+P` trên Mac)
-
-Ứng dụng sẽ tự loại bỏ giao diện (menu, nút bấm…) khi in, chỉ giữ lại nội dung bài viết.
-
-### Tải TXT
-
-Lưu bài viết thành file `.txt` để mở bằng Notepad hoặc bất kỳ phần mềm nào.
-
-### Tải HTML
-
-Lưu bài viết thành file `.html` để mở bằng trình duyệt.
-
-- File này sẽ **giữ nguyên định dạng** bạn đang chọn (cỡ chữ, phông chữ, màu nền…)
-- Nhấp đúp vào file đó là đọc được ngay
-
-### Xoá
-
-Xoá toàn bộ nội dung. Ứng dụng sẽ **hỏi xác nhận** trước khi xoá, để tránh bấm nhầm.
-
-### Toàn màn hình (chỉ trên máy tính)
-
-Ẩn tiêu đề, chỉ giữ lại thanh công cụ và nội dung đọc. Giúp bạn có nhiều không gian đọc hơn.
-
-### Chia sẻ (chỉ trên điện thoại)
-
-Chia sẻ bài viết qua Zalo, Messenger, Gmail… hoặc các ứng dụng khác trên điện thoại.
-
----
-
-## 8. Nút "Lên đầu" và "Quay lại"
-
-Ở góc dưới bên phải có **1 nút nổi** thay đổi chức năng:
-
-### Khi hiển thị "Lên đầu"
-
-Bấm vào → cuộn lên đầu trang. Nhãn nút sẽ đổi thành "Quay lại".
-
-### Khi hiển thị "Quay lại"
-
-Bấm vào → quay về vị trí bạn đang đọc dở lúc nãy. Rất tiện khi:
-
-- Bạn đang đọc ở giữa bài
-- Cần xem lại đoạn đầu
-- Muốn quay lại vị trí cũ mà không phải cuộn tay
-
-Nhãn nút sẽ trở lại "Lên đầu".
-
----
-
-## 9. Sử dụng trên điện thoại
-
-Trên điện thoại, giao diện được thiết kế lại cho màn hình nhỏ:
-
-- **Thanh công cụ ẩn đi** — bấm nút **Menu** (góc dưới bên trái) để mở
-- **Chỉ hiện 1 trong 2 phần** — Sửa hoặc Đọc, tuỳ bạn chọn
-- **Có nút Chia sẻ** — để gửi bài viết qua Zalo, Messenger, Gmail…
-
-Khi mở menu, màn hình sẽ tối đi và thanh công cụ trượt lên từ dưới. Bấm ra ngoài hoặc bấm nút **✕** để đóng.
-
----
-
-## 10. Phím tắt
-
-| Phím | Chức năng |
-|---|---|
-| `Ctrl+V` / `⌘+V` | Dán nội dung từ clipboard (thay thế toàn bộ bài cũ) |
-| `Ctrl+P` / `⌘+P` | In bài viết |
-| `Esc` | Đóng menu / Đóng hộp thoại thông báo |
-
----
-
-## 11. Nội dung có được lưu lại không?
-
-**Có.** Mọi thứ bạn nhập được **tự động lưu** vào trình duyệt:
-
-- Nội dung bài viết
-- Cỡ chữ, phông chữ, giãn dòng
-- Màu nền, chiều rộng
-- Trạng thái Sửa hay Đọc
-
-**Lần sau mở lại**, ứng dụng sẽ hiển thị đúng những gì bạn đang xem trước đó. Không cần dán lại.
-
-> ⚠️ **Lưu ý:** Nội dung chỉ lưu **trên máy của bạn**, không được gửi đi đâu cả. Nếu bạn xoá lịch sử trình duyệt hoặc dùng chế độ ẩn danh, nội dung có thể mất. Muốn giữ lâu dài, hãy dùng **Tải TXT** hoặc **Tải HTML** để lưu thành file.
-
----
-
-## 12. Mẹo hay
-
-### 🔖 Tạo "chế độ đọc" cho từng loại nội dung
-
-Bạn có thể tuỳ chỉnh ứng dụng cho từng mục đích:
-
-- **Đọc tin tức buổi sáng** → Nền trắng, cỡ 1.3rem, Sans hệ thống
-- **Đọc sách buổi tối** → Nền đen, cỡ 1.5rem, chữ sáng, giãn dòng 2.0
-- **Đọc tài liệu kỹ thuật** → Roboto Mono, cỡ 1.2rem, rộng sát lề
-
-Mỗi lần đổi, ứng dụng tự nhớ. Bạn chỉ cần đổi 1 lần cho mỗi kiểu nội dung.
-
-### 📱 Đọc trên điện thoại lâu không mỏi mắt
-
-- Đổi sang **Nền đen (chữ sáng)** khi đọc buổi tối
-- Chọn **Dòng 2.0** cho thoáng
-- Chọn **Rộng 400px** để dòng chữ ngắn, mắt đỡ phải di chuyển ngang
-
-### 📄 Dán vào Word mà không bị lỗi font
-
-Khi bấm **Copy** rồi dán vào Word:
-
-- **Nên** dán bằng `Ctrl+V` (dán thường)
-- **Không nên** dán bằng `Ctrl+Shift+V` (dán không định dạng) — sẽ mất hết định dạng
-
-Nếu máy bạn không có sẵn phông chữ đang chọn, Word sẽ tự động thay bằng phông tương tự gần nhất — chữ vẫn đọc được bình thường.
-
-### 🎯 Tập trung cao độ khi đọc
-
-1. Dán bài viết vào
-2. Chuyển sang chế độ Đọc (bấm nút **Sửa ▶ Đọc**)
-3. Bấm **Toàn màn hình** (trên máy tính)
-4. Chọn **Rộng 400px** + **Nền ngà**
-
-Kết quả: màn hình chỉ còn văn bản, không có gì gây xao nhãng.
-
-### 📚 Lưu lại nhiều bài viết
-
-Ứng dụng chỉ giữ **1 bài viết tại một thời điểm**. Nếu muốn lưu nhiều bài:
-
-1. Dán bài 1 → bấm **Tải HTML** → lưu thành `bai-1.html`
-2. Dán bài 2 → bấm **Tải HTML** → lưu thành `bai-2.html`
-3. Lần sau chỉ cần mở file đã lưu
-
-### 🔗 Đọc bài viết từ đường link
-
-Hiện tại ứng dụng **không tải trực tiếp từ đường link** được. Cách làm:
-
-1. Mở link bằng trình duyệt
-2. Chọn toàn bộ nội dung (`Ctrl+A`)
-3. Sao chép (`Ctrl+C`)
-4. Quay lại ứng dụng, nhấn `Ctrl+V`
-
-Ứng dụng sẽ tự lọc sạch quảng cáo, menu và trình bày đẹp.
-
----
-
-## Câu hỏi thường gặp
-
-### Tại sao nút "Dán" báo lỗi?
-
-Trình duyệt yêu cầu bạn **cho phép truy cập clipboard**. Khi bấm nút Dán lần đầu, có thể có thông báo hỏi quyền — hãy chọn **Cho phép**.
-
-Nếu vẫn lỗi, dùng cách dán thủ công:
-1. Bấm vào ô nhập bên trái
-2. Nhấn giữ (trên điện thoại) hoặc nhấp chuột phải (trên máy tính)
-3. Chọn **Paste** / **Dán**
-
-### Tại sao nút Copy dán vào Word bị mất định dạng?
-
-Đảm bảo bạn **không** dùng **Dán không định dạng** (`Ctrl+Shift+V`). Hãy dùng **Dán thường** (`Ctrl+V`).
-
-### Tại sao ảnh SVG hiển thị rất nhỏ?
-
-Ứng dụng **giới hạn kích thước ảnh SVG tối đa 12rem** (~192px) để tránh trường hợp ảnh icon nhỏ bị phóng to khủng khiếp. Đây là thiết kế có chủ đích, không phải lỗi.
-
-Nếu cần xem ảnh lớn, hãy mở bài viết gốc bằng trình duyệt.
-
-### Nội dung lưu ở đâu? Có an toàn không?
-
-Nội dung lưu trong **bộ nhớ cục bộ của trình duyệt** trên máy bạn. Không gửi lên server, không ai đọc được. Xoá cache trình duyệt sẽ mất — vì vậy nên **Tải HTML** nếu muốn giữ lâu dài.
-
----
-
-## Giấy phép và tác giả
-
-**Tác giả:** Dương Tấn Chánh
-
-Ứng dụng được cung cấp miễn phí cho mục đích cá nhân. Bạn có thể tự do sử dụng, chỉnh sửa cho nhu cầu của mình.
-
----
-
-*Chúc bạn đọc vui vẻ!* 📖
+* **Tự động ghi nhớ:** Toàn bộ nội dung bạn đang gõ cùng các cài đặt (màu nền, cỡ chữ, phông chữ) đều được tự động lưu trên máy của bạn. Khi bạn đóng trình duyệt hoặc tải lại trang, bài viết vẫn nằm nguyên vẹn tại đó.
+* **Bảo mật và riêng tư 100%:** Phần mềm xử lý hoàn toàn cục bộ ngay trên trình duyệt của bạn, không tải dữ liệu lên bất kỳ máy chủ nào. Bạn có thể yên tâm đọc và chỉnh sửa các tài liệu riêng tư.

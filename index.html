@@ -26,7 +26,7 @@ html {
 
 body {
   margin: 0;
-  padding: 0;
+  padding: 0.5rem 0.5rem 8rem;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 1.1rem;
   font-weight: normal;
@@ -36,6 +36,15 @@ body {
   word-break: normal;
   overflow-wrap: break-word;
   transition: background-color 0.2s, color 0.2s;
+  min-height: 100vh;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 /* =========================================================
@@ -50,64 +59,83 @@ body {
   --paper: #faf9f6;
   --ink: #1a1a1a;
   --line: #e6e1d6;
-  --muted: #8a8578;
+  --muted: #6b675c;
   --link: #b04a00;
   --accent: #2980b9;
   --accent-bg: rgba(52, 152, 219, 0.12);
   --accent-bg-hover: rgba(52, 152, 219, 0.22);
+  --danger: #b3261e;
+  --danger-bg: rgba(179, 38, 30, 0.1);
 }
 
 body.dark {
   --paper: #1c1a17;
   --ink: #d8d4cc;
   --line: #33302a;
-  --muted: #7a766a;
+  --muted: #9a958a;
   --link: #e8a06b;
   --accent: #6cb2eb;
   --accent-bg: rgba(108, 178, 235, 0.15);
   --accent-bg-hover: rgba(108, 178, 235, 0.25);
+  --danger: #ef5350;
+  --danger-bg: rgba(239, 83, 80, 0.15);
 }
 
 /* =========================================================
-   3. BỐ CỤC CHUNG
-   ========================================================= */
-body {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-body.modal-open {
-  overflow: hidden !important;
-}
-
-/* =========================================================
-   4. TOPBAR
+   3. BẢNG TUỲ CHỌN HỢP NHẤT (DRAWER DÙNG CHUNG MỌI MÀN HÌNH)
    ========================================================= */
 .topbar {
-  flex: 0 0 auto;
-  padding-top: 0;
-  margin-top: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 auto;
+  max-width: 48rem;
+  width: 100%;
+  z-index: 300;
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--paper);
+  border: 2px solid var(--line);
+  border-bottom: none;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -0.4rem 1.5rem rgba(0, 0, 0, 0.25);
+  padding: 1rem 1rem max(1rem, env(safe-area-inset-bottom));
+  transform: translateY(105%);
+  transition: transform 0.25s ease-out;
+  touch-action: manipulation;
 }
 
-/* =========================================================
-   5. HEADER
-   ========================================================= */
+.topbar.is-open {
+  transform: translateY(0);
+}
+
+.menu-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 290;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.menu-open .menu-backdrop {
+  display: block;
+}
+
 .page-header {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 0.2rem 0.8rem;
-  margin: 0 0 0.3rem;
-  padding: 0 0.5rem;
-}
-
-.page-header-side {
-  flex: 1 1 0;
-  min-width: 0;
+  margin: 0 0 0.6rem;
+  padding: 0 2.5rem 0.4rem 0;
+  border-bottom: 2px solid var(--line);
 }
 
 .page-header h1 {
@@ -116,58 +144,92 @@ body.modal-open {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.04rem;
-  line-height: 1;
-  padding-top: 1rem;
+  line-height: 1.2;
   margin: 0;
-  flex: 0 0 auto;
   color: var(--ink);
 }
 
 .page-header .author {
   font-size: 1.1rem;
   font-weight: normal;
-  font-style: normal;
-  text-align: right;
-  line-height: 1.2;
-  margin: 0;
-  flex: 1 1 0;
-  min-width: 0;
   color: var(--muted);
+  margin: 0.2rem 0 0;
+  text-align: right;
+  align-self: flex-end;
   white-space: nowrap;
 }
 
 .menu-close {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 2.2rem;
+  min-height: 2.2rem;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--ink);
+  background-color: transparent;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
 }
 
-h2 { font-size: 1.3rem; font-weight: bold; margin: 1rem 0 0.5rem; }
-h3 { font-size: 1.2rem; font-weight: bold; margin: 1rem 0 0.5rem; }
-h4 { font-size: 1.1rem; font-weight: bold; margin: 1rem 0 0.5rem; }
+.menu-close:hover:not(:disabled) {
+  border-color: var(--muted);
+  background-color: rgba(128, 128, 128, 0.1);
+}
 
 /* =========================================================
-   6. TOOLBAR
+   4. CÁC NHÓM CÔNG CỤ TRONG BẢNG TUỲ CHỌN
    ========================================================= */
 .toolbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.6rem;
-  align-items: center;
-  padding: 0.35rem 0.5rem;
-  border-bottom: 2px solid var(--line);
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.2rem 0;
 }
 
-.toolbar-spacer { flex: 1 1 auto; }
+.toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  padding: 0.2rem 0;
+  width: 100%;
+}
+
+.toolbar-group + .toolbar-group {
+  border-top: 2px solid var(--line);
+  padding-top: 0.6rem;
+}
+
+.toolbar-group-label {
+  display: block;
+  flex: 1 1 100%;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.15rem;
+  pointer-events: none;
+}
 
 select,
 button {
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: normal;
   line-height: 1.4;
   color: var(--ink);
   background-color: transparent;
-  border: none;
-  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--line);
+  padding: 0.45rem 0.75rem;
+  min-height: 2.6rem;
   border-radius: 0.5rem;
   cursor: pointer;
   outline: none;
@@ -176,54 +238,219 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.12s, opacity 0.12s, color 0.12s;
+  transition: background-color 0.12s, border-color 0.12s, opacity 0.12s, color 0.12s;
 }
 
-select {
-  border-bottom: 2px solid var(--line);
-  border-radius: 0.4rem;
-  padding: 0.3rem 0.5rem;
-}
-
-select:hover { border-bottom-color: var(--muted); }
+select { padding: 0.45rem 0.65rem; }
+select:hover:not(:disabled) { border-color: var(--muted); }
 select:disabled { opacity: 0.5; cursor: not-allowed; }
 
-button:hover:not(:disabled) { background-color: rgba(128, 128, 128, 0.12); }
-button.active { color: var(--link); font-weight: bold; }
-button:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+button:hover:not(:disabled) {
+  background-color: rgba(128, 128, 128, 0.1);
+  border-color: var(--muted);
+}
+
+button.active {
+  color: var(--link);
+  border-color: var(--link);
+  font-weight: bold;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
 #pasteBtn {
   background-color: var(--accent-bg);
   color: var(--accent);
   font-weight: bold;
+  border-color: var(--accent);
 }
 
-#pasteBtn:hover:not(:disabled) { background-color: var(--accent-bg-hover); }
+#pasteBtn:hover:not(:disabled) {
+  background-color: var(--accent-bg-hover);
+  border-color: var(--accent);
+}
 
-.mobile-only { display: none; }
-.desktop-only { display: inline-flex; }
+#cleanBtn { color: var(--danger); }
+#cleanBtn:hover:not(:disabled) {
+  background-color: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+/* Font Size Stepper */
+.font-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--line);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.font-stepper button {
+  border: none;
+  border-radius: 0;
+  padding: 0.35rem 0.75rem;
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 2.5rem;
+}
+
+.font-stepper button:hover:not(:disabled) {
+  background-color: rgba(128, 128, 128, 0.12);
+  border-color: transparent;
+}
+
+.font-size-display {
+  padding: 0 0.55rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--muted);
+  min-width: 4rem;
+  text-align: center;
+  border-left: 2px solid var(--line);
+  border-right: 2px solid var(--line);
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Font Picker */
+.font-picker {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--line);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: border-color 0.12s;
+}
+
+.font-picker:hover { border-color: var(--muted); }
+.font-picker:focus-within { border-color: var(--accent); }
+
+.font-preview {
+  padding: 0 0.6rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--muted);
+  min-width: 2rem;
+  text-align: center;
+  line-height: 1;
+  border-right: 2px solid var(--line);
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.font-picker select {
+  border: none;
+  border-radius: 0;
+  padding: 0.45rem 0.6rem;
+}
+
+.font-picker select:hover:not(:disabled) {
+  border-color: transparent;
+  background-color: rgba(128, 128, 128, 0.08);
+}
+
+.font-picker select:focus-visible { outline: none; }
+
+.btn-toggle { gap: 0.4rem; }
+.btn-toggle svg {
+  flex: 0 0 auto;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Dropdown Xuất (Mở xuống dưới nhóm Hành động) */
+.dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.dropdown-toggle {
+  justify-content: space-between;
+}
+
+.dropdown-toggle::after {
+  content: '▾';
+  margin-left: 0.4rem;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.dropdown-toggle[aria-expanded="true"],
+.dropdown-toggle[aria-expanded="true"]:hover:not(:disabled) {
+  border-color: var(--accent);
+  background-color: var(--accent-bg);
+  color: var(--accent);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  min-width: 11.5rem;
+  background-color: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: 0.6rem;
+  box-shadow: 0 0.5rem 1.4rem rgba(0, 0, 0, 0.22);
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 400;
+}
+
+.dropdown-menu[hidden] { display: none; }
+
+.dropdown-menu button {
+  border: none;
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0.55rem 0.8rem;
+  min-height: 2.4rem;
+}
+
+.dropdown-menu button:hover:not(:disabled) {
+  background-color: rgba(128, 128, 128, 0.12);
+  border-color: transparent;
+}
 
 /* =========================================================
-   7. CHẾ ĐỘ TOÀN MÀN HÌNH (desktop)
+   5. KHUNG XEM TRƯỚC 2 DÒNG (NẰM DƯỚI CÙNG TRONG TUỲ CHỌN)
    ========================================================= */
-body.is-fullscreen .page-header { display: none; }
-
-body.is-fullscreen .toolbar {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+.format-preview {
+  font-family: var(--reader-ff);
+  font-size: var(--reader-fs);
+  line-height: var(--reader-lh);
+  color: var(--ink);
+  background-color: rgba(128, 128, 128, 0.05);
+  border: 2px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.4rem;
+  width: 100%;
+  word-break: normal;
+  overflow-wrap: break-word;
+  transition: font-size 0.15s, line-height 0.15s, color 0.2s, background-color 0.2s;
+  user-select: none;
+  pointer-events: none;
 }
-
-body.is-fullscreen .toolbar::-webkit-scrollbar { height: 0.4rem; }
-body.is-fullscreen .toolbar::-webkit-scrollbar-thumb {
-  background-color: var(--line);
-  border-radius: 0.2rem;
-}
-
-body.is-fullscreen .toolbar > * { flex: 0 0 auto; }
 
 /* =========================================================
-   8. CHẾ ĐỘ "RỘNG SÁT LỀ"
+   6. BỐ CỤC CHÍNH (CHUYỂN ĐỔI SỬA / ĐỌC TOÀN MÀN HÌNH)
    ========================================================= */
 body.is-max-width #reader {
   max-width: none;
@@ -231,60 +458,40 @@ body.is-max-width #reader {
   margin: 0;
 }
 
-/* =========================================================
-   9. BỐ CỤC CHÍNH
-   ========================================================= */
 .main {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  transition: grid-template-columns 0.2s;
+  display: block;
+  width: 100%;
+  min-height: 70vh;
 }
 
-.main.reading-mode { grid-template-columns: 0 1fr; }
-
-.side-input {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0.8rem;
-  border-right: 2px solid var(--line);
-  transition: opacity 0.2s;
-}
-
-.main.reading-mode .side-input {
-  opacity: 0;
-  pointer-events: none;
-  overflow: hidden;
-  padding: 0;
-  border-right: none;
-}
-
+.side-input,
 .side-read {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0;
-  scrollbar-gutter: stable;
+  display: none;
+  width: 100%;
 }
+
+.main[data-view="input"] .side-input { display: block; }
+.main[data-view="read"] .side-read { display: block; }
 
 /* =========================================================
-   10. Ô NHẬP
+   7. KHUNG SOẠN THẢO (#input) — PHÓNG TO THEO A+/A-
    ========================================================= */
 #input {
   width: 100%;
-  min-height: 100%;
+  min-height: 70vh;
   border: none;
   background-color: transparent;
   color: var(--ink);
   outline: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--reader-fs);
   font-weight: normal;
   line-height: 1.6;
   word-break: normal;
   overflow-wrap: break-word;
-  padding: 0;
+  padding: 0 0 2rem;
   display: block;
+  transition: font-size 0.15s ease;
 }
 
 #input:empty::before {
@@ -295,11 +502,7 @@ body.is-max-width #reader {
   display: block;
   white-space: pre-line;
   line-height: 1.7;
-}
-
-#input * {
-  color: inherit;
-  background-color: transparent;
+  font-size: max(0.95rem, calc(var(--reader-fs) * 0.7));
 }
 
 #input img {
@@ -317,18 +520,10 @@ body.is-max-width #reader {
   max-height: var(--svg-max-size);
 }
 
-#input h1,
-#input h2,
-#input h3 {
-  text-align: left;
-  text-transform: none;
-  font-size: 1.3rem;
-  margin: 0.6rem 0 0.3rem;
-}
-
-#input ul,
-#input ol { padding-left: 1.5rem; margin: 0.4rem 0; }
-
+#input h1 { font-size: 1.4em; font-weight: bold; margin: 0.6em 0 0.3em; }
+#input h2 { font-size: 1.25em; font-weight: bold; margin: 0.6em 0 0.3em; }
+#input h3 { font-size: 1.15em; font-weight: bold; margin: 0.6em 0 0.3em; }
+#input ul, #input ol { padding-left: 1.6rem; margin: 0.4rem 0; }
 #input blockquote {
   margin: 0.6rem 0;
   padding: 0;
@@ -340,38 +535,17 @@ body.is-max-width #reader {
   background-color: transparent;
   padding: 0;
   font-family: ui-monospace, Menlo, Consolas, monospace;
-  font-size: 0.9rem;
+  font-size: 0.9em;
   overflow-x: auto;
 }
 
-#input table,
-#input thead,
-#input tbody,
-#input tr,
-#input th,
-#input td,
-#input caption {
-  display: block;
-  border: none;
-  padding: 0;
-  margin: 0;
-  background-color: transparent;
-  width: auto;
-}
-
-#input th,
-#input td { display: inline; }
-#input tr { margin: 0 0 0.4rem; }
-#input th::after,
-#input td::after { content: " "; }
-
 /* =========================================================
-   11. VÙNG ĐỌC
+   8. VÙNG ĐỌC BÀI VIẾT (#reader)
    ========================================================= */
 #reader {
   max-width: var(--reader-mw);
   margin: 0 auto;
-  padding: 0.6rem;
+  padding: 0.5rem 0.5rem 2rem;
   font-family: var(--reader-ff);
   font-size: var(--reader-fs);
   font-weight: normal;
@@ -379,6 +553,7 @@ body.is-max-width #reader {
   color: var(--ink);
   word-break: normal;
   overflow-wrap: break-word;
+  transition: font-size 0.15s ease;
 }
 
 #reader .article-title {
@@ -394,27 +569,21 @@ body.is-max-width #reader {
 
 #reader .article-meta {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.75em;
+  font-size: 0.8em;
   font-weight: normal;
   color: var(--muted);
   margin: 0 0 2rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 #reader .article-meta .dot { margin: 0 0.5em; opacity: 0.5; }
-
 #reader .article-body > *:first-child { margin-top: 0; }
 #reader .article-body > *:last-child { margin-bottom: 0; }
 
 #reader p { margin: 0 0 1.1em; }
 
-#reader h1,
-#reader h2,
-#reader h3,
-#reader h4,
-#reader h5,
-#reader h6 {
+#reader h1, #reader h2, #reader h3, #reader h4, #reader h5, #reader h6 {
   font-family: inherit;
   font-weight: bold;
   color: var(--ink);
@@ -428,8 +597,7 @@ body.is-max-width #reader {
 #reader h3 { font-size: 1.15em; margin: 1.2em 0 0.5em; }
 #reader h4 { font-size: 1em; margin: 1.1em 0 0.4em; }
 
-#reader h5,
-#reader h6 {
+#reader h5, #reader h6 {
   font-size: 0.9em;
   margin: 1em 0 0.4em;
   text-transform: uppercase;
@@ -460,7 +628,6 @@ body.is-max-width #reader {
 }
 
 #reader figure { margin: 1.2em 0; }
-
 #reader figcaption {
   font-family: inherit;
   font-size: 0.9em;
@@ -469,9 +636,7 @@ body.is-max-width #reader {
   margin-top: 0.4em;
 }
 
-#reader ul,
-#reader ol { margin: 0.6em 0 1.1em; padding-left: 1.6em; }
-
+#reader ul, #reader ol { margin: 0.6em 0 1.1em; padding-left: 1.6em; }
 #reader li { margin: 0.35em 0; }
 
 #reader blockquote {
@@ -491,35 +656,6 @@ body.is-max-width #reader {
   width: 30%;
 }
 
-#reader table,
-#reader thead,
-#reader tbody,
-#reader tfoot,
-#reader tr,
-#reader th,
-#reader td,
-#reader caption,
-#reader col,
-#reader colgroup {
-  display: block;
-  border: none;
-  padding: 0;
-  margin: 0;
-  background-color: transparent;
-  width: auto;
-  max-width: 100%;
-  font-size: inherit;
-  font-weight: inherit;
-  text-align: left;
-  vertical-align: baseline;
-}
-
-#reader tr { margin: 0 0 0.8em; }
-#reader th,
-#reader td { display: inline; }
-#reader th::after,
-#reader td::after { content: " "; }
-
 #reader code {
   font-family: "Roboto Mono", Consolas, ui-monospace, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", monospace;
   font-size: 0.9em;
@@ -534,8 +670,6 @@ body.is-max-width #reader {
   font-family: "Roboto Mono", Consolas, ui-monospace, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", monospace;
   font-size: 0.9em;
 }
-
-#reader pre code { font-size: 1em; }
 
 #reader details {
   margin: 1em 0;
@@ -562,27 +696,15 @@ body.dark #reader mark {
   color: #ffffff;
 }
 
-#reader b,
-#reader strong { font-weight: bold; }
-
-#reader i,
-#reader em { font-style: italic; }
-
+#reader b, #reader strong { font-weight: bold; }
+#reader i, #reader em { font-style: italic; }
 #reader u { text-decoration: underline; }
-
-#reader s,
-#reader del {
+#reader s, #reader del {
   text-decoration: line-through;
   color: var(--muted);
 }
-
-#reader sub,
-#reader sup { font-size: 0.75em; line-height: 0; }
-
-#reader small {
-  font-size: 0.85em;
-  color: var(--muted);
-}
+#reader sub, #reader sup { font-size: 0.75em; line-height: 0; }
+#reader small { font-size: 0.85em; color: var(--muted); }
 
 #reader .blocked-media {
   display: inline-block;
@@ -596,7 +718,7 @@ body.dark #reader mark {
   text-align: center;
   color: var(--muted);
   padding: 3rem 1rem;
-  font-size: max(0.85rem, calc(var(--reader-fs) * 0.65));
+  font-size: max(0.95rem, calc(var(--reader-fs) * 0.65));
   line-height: 1.8;
 }
 
@@ -646,7 +768,7 @@ body.dark #reader mark {
 }
 
 /* =========================================================
-   12. DROP OVERLAY
+   9. MODAL, OVERLAY & CÁC NÚT ĐIỀU KHIỂN NỔI
    ========================================================= */
 .drop-overlay {
   position: fixed;
@@ -667,7 +789,7 @@ body.dark #reader mark {
 .drop-overlay-inner {
   background-color: var(--paper);
   color: var(--ink);
-  padding: 3rem 4rem;
+  padding: 1rem;
   border-radius: 1rem;
   border: 3px dashed var(--accent);
   text-align: center;
@@ -683,9 +805,6 @@ body.dark #reader mark {
   margin-top: 0.8rem;
 }
 
-/* =========================================================
-   13. MODAL THÔNG BÁO
-   ========================================================= */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -697,7 +816,7 @@ body.dark #reader mark {
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 1.5rem;
+  padding: 1rem;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -718,7 +837,7 @@ body.dark #reader mark {
   border: 2px solid var(--line);
   border-radius: 1rem;
   box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.4);
-  padding: 2.2rem 2.4rem 1.8rem;
+  padding: 1rem;
   max-width: 34rem;
   width: 100%;
   text-align: center;
@@ -731,13 +850,15 @@ body.dark #reader mark {
 }
 
 .modal-icon {
-  font-size: 3rem;
-  line-height: 1;
-  margin: 0 0 1rem;
-  display: block;
-  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 0 0.8rem;
 }
 
+.modal-icon svg { width: 100%; height: 100%; display: block; }
 .modal-icon.info    { color: var(--accent); }
 .modal-icon.success { color: #2e7d32; }
 .modal-icon.error   { color: #c62828; }
@@ -749,24 +870,22 @@ body.dark .modal-icon.error   { color: #ef5350; }
 body.dark .modal-icon.warning { color: #ffb74d; }
 
 .modal-title {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: bold;
   line-height: 1.3;
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.6rem;
   color: var(--ink);
 }
 
 .modal-message {
-  font-size: 1.05rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--ink);
-  margin: 0 0 1.6rem;
+  margin: 0 0 1.2rem;
   white-space: pre-line;
   word-break: break-word;
   text-align: left;
 }
-
-.modal-message:last-child { margin-bottom: 0; }
 
 .modal-actions {
   display: flex;
@@ -778,11 +897,11 @@ body.dark .modal-icon.warning { color: #ffb74d; }
 
 .modal-btn {
   font-family: inherit;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: bold;
   line-height: 1;
-  padding: 0.85rem 2rem;
-  min-width: 8rem;
+  padding: 0.8rem 1.8rem;
+  min-width: 7rem;
   color: var(--paper);
   background-color: var(--ink);
   border: 2px solid var(--ink);
@@ -791,13 +910,11 @@ body.dark .modal-icon.warning { color: #ffb74d; }
   outline: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: opacity 0.12s, background-color 0.12s, color 0.12s;
+  transition: opacity 0.12s;
 }
 
 .modal-btn:hover,
 .modal-btn:focus-visible { opacity: 0.85; }
-
-.modal-btn:active { opacity: 0.75; }
 
 .modal-btn-cancel {
   color: var(--ink);
@@ -811,16 +928,14 @@ body.dark .modal-icon.warning { color: #ffb74d; }
   opacity: 1;
 }
 
-/* =========================================================
-   14. NÚT NỔI
-   ========================================================= */
+/* Các nút nổi dùng chung mọi màn hình */
 .floating-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 3rem;
-  min-height: 3rem;
-  padding: 0.4rem 0.7rem;
+  min-width: 3.2rem;
+  min-height: 3.2rem;
+  padding: 0.4rem 0.8rem;
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: bold;
@@ -828,14 +943,13 @@ body.dark .modal-icon.warning { color: #ffb74d; }
   text-align: center;
   color: var(--paper);
   background-color: var(--ink);
-  border: none;
+  border: 2px solid transparent;
   border-radius: 0.8rem;
-  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.3);
   cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: none;
 }
 
 button.floating-btn:hover,
@@ -844,18 +958,8 @@ button.floating-btn:active {
   color: var(--paper);
 }
 
-.scroll-top {
-  position: fixed;
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  right: max(1rem, env(safe-area-inset-right));
-  z-index: 100;
-}
-
-/* =========================================================
-   15. CỤM NÚT GÓC DƯỚI TRÁI
-   ========================================================= */
 .bottom-left {
-  display: none;
+  display: flex;
   position: fixed;
   bottom: max(1rem, env(safe-area-inset-bottom));
   left: max(1rem, env(safe-area-inset-left));
@@ -863,183 +967,34 @@ button.floating-btn:active {
   gap: 0.5rem;
 }
 
-#viewBtn {
-  font-size: 0.85rem;
-  line-height: 1.15;
-  padding: 0.5rem 0.8rem;
-}
-
-/* =========================================================
-   16. BACKDROP
-   ========================================================= */
-.menu-backdrop {
+body.menu-open .bottom-left,
+body.menu-open .scroll-top,
+body.modal-open .bottom-left,
+body.modal-open .scroll-top {
   display: none;
+}
+
+.scroll-top {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 290;
-  -webkit-tap-highlight-color: transparent;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 100;
+  padding: 0.55rem;
+}
+
+.scroll-top svg {
+  display: block;
+  width: 1.7rem;
+  height: 1.7rem;
 }
 
 /* =========================================================
-   17. MEDIA QUERIES — MOBILE (≤ 820px)
-   ========================================================= */
-@media (max-width: 820px) {
-  body {
-    display: block;
-    height: auto;
-    min-height: 100vh;
-    overflow: auto;
-    padding: 0 0 5rem;
-  }
-
-  body.menu-open { overflow: hidden; }
-
-  .bottom-left { display: flex; }
-
-  body.menu-open .bottom-left,
-  body.menu-open .scroll-top { display: none; }
-
-  .topbar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 300;
-    max-height: 88vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    background-color: var(--paper);
-    border-top: 2px solid var(--line);
-    border-radius: 1rem 1rem 0 0;
-    box-shadow: 0 -0.3rem 0.8rem rgba(0, 0, 0, 0.15);
-    padding: 0.6rem 0.6rem max(0.6rem, env(safe-area-inset-bottom));
-    transform: translateY(105%);
-    transition: transform 0.25s ease-out;
-  }
-
-  .topbar.is-open { transform: translateY(0); }
-
-  body.menu-open .menu-backdrop { display: block; }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.1rem;
-    margin: 0 0 0.4rem;
-    padding: 0 0 0.2rem;
-    padding-right: 2.4rem;
-  }
-
-  .page-header-side { display: none; }
-
-  .page-header h1 {
-    font-size: 1.3rem;
-    text-align: left;
-    width: 100%;
-    padding-top: 0;
-  }
-
-  .page-header .author {
-    font-size: 0.95rem;
-    text-align: left;
-    width: 100%;
-    white-space: normal;
-  }
-
-  .menu-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 2rem;
-    min-height: 2rem;
-    padding: 0;
-    font-size: 1.1rem;
-    line-height: 1;
-    color: var(--ink);
-    background-color: rgba(128, 128, 128, 0.12);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .toolbar {
-    padding: 0.4rem 0;
-    border-bottom: none;
-    gap: 0.4rem;
-  }
-
-  .toolbar button,
-  .toolbar select {
-    min-height: 2.6rem;
-    padding: 0.55rem 0.85rem;
-    font-size: 0.95rem;
-  }
-
-  .main {
-    display: block;
-    overflow: visible;
-  }
-
-  .side-input,
-  .side-read {
-    display: none;
-    overflow: visible;
-    border: none;
-    min-height: 0;
-    opacity: 1;
-  }
-
-  .side-input { padding: 0 0.8rem 1rem; }
-  .side-read { padding: 0 0 1rem; }
-
-  .main[data-view="input"]:not(.reading-mode) .side-input { display: block; }
-  .main[data-view="read"] .side-read { display: block; }
-  .main.reading-mode .side-input { display: none; }
-  .main.reading-mode .side-read { display: block; }
-
-  #reader { padding-top: 0; }
-
-  #input {
-    font-size: 1rem;
-    min-height: 60vh;
-  }
-
-  #reader .article-title { font-size: 1.5em; }
-
-  .desktop-only { display: none; }
-  .mobile-only { display: inline-flex; }
-}
-
-/* =========================================================
-   18. MEDIA QUERIES — MÀN RẤT HẸP (≤ 480px)
-   ========================================================= */
-@media (max-width: 480px) {
-  .page-header h1 { font-size: 1.2rem; }
-  .page-header .author { font-size: 0.9rem; }
-
-  .modal-overlay { padding: 1rem; }
-  .modal-card { padding: 1.8rem 1.5rem 1.4rem; }
-  .modal-icon { font-size: 2.4rem; }
-  .modal-title { font-size: 1.25rem; }
-  .modal-message { font-size: 1rem; }
-  .modal-btn { font-size: 1rem; padding: 0.75rem 1.5rem; min-width: 6rem; }
-}
-
-/* =========================================================
-   19. KIỂU IN
+   10. KIỂU IN (Print Stylesheet)
    ========================================================= */
 @media print {
   @page { margin: 2cm; }
 
-  html,
-  body {
+  html, body {
     background: #ffffff !important;
     background-color: #ffffff !important;
     color: #000000 !important;
@@ -1060,19 +1015,12 @@ button.floating-btn:active {
     display: none !important;
   }
 
-  .main {
-    display: block !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-  }
-
+  .main,
   .side-read {
     display: block !important;
     overflow: visible !important;
     height: auto !important;
     padding: 0 !important;
-    scrollbar-gutter: auto !important;
     background: #ffffff !important;
   }
 
@@ -1082,15 +1030,11 @@ button.floating-btn:active {
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: #ffffff !important;
-    background-color: #ffffff !important;
     color: #000000 !important;
   }
 
-  #reader,
-  #reader * {
+  #reader, #reader * {
     background: transparent !important;
-    background-color: transparent !important;
     color: #000000 !important;
   }
 
@@ -1107,29 +1051,24 @@ button.floating-btn:active {
     text-decoration: underline !important;
   }
 
-  #reader tr,
-  #reader img,
-  #reader figure,
-  #reader pre {
+  #reader img, #reader figure, #reader pre {
     page-break-inside: avoid;
   }
 
-  #reader .article-title {
+  #reader .article-title,
+  #reader h1, #reader h2, #reader h3, #reader h4, #reader h5, #reader h6 {
     page-break-after: avoid;
   }
 
-  #reader h1,
-  #reader h2,
-  #reader h3,
-  #reader h4,
-  #reader h5,
-  #reader h6 {
-    page-break-after: avoid;
-    color: #000000 !important;
-  }
+  #reader .placeholder { display: none !important; }
+}
 
-  #reader .placeholder {
-    display: none !important;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 </style>
@@ -1140,7 +1079,7 @@ button.floating-btn:active {
 
 <div class="bottom-left" id="bottomLeft">
   <button class="floating-btn" id="menuBtn" type="button"
-          aria-label="Mở menu tuỳ chọn" title="Mở menu">Menu</button>
+          aria-label="Mở tuỳ chọn" title="Mở tuỳ chọn">Tuỳ Chọn</button>
   <button class="floating-btn" id="viewBtn" type="button"
           aria-label="Chuyển sang chế độ đọc" title="Chuyển sang chế độ đọc">Sửa<br>▶ Đọc</button>
 </div>
@@ -1148,84 +1087,104 @@ button.floating-btn:active {
 <div class="topbar" id="topbar">
 
   <header class="page-header">
-    <span class="page-header-side" aria-hidden="true"></span>
     <h1>Chế độ đọc</h1>
     <p class="author">Dương Tấn Chánh</p>
     <button class="menu-close" id="menuCloseBtn" type="button"
-            aria-label="Đóng menu" title="Đóng menu">✕</button>
+            aria-label="Đóng tuỳ chọn" title="Đóng tuỳ chọn">✕</button>
   </header>
 
   <div class="toolbar">
-    <select id="fontSize" aria-label="Cỡ chữ">
-      <option value="1rem">Cỡ 1rem</option>
-      <option value="1.1rem">Cỡ 1.1rem</option>
-      <option value="1.2rem">Cỡ 1.2rem</option>
-      <option value="1.3rem">Cỡ 1.3rem</option>
-      <option value="1.5rem" selected>Cỡ 1.5rem</option>
-      <option value="1.75rem">Cỡ 1.75rem</option>
-      <option value="2rem">Cỡ 2rem</option>
-    </select>
 
-    <select id="fontFamily" aria-label="Phông chữ">
-      <option value="Georgia, 'Times New Roman', 'Noto Serif', serif" selected>Serif hệ thống</option>
-      <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">Sans hệ thống</option>
-      <option value="'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">Noto Sans</option>
-      <option value="'Roboto Mono', Consolas, Menlo, Monaco, 'Liberation Mono', 'DejaVu Sans Mono', monospace">Roboto Mono</option>
-    </select>
+    <!-- 1. HÀNH ĐỘNG ĐƯA LÊN TRÊN HẾT -->
+    <div class="toolbar-group">
+      <span class="toolbar-group-label">Hành động</span>
 
-    <select id="lineHeight" aria-label="Giãn dòng">
-      <option value="1.55">Dòng 1.55</option>
-      <option value="1.75" selected>Dòng 1.75</option>
-      <option value="2">Dòng 2.0</option>
-    </select>
+      <button id="pasteBtn" type="button"
+              aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
 
-    <select id="maxWidth" aria-label="Chiều rộng">
-      <option value="25rem">Rộng 400px</option>
-      <option value="37.5rem" selected>Rộng 600px</option>
-      <option value="50rem">Rộng 800px</option>
-      <option value="none">Rộng sát lề</option>
-    </select>
+      <button id="fileBtn" type="button"
+              aria-label="Chọn file từ máy" title="Chọn file .html, .htm, .txt">Chọn file</button>
 
-    <select id="paperColor" aria-label="Màu nền">
-      <option value="#faf9f6" selected>Nền ngà</option>
-      <option value="#ffffff">Nền trắng</option>
-      <option value="#fdf6e3">Nền vàng nhạt</option>
-      <option value="#e8f0e8">Nền xanh nhạt</option>
-      <option value="#f5ebe8">Nền hồng nhạt</option>
-      <option value="#f0f0f0">Nền xám nhạt</option>
-      <option value="dark">Nền đen (chữ sáng)</option>
-    </select>
+      <input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
 
-    <span class="toolbar-spacer"></span>
+      <button id="copyBtn" type="button"
+              aria-label="Copy bài viết" title="Chưa có nội dung để copy" disabled>Copy</button>
 
-    <button id="pasteBtn" type="button"
-            aria-label="Dán từ clipboard" title="Dán từ clipboard">Dán</button>
+      <button id="printBtn" type="button"
+              aria-label="In bài viết" title="Chưa có nội dung để in" disabled>In</button>
 
-    <button id="fileBtn" type="button"
-            aria-label="Chọn file từ máy" title="Chọn file .html, .htm, .txt">Chọn file</button>
+      <div class="dropdown">
+        <button class="dropdown-toggle" id="exportToggle" type="button"
+                aria-haspopup="true" aria-expanded="false"
+                aria-label="Xuất hoặc chia sẻ" title="Xuất hoặc chia sẻ">Xuất</button>
+        <div class="dropdown-menu" id="exportMenu" role="menu" hidden>
+          <button id="exportTxtBtn" type="button" role="menuitem"
+                  aria-label="Tải file TXT" title="Tải nội dung thành file .txt" disabled>Tải TXT</button>
+          <button id="exportHtmlBtn" type="button" role="menuitem"
+                  aria-label="Tải file HTML" title="Tải nội dung thành file .html" disabled>Tải HTML</button>
+          <button id="shareBtn" type="button" role="menuitem"
+                  aria-label="Chia sẻ bài viết" title="Chia sẻ bài viết" disabled>Chia sẻ</button>
+        </div>
+      </div>
 
-    <input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
+      <button id="cleanBtn" type="button"
+              aria-label="Xoá nội dung" title="Xoá nội dung">Xoá</button>
+    </div>
 
-    <button id="copyBtn" type="button"
-            aria-label="Copy bài viết" title="Chưa có nội dung để copy" disabled>Copy</button>
+    <!-- 2. ĐỊNH DẠNG ĐƯA XUỐNG DƯỚI -->
+    <div class="toolbar-group">
+      <span class="toolbar-group-label">Định dạng</span>
 
-    <button id="printBtn" type="button"
-            aria-label="In bài viết" title="Chưa có nội dung để in" disabled>In</button>
+      <div class="font-stepper" role="group" aria-label="Cỡ chữ">
+        <button id="fontMinus" type="button" aria-label="Giảm cỡ chữ" title="Giảm cỡ chữ">A−</button>
+        <span id="fontSizeDisplay" class="font-size-display" aria-live="polite">1.5rem</span>
+        <button id="fontPlus" type="button" aria-label="Tăng cỡ chữ" title="Tăng cỡ chữ">A+</button>
+      </div>
 
-    <button id="shareBtn" class="mobile-only" type="button"
-            aria-label="Chia sẻ bài viết" title="Chia sẻ bài viết">Chia sẻ</button>
+      <span class="font-picker">
+        <span class="font-preview" id="fontPreview" aria-hidden="true">Aa</span>
+        <select id="fontFamily" aria-label="Phông chữ">
+          <option value="Georgia, 'Times New Roman', 'Noto Serif', serif" selected>Serif hệ thống</option>
+          <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">Sans hệ thống</option>
+          <option value="'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">Noto Sans</option>
+          <option value="'Roboto Mono', Consolas, Menlo, Monaco, 'Liberation Mono', 'DejaVu Sans Mono', monospace">Roboto Mono</option>
+        </select>
+      </span>
 
-    <button id="exportTxtBtn" type="button"
-            aria-label="Tải file TXT" title="Tải nội dung thành file .txt">Tải TXT</button>
+      <select id="lineHeight" aria-label="Giãn dòng">
+        <option value="1.55">Dòng chặt</option>
+        <option value="1.75" selected>Dòng vừa</option>
+        <option value="2">Dòng thoáng</option>
+      </select>
 
-    <button id="exportHtmlBtn" type="button"
-            aria-label="Tải file HTML" title="Tải nội dung thành file .html">Tải HTML</button>
+      <select id="maxWidth" aria-label="Chiều rộng">
+        <option value="25rem">Hẹp</option>
+        <option value="37.5rem" selected>Vừa</option>
+        <option value="50rem">Rộng</option>
+        <option value="none">Sát lề</option>
+      </select>
 
-    <button id="cleanBtn" type="button"
-            aria-label="Xoá nội dung" title="Xoá nội dung">Xoá</button>
+      <select id="paperColor" aria-label="Màu nền">
+        <option value="#faf9f6" selected>Nền ngà</option>
+        <option value="#ffffff">Nền trắng</option>
+        <option value="#fdf6e3">Nền vàng nhạt</option>
+        <option value="#e8f0e8">Nền xanh nhạt</option>
+        <option value="#f5ebe8">Nền hồng nhạt</option>
+        <option value="#f0f0f0">Nền xám nhạt</option>
+      </select>
 
-    <button id="expandBtn" class="desktop-only" type="button"
-            aria-label="Bật chế độ toàn màn hình" title="Chỉ giữ thanh nút, ẩn tiêu đề">Toàn màn hình</button>
+      <button id="darkToggle" class="btn-toggle" type="button" aria-pressed="false" title="Bật nền tối">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <span>Nền tối</span>
+      </button>
+    </div>
+
+    <!-- 3. KHUNG XEM TRƯỚC 2 DÒNG NẰM DƯỚI CÙNG -->
+    <div class="format-preview" id="formatPreview" aria-hidden="true"></div>
+
   </div>
 </div>
 
@@ -1235,13 +1194,10 @@ button.floating-btn:active {
          autocorrect="off" autocapitalize="off"
          data-placeholder="Dán nội dung vào đây
 
-Cách 1: Bấm nút Dán trong Menu.
-Cách 2: Bấm nút Menu, chọn Chọn file để mở file .html, .htm, .txt.
-Cách 3: Kéo thả file vào cửa sổ trình duyệt (máy tính).
-Cách 4: Nhấn giữ vào vùng này rồi chọn Paste.
-Cách 5: Nhấn Ctrl+V ở bất cứ đâu để thay thế toàn bộ.
-
-Cũng có thể gõ trực tiếp."></div>
+Bấm nút Sửa ▶ Đọc để xem bài viết ở chế độ đọc.
+Bấm nút Tuỳ Chọn để Dán, mở file, chỉnh cỡ chữ, phông chữ, màu nền.
+Dùng Ctrl+V, ⌘+V hoặc kéo thả file .html/.htm/.txt vào màn hình để mở.
+Bấm A+ hoặc A- để phóng to/thu nhỏ cỡ chữ cả khi đọc và sửa."></div>
   </div>
   <div class="side-read"><div id="reader"></div></div>
 </div>
@@ -1267,7 +1223,13 @@ Cũng có thể gõ trực tiếp."></div>
 </div>
 
 <button class="floating-btn scroll-top" id="scrollTopBtn" type="button"
-        aria-label="Cuộn lên đầu">Lên<br>đầu</button>
+        aria-label="Cuộn lên đầu" title="Cuộn lên đầu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <line x1="12" y1="19" x2="12" y2="5"/>
+    <polyline points="5 12 12 5 19 12"/>
+  </svg>
+</button>
 
 <script>
 /* =========================================================
@@ -1276,13 +1238,10 @@ Cũng có thể gõ trực tiếp."></div>
 const input          = document.getElementById('input');
 const reader         = document.getElementById('reader');
 const main           = document.getElementById('main');
-const sideInput      = document.querySelector('.side-input');
-const sideRead       = document.querySelector('.side-read');
 const topbar         = document.getElementById('topbar');
 const menuBtn        = document.getElementById('menuBtn');
 const menuCloseBtn   = document.getElementById('menuCloseBtn');
 const menuBackdrop   = document.getElementById('menuBackdrop');
-const expandBtn      = document.getElementById('expandBtn');
 const viewBtn        = document.getElementById('viewBtn');
 const pasteBtn       = document.getElementById('pasteBtn');
 const fileBtn        = document.getElementById('fileBtn');
@@ -1292,7 +1251,6 @@ const printBtn       = document.getElementById('printBtn');
 const cleanBtn       = document.getElementById('cleanBtn');
 const scrollTopBtn   = document.getElementById('scrollTopBtn');
 const dropOverlay    = document.getElementById('dropOverlay');
-const fontSizeSel    = document.getElementById('fontSize');
 const fontFamilySel  = document.getElementById('fontFamily');
 const lineHeightSel  = document.getElementById('lineHeight');
 const maxWidthSel    = document.getElementById('maxWidth');
@@ -1300,8 +1258,21 @@ const paperColorSel  = document.getElementById('paperColor');
 const exportTxtBtn   = document.getElementById('exportTxtBtn');
 const exportHtmlBtn  = document.getElementById('exportHtmlBtn');
 const shareBtn       = document.getElementById('shareBtn');
+const formatPreview  = document.getElementById('formatPreview');
 const bodyEl         = document.body;
 const root           = document.documentElement;
+
+const fontMinus       = document.getElementById('fontMinus');
+const fontPlus        = document.getElementById('fontPlus');
+const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+const FONT_STEPS      = ['1rem','1.1rem','1.2rem','1.3rem','1.5rem','1.75rem','2rem','2.25rem','2.5rem'];
+let   fontIndex       = 4;
+
+const fontPreview = document.getElementById('fontPreview');
+const darkToggle  = document.getElementById('darkToggle');
+
+const exportToggle = document.getElementById('exportToggle');
+const exportMenu   = document.getElementById('exportMenu');
 
 const modalOverlay   = document.getElementById('modalOverlay');
 const modalIcon      = document.getElementById('modalIcon');
@@ -1310,10 +1281,24 @@ const modalMsg       = document.getElementById('modalMsg');
 const modalBtn       = document.getElementById('modalBtn');
 const modalCancelBtn = document.getElementById('modalCancelBtn');
 
-const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
-
 const SVG_MAX_SIZE = '12rem';
 const SVG_MAX_WIDTH_CSS = 'min(100%, ' + SVG_MAX_SIZE + ')';
+
+/* =========================================================
+   CẬP NHẬT CHỮ MẪU VÀ NGÀY THÁNG THỜI GIAN THỰC
+   ========================================================= */
+function updatePreviewText() {
+  const now = new Date();
+  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const thu = days[now.getDay()];
+  const d = now.getDate();
+  const m = now.getMonth() + 1;
+  const y = now.getFullYear();
+
+  formatPreview.innerHTML =
+    'AaBbCc Đđ Ăă Ââ Êê Ôô Ơơ Ưư 0123456789<br>' +
+    'Hôm nay là ' + thu + ', ngày ' + d + '/' + m + '/' + y;
+}
 
 /* =========================================================
    MODAL THÔNG BÁO
@@ -1324,10 +1309,10 @@ let modalOnCancel      = null;
 let modalPreviousFocus = null;
 
 const MODAL_ICONS = {
-  info:    'ℹ',
-  success: '✓',
-  error:   '✕',
-  warning: '⚠'
+  info:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
 };
 
 const MODAL_DEFAULT_TITLES = {
@@ -1356,8 +1341,8 @@ function showMessage(message, opts) {
     ? document.activeElement
     : null;
 
-  modalIcon.textContent = MODAL_ICONS[type] || MODAL_ICONS.info;
-  modalIcon.className   = 'modal-icon ' + type;
+  modalIcon.innerHTML = MODAL_ICONS[type] || MODAL_ICONS.info;
+  modalIcon.className = 'modal-icon ' + type;
 
   if (title) {
     modalTitle.textContent   = title;
@@ -1457,10 +1442,34 @@ function trapFocus(e) {
 }
 
 /* =========================================================
-   MENU MOBILE
+   DROPDOWN XUẤT
+   ========================================================= */
+function closeExportMenu() {
+  if (!exportMenu.hidden) {
+    exportMenu.hidden = true;
+    exportToggle.setAttribute('aria-expanded', 'false');
+  }
+}
+
+exportToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  const willOpen = exportMenu.hidden;
+  exportMenu.hidden = !willOpen;
+  exportToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+});
+
+document.addEventListener('click', e => {
+  if (exportMenu.hidden) return;
+  if (exportMenu.contains(e.target)) return;
+  if (e.target === exportToggle) return;
+  closeExportMenu();
+});
+
+/* =========================================================
+   MENU TUỲ CHỌN HỢP NHẤT
    ========================================================= */
 function openMenu() {
-  if (!isMobile()) return;
+  updatePreviewText();
   bodyEl.classList.add('menu-open');
   topbar.classList.add('is-open');
 }
@@ -1468,6 +1477,7 @@ function openMenu() {
 function closeMenu() {
   bodyEl.classList.remove('menu-open');
   topbar.classList.remove('is-open');
+  closeExportMenu();
 }
 
 menuBtn.addEventListener('click', openMenu);
@@ -1484,6 +1494,15 @@ document.addEventListener('keydown', e => {
       } else {
         hideModal('confirm');
       }
+      return;
+    }
+    if (!dropOverlay.classList.contains('is-visible') && dragCounter > 0) {
+      dragCounter = 0;
+      dropOverlay.classList.remove('is-visible');
+    }
+    if (!exportMenu.hidden) {
+      closeExportMenu();
+      try { exportToggle.focus(); } catch (err) { /* bỏ qua */ }
       return;
     }
     if (bodyEl.classList.contains('menu-open')) {
@@ -1511,7 +1530,7 @@ function updateThemeColor() {
 }
 
 /* =========================================================
-   HÀM NỀN TẢNG
+   BỘ LỌC BẢO MẬT & URL (XSS PROTECTION)
    ========================================================= */
 const BLANK_RE = /[\s\u00A0\u200B\u200C\u200D\uFEFF\u2060]+/g;
 function stripBlank(s) { return (s || '').replace(BLANK_RE, ''); }
@@ -1526,11 +1545,20 @@ function escapeHTML(s) {
           .replace(/>/g, '&gt;');
 }
 
-function safeURL(url) {
+/* Chặn triệt để giao thức nguy hiểm; cho phép ảnh tương đối và ảnh an toàn */
+function safeURL(url, isImage) {
   if (!url) return '';
   const t = url.trim();
-  if (/^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(t)) return t;
-  if (/^data:image\/(png|jpe?g|gif|webp|svg\+xml);/i.test(t)) return t;
+  if (/^(javascript|vbscript):/i.test(t)) return '';
+  if (isImage) {
+    if (/^data:image\/(png|jpe?g|gif|webp|svg\+xml);/i.test(t)) return t;
+    if (/^blob:/i.test(t)) return t;
+    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(t) || /^(https?:)/i.test(t)) return t;
+    return '';
+  }
+  if (/^data:/i.test(t)) return '';
+  if (/^(https?:|mailto:|tel:|#)/i.test(t)) return t;
+  if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(t)) return t;
   return '';
 }
 
@@ -1550,11 +1578,6 @@ function applySVGLimitToImages(rootEl) {
   });
 }
 
-/* =========================================================
-   FIX: BỎ font-family, font-size, line-height khỏi whitelist
-   → Sanitizer không giữ chúng khi paste từ Word/HTML
-   → Cỡ chữ của #reader luôn thắng
-   ========================================================= */
 const ALLOWED_STYLE_PROPS = new Set([
   'text-align', 'font-weight', 'font-style', 'text-decoration',
   'text-transform', 'letter-spacing', 'list-style-type',
@@ -1576,9 +1599,6 @@ function filterStyle(text) {
   return kept.join('; ');
 }
 
-/* =========================================================
-   WHITELIST
-   ========================================================= */
 const ALLOWED_TAGS = new Set([
   'p', 'div', 'section', 'article', 'figure', 'figcaption',
   'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -1608,9 +1628,6 @@ const STRIP_WITH_CONTENT = new Set([
   'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption', 'col', 'colgroup'
 ]);
 
-/* =========================================================
-   KIỂM TRA NỘI DUNG NODE
-   ========================================================= */
 function hasVisibleContent(node) {
   if (node.nodeType === 3) return stripBlank(node.textContent).length > 0;
   if (node.nodeType !== 1) return false;
@@ -1626,9 +1643,6 @@ function hasVisibleContent(node) {
   return false;
 }
 
-/* =========================================================
-   PHÁ BẢNG
-   ========================================================= */
 function flattenTables(rootEl) {
   const tables = Array.from(rootEl.querySelectorAll('table')).reverse();
   for (const t of tables) {
@@ -1686,11 +1700,6 @@ function unwrapSingleChildWrappers(rootEl) {
   }
 }
 
-/* =========================================================
-   FIX: XOÁ INLINE FONT TRONG SANITIZE
-   Bước 2 bảo vệ — loại bỏ mọi inline font-size/font-family/
-   line-height còn sót (kể cả khi browser parse không chuẩn).
-   ========================================================= */
 function stripInlineFontStyles(rootEl) {
   rootEl.querySelectorAll('[style]').forEach(el => {
     if (!el.style) return;
@@ -1699,14 +1708,10 @@ function stripInlineFontStyles(rootEl) {
     el.style.removeProperty('line-height');
     el.style.removeProperty('font');
 
-    /* Nếu style attribute rỗng thì xoá luôn */
     if (!el.getAttribute('style')) el.removeAttribute('style');
   });
 }
 
-/* =========================================================
-   SANITIZE
-   ========================================================= */
 function sanitizeHTML(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   flattenTables(doc.body);
@@ -1757,8 +1762,12 @@ function sanitizeHTML(html) {
         return;
       }
 
-      if (name === 'href' || name === 'src') {
-        const clean = safeURL(value);
+      if (name === 'href') {
+        const clean = safeURL(value, false);
+        if (clean) el.setAttribute(name, clean);
+        else el.removeAttribute(name);
+      } else if (name === 'src') {
+        const clean = safeURL(value, true);
         if (clean) el.setAttribute(name, clean);
         else el.removeAttribute(name);
       }
@@ -1777,16 +1786,11 @@ function sanitizeHTML(html) {
     }
   }
 
-  /* BƯỚC 2: Xoá mọi inline font còn sót */
   stripInlineFontStyles(doc.body);
-
   unwrapSingleChildWrappers(doc.body);
   return doc.body.innerHTML;
 }
 
-/* =========================================================
-   LỌC NHIỄU
-   ========================================================= */
 const NOISE_SELECTORS = [
   'script', 'style', 'noscript', 'template', 'iframe', 'object', 'embed',
   'nav', 'header', 'footer', 'aside',
@@ -1841,9 +1845,6 @@ function removeNoise(doc) {
   }
 }
 
-/* =========================================================
-   CHẤM ĐIỂM VÀ CHỌN CONTAINER
-   ========================================================= */
 function scoreElement(el) {
   const text = (el.textContent || '').trim();
   const textLen = text.length;
@@ -1957,13 +1958,8 @@ function trimEdges(container) {
   }
 }
 
-/* Bọc text phẳng trong <p> khi không có block element */
 function wrapLooseTextInParagraphs(rootEl) {
-  const hasBlock = rootEl.querySelector(
-    'p, div, section, article, h1, h2, h3, h4, h5, h6, ' +
-    'ul, ol, blockquote, pre, figure, details, hr'
-  );
-  if (hasBlock) return;
+  if (rootEl.querySelectorAll('p').length > 0) return;
 
   const html = rootEl.innerHTML;
   if (!stripBlank(html)) return;
@@ -1984,12 +1980,10 @@ function wrapLooseTextInParagraphs(rootEl) {
   if (wrapped) rootEl.innerHTML = wrapped;
 }
 
-function countStats(html) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  const words = (tmp.textContent || '').split(/\s+/)
-    .filter(w => /[\p{L}\p{N}]/u.test(w)).length;
-  const minutes = Math.max(1, Math.round(words / 220));
+function countStatsFromNode(containerEl) {
+  const text = containerEl.textContent || '';
+  const words = text.split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w)).length;
+  const minutes = words === 0 ? 0 : Math.max(1, Math.round(words / 220));
   return { words, minutes };
 }
 
@@ -2011,7 +2005,8 @@ function extractArticle(rawHTML) {
   if (stripBlank(wrap.textContent).length < 200) {
     note = 'Không tìm thấy bài viết rõ ràng — hiển thị toàn bộ nội dung đọc được.';
   }
-  return { title, bodyHTML: wrap.innerHTML, note };
+  const stats = countStatsFromNode(wrap);
+  return { title, bodyHTML: wrap.innerHTML, note, stats };
 }
 
 function isEmptySource(src) {
@@ -2028,19 +2023,11 @@ function isEmptySource(src) {
 }
 
 /* =========================================================
-   VIEW MODE
+   CHUYỂN ĐỔI CHẾ ĐỘ SỬA / ĐỌC
    ========================================================= */
 function setView(view) {
-  if (view === 'input' && main.classList.contains('reading-mode')) {
-    main.classList.remove('reading-mode');
-    bodyEl.classList.remove('is-fullscreen');
-    expandBtn.classList.remove('active');
-    expandBtn.setAttribute('aria-label', 'Bật chế độ toàn màn hình');
-    expandBtn.title = 'Chỉ giữ thanh nút, ẩn tiêu đề';
-  }
   main.dataset.view = view;
-
-  if (isMobile()) window.scrollTo(0, 0);
+  window.scrollTo(0, 0);
 
   if (view === 'read') {
     viewBtn.innerHTML = 'Đọc<br>▶ Sửa';
@@ -2050,6 +2037,11 @@ function setView(view) {
     viewBtn.innerHTML = 'Sửa<br>▶ Đọc';
     viewBtn.setAttribute('aria-label', 'Chuyển sang chế độ đọc');
     viewBtn.title = 'Chuyển sang chế độ đọc';
+    if (!bodyEl.classList.contains('menu-open') && document.activeElement !== input) {
+      setTimeout(() => {
+        try { input.focus(); } catch (e) { /* bỏ qua */ }
+      }, 80);
+    }
   }
   saveOpts();
 }
@@ -2065,9 +2057,6 @@ viewBtn.addEventListener('click', () => {
   closeMenu();
 });
 
-/* =========================================================
-   CẬP NHẬT TRẠNG THÁI NÚT
-   ========================================================= */
 let _hasContentCache    = null;
 let _hasContentCacheSig = '';
 
@@ -2101,9 +2090,6 @@ function updateActionButtons() {
   shareBtn.title = has ? 'Chia sẻ bài viết' : 'Chưa có nội dung để chia sẻ';
 }
 
-/* =========================================================
-   RENDER
-   ========================================================= */
 let lastRenderSig = '';
 
 function render() {
@@ -2116,38 +2102,39 @@ function render() {
         '<div class="title">Chưa có nội dung</div>' +
         '<div>Dán văn bản hoặc mở file để bắt đầu.</div>' +
         '<div class="hint">' +
-          '<b>Cách nhập:</b><br>' +
-          '• Bấm nút <kbd>Menu</kbd> rồi chọn <kbd>Dán</kbd> để lấy clipboard<br>' +
-          '• Bấm nút <kbd>Menu</kbd> để chọn file hoặc tuỳ chỉnh<br>' +
-          '• Kéo thả file vào cửa sổ trình duyệt (máy tính)<br>' +
-          '• Trên máy tính: <kbd>Ctrl</kbd>+<kbd>V</kbd> hoặc <kbd>⌘</kbd>+<kbd>V</kbd>' +
+          '<b>Cách sử dụng:</b><br>' +
+          '• Bấm nút <kbd>Tuỳ Chọn</kbd> ở góc dưới trái để dán, mở file, chỉnh cỡ chữ, phông chữ, màu nền<br>' +
+          '• Bấm <kbd>Sửa ▶ Đọc</kbd> để chuyển đổi giữa màn hình gõ và màn hình đọc<br>' +
+          '• Bấm <kbd>A+</kbd> hoặc <kbd>A−</kbd> để phóng to/thu nhỏ cỡ chữ cả khi đọc và sửa<br>' +
+          '• Kéo thả file .html, .htm, .txt vào màn hình để mở nhanh' +
         '</div>' +
       '</div>';
     lastRenderSig = '';
     _hasContentCache    = null;
     _hasContentCacheSig = '';
     updateActionButtons();
-
-    if (isMobile() && main.dataset.view === 'read') setView('input');
     return;
   }
 
   let title = '';
   let bodyHTML = '';
   let note = '';
+  let stats = { words: 0, minutes: 0 };
 
   if (looksLikeHTML(src)) {
     const r = extractArticle(src);
     title = r.title;
     bodyHTML = r.bodyHTML;
     note = r.note;
+    stats = r.stats;
   } else {
     bodyHTML = src.split(/\n\s*\n/)
       .map(b => '<p>' + escapeHTML(b).replace(/\n/g, '<br>') + '</p>')
       .join('');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = bodyHTML;
+    stats = countStatsFromNode(tmp);
   }
-
-  const stats = countStats(bodyHTML);
 
   let html = '';
   if (title) {
@@ -2163,22 +2150,13 @@ function render() {
   html += '<div class="article-body">' + bodyHTML + '</div>';
 
   const sig = title + '\u0001' + bodyHTML;
-  const changed = sig !== lastRenderSig;
   lastRenderSig = sig;
-
   reader.innerHTML = html;
 
   _hasContentCache    = null;
   _hasContentCacheSig = '';
 
-  if (changed) {
-    if (sideRead) sideRead.scrollTop = 0;
-  }
-
   updateActionButtons();
-
-  /* Áp lại style sau khi render để đảm bảo inline style không bị mất */
-  applyReaderInlineStyle();
 }
 
 let renderTimer = null;
@@ -2187,9 +2165,6 @@ function renderDebounced() {
   renderTimer = setTimeout(render, 120);
 }
 
-/* =========================================================
-   CHÈN VÀO Ô NHẬP TẠI VỊ TRÍ CON TRỎ
-   ========================================================= */
 function insertAtCursor(html, text) {
   let toInsert;
   if (html && looksLikeHTML(html)) toInsert = sanitizeHTML(html);
@@ -2226,9 +2201,6 @@ function insertAtCursor(html, text) {
   renderDebounced();
 }
 
-/* =========================================================
-   THAY THẾ TOÀN BỘ NỘI DUNG
-   ========================================================= */
 function replaceContent(html, text) {
   input.innerHTML = '';
   lastRenderSig = '';
@@ -2245,16 +2217,15 @@ function replaceContent(html, text) {
   closeMenu();
 }
 
-/* =========================================================
-   LƯU NỘI DUNG VÀO LOCALSTORAGE
-   ========================================================= */
 const CONTENT_KEY = 'readerContentDTC';
 let saveContentTimer = null;
 
 function saveContentNow() {
   try {
     localStorage.setItem(CONTENT_KEY, input.innerHTML);
-  } catch (e) { /* bỏ qua */ }
+  } catch (e) {
+    // Tránh lỗi đầy bộ nhớ QuotaExceededError
+  }
 }
 
 function saveContentDebounced() {
@@ -2280,59 +2251,43 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') saveContentNow();
 });
 
-/* =========================================================
-   NÚT "LÊN ĐẦU" / "QUAY LẠI"
-   ========================================================= */
 let savedScrollPos = null;
 
+const SCROLL_ICON_TOP =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<line x1="12" y1="19" x2="12" y2="5"/>' +
+  '<polyline points="5 12 12 5 19 12"/></svg>';
+
+const SCROLL_ICON_BACK =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<polyline points="9 14 4 9 9 4"/>' +
+  '<path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>';
+
 function captureScrollPos() {
-  return {
-    windowY:      window.scrollY || window.pageYOffset || 0,
-    sideInputTop: sideInput ? sideInput.scrollTop : 0,
-    sideReadTop:  sideRead  ? sideRead.scrollTop  : 0
-  };
+  return window.scrollY || window.pageYOffset || 0;
 }
 
-function restoreScrollPos(pos) {
-  if (!pos) return;
-
-  try { window.scrollTo({ top: pos.windowY, behavior: 'smooth' }); }
-  catch (e) { window.scrollTo(0, pos.windowY); }
-
-  if (sideInput && pos.sideInputTop > 0) {
-    try { sideInput.scrollTo({ top: pos.sideInputTop, behavior: 'smooth' }); }
-    catch (e) { sideInput.scrollTop = pos.sideInputTop; }
-  }
-  if (sideRead && pos.sideReadTop > 0) {
-    try { sideRead.scrollTo({ top: pos.sideReadTop, behavior: 'smooth' }); }
-    catch (e) { sideRead.scrollTop = pos.sideReadTop; }
-  }
+function restoreScrollPos(posY) {
+  try { window.scrollTo({ top: posY, behavior: 'smooth' }); }
+  catch (e) { window.scrollTo(0, posY); }
 }
 
 function scrollToTop() {
   try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
   catch (e) { window.scrollTo(0, 0); }
-
   if (document.documentElement) document.documentElement.scrollTop = 0;
   if (document.body) document.body.scrollTop = 0;
-
-  if (sideInput) {
-    try { sideInput.scrollTo({ top: 0, behavior: 'smooth' }); }
-    catch (e) { sideInput.scrollTop = 0; }
-  }
-  if (sideRead) {
-    try { sideRead.scrollTo({ top: 0, behavior: 'smooth' }); }
-    catch (e) { sideRead.scrollTop = 0; }
-  }
 }
 
 function setScrollBtnMode(mode) {
   if (mode === 'back') {
-    scrollTopBtn.innerHTML = 'Quay<br>lại';
+    scrollTopBtn.innerHTML = SCROLL_ICON_BACK;
     scrollTopBtn.setAttribute('aria-label', 'Quay lại vị trí cũ');
     scrollTopBtn.title = 'Quay lại vị trí cũ';
   } else {
-    scrollTopBtn.innerHTML = 'Lên<br>đầu';
+    scrollTopBtn.innerHTML = SCROLL_ICON_TOP;
     scrollTopBtn.setAttribute('aria-label', 'Cuộn lên đầu');
     scrollTopBtn.title = 'Cuộn lên đầu';
   }
@@ -2345,8 +2300,7 @@ function resetScrollBtn() {
 
 scrollTopBtn.addEventListener('click', () => {
   scrollTopBtn.blur();
-
-  if (savedScrollPos) {
+  if (savedScrollPos !== null) {
     restoreScrollPos(savedScrollPos);
     savedScrollPos = null;
     setScrollBtnMode('top');
@@ -2357,9 +2311,14 @@ scrollTopBtn.addEventListener('click', () => {
   }
 });
 
-/* =========================================================
-   PASTE TRONG Ô NHẬP
-   ========================================================= */
+/* Tự động trả nút cuộn về trạng thái 'top' khi người dùng cuộn tay */
+window.addEventListener('scroll', () => {
+  if (savedScrollPos !== null && (window.scrollY || window.pageYOffset || 0) > 80) {
+    savedScrollPos = null;
+    setScrollBtnMode('top');
+  }
+}, { passive: true });
+
 let composing = false;
 
 input.addEventListener('compositionstart', () => { composing = true; });
@@ -2378,23 +2337,22 @@ input.addEventListener('paste', e => {
   insertAtCursor(html, text);
   saveContentDebounced();
 
-  if (isMobile()) {
-    if (document.activeElement && document.activeElement !== document.body) {
-      document.activeElement.blur();
-    }
-    setTimeout(() => setView('read'), 180);
+  if (document.activeElement && document.activeElement !== document.body) {
+    document.activeElement.blur();
   }
+  setTimeout(() => setView('read'), 180);
 });
 
 input.addEventListener('input', () => {
   if (composing) return;
+  /* Phục hồi chữ gợi ý tức thì khi người dùng xoá sạch văn bản */
+  if (stripBlank(input.textContent) === '' && !input.querySelector('img, hr, table, pre')) {
+    input.innerHTML = '';
+  }
   renderDebounced();
   saveContentDebounced();
 });
 
-/* =========================================================
-   PASTE TOÀN MÀN HÌNH — THAY THẾ
-   ========================================================= */
 document.addEventListener('paste', e => {
   if (e.target === input || (e.target && input.contains(e.target))) return;
 
@@ -2412,17 +2370,11 @@ document.addEventListener('paste', e => {
   if (!html && !text) return;
 
   replaceContent(html, text);
-
-  if (isMobile()) {
-    if (document.activeElement && document.activeElement !== document.body) {
-      document.activeElement.blur();
-    }
+  if (document.activeElement && document.activeElement !== document.body) {
+    document.activeElement.blur();
   }
 });
 
-/* =========================================================
-   XỬ LÝ DÁN — nút Dán trong menu
-   ========================================================= */
 let isPasting = false;
 
 async function handlePasteClick() {
@@ -2457,7 +2409,7 @@ async function handlePasteClick() {
           replaceContent(gotHTML, gotText);
           return;
         }
-      } catch (err) { /* bị từ chối */ }
+      } catch (err) { /* Bị chặn quyền */ }
     }
 
     if (navigator.clipboard && navigator.clipboard.readText) {
@@ -2467,12 +2419,11 @@ async function handlePasteClick() {
           replaceContent('', text);
           return;
         }
-      } catch (err) { /* tiếp tục fallback */ }
+      } catch (err) { /* Fallback */ }
     }
 
     showMessage(
-      'Trình duyệt không cho phép đọc clipboard tự động.\n\n' +
-      'Hãy nhấn giữ vào ô nhập và chọn Paste, hoặc dùng tổ hợp phím Ctrl+V / ⌘+V.',
+      'Trình duyệt không cho phép đọc clipboard tự động.\n\nHãy nhấn giữ vào ô nhập và chọn Dán, hoặc dùng tổ hợp phím Ctrl+V / ⌘+V.',
       { type: 'warning', title: 'Không đọc được clipboard' }
     );
   } finally {
@@ -2484,16 +2435,11 @@ async function handlePasteClick() {
 
 pasteBtn.addEventListener('click', handlePasteClick);
 
-/* =========================================================
-   CHỌN FILE
-   ========================================================= */
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTS  = ['html', 'htm', 'txt'];
 let isReadingFile = false;
 
-fileBtn.addEventListener('click', () => {
-  fileInput.click();
-});
+fileBtn.addEventListener('click', () => { fileInput.click(); });
 
 fileInput.addEventListener('change', e => {
   const file = e.target.files && e.target.files[0];
@@ -2538,7 +2484,6 @@ function readFile(file) {
   fileReader.onload = () => {
     const content = fileReader.result || '';
     replaceContent(content, content);
-
     isReadingFile = false;
     fileBtn.disabled = false;
     fileBtn.removeAttribute('aria-busy');
@@ -2547,12 +2492,10 @@ function readFile(file) {
   fileReader.readAsText(file, 'UTF-8');
 }
 
-/* =========================================================
-   KÉO THẢ FILE (chỉ desktop)
-   ========================================================= */
 let dragCounter = 0;
 
 function isFileDrag(e) {
+  if (modalOverlay.classList.contains('is-visible')) return false;
   if (!e.dataTransfer) return false;
   const types = e.dataTransfer.types;
   if (!types) return false;
@@ -2560,7 +2503,6 @@ function isFileDrag(e) {
 }
 
 document.addEventListener('dragenter', e => {
-  if (isMobile()) return;
   if (!isFileDrag(e)) return;
   e.preventDefault();
   dragCounter++;
@@ -2568,14 +2510,12 @@ document.addEventListener('dragenter', e => {
 });
 
 document.addEventListener('dragover', e => {
-  if (isMobile()) return;
   if (!isFileDrag(e)) return;
   e.preventDefault();
   if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
 });
 
 document.addEventListener('dragleave', e => {
-  if (isMobile()) return;
   if (!isFileDrag(e)) return;
   dragCounter--;
   if (dragCounter <= 0) {
@@ -2585,7 +2525,6 @@ document.addEventListener('dragleave', e => {
 });
 
 document.addEventListener('drop', e => {
-  if (isMobile()) return;
   if (!isFileDrag(e)) return;
   e.preventDefault();
   dragCounter = 0;
@@ -2597,21 +2536,23 @@ document.addEventListener('drop', e => {
   }
 });
 
-/* =========================================================
-   TUỲ CHỌN
-   ========================================================= */
+window.addEventListener('dragend', () => {
+  dragCounter = 0;
+  dropOverlay.classList.remove('is-visible');
+});
+
 const OPTS_KEY = 'readerOptsDTC';
 let savedView = 'input';
 
 function saveOpts() {
   try {
     localStorage.setItem(OPTS_KEY, JSON.stringify({
-      fontSize:   fontSizeSel.value,
+      fontSize:   FONT_STEPS[fontIndex],
       fontFamily: fontFamilySel.value,
       lineHeight: lineHeightSel.value,
       maxWidth:   maxWidthSel.value,
       paperColor: paperColorSel.value,
-      expanded:   main.classList.contains('reading-mode'),
+      darkMode:   bodyEl.classList.contains('dark'),
       view:       main.dataset.view
     }));
   } catch (e) { /* bỏ qua */ }
@@ -2620,18 +2561,24 @@ function saveOpts() {
 function loadOpts() {
   try {
     const o = JSON.parse(localStorage.getItem(OPTS_KEY) || '{}');
-    if (o.fontSize)   fontSizeSel.value   = o.fontSize;
+
+    if (o.fontSize) {
+      const idx = FONT_STEPS.indexOf(o.fontSize);
+      if (idx >= 0) fontIndex = idx;
+    }
     if (o.fontFamily) fontFamilySel.value = o.fontFamily;
     if (o.lineHeight) lineHeightSel.value = o.lineHeight;
     if (o.maxWidth)   maxWidthSel.value   = o.maxWidth;
-    if (o.paperColor) paperColorSel.value = o.paperColor;
+    if (o.paperColor && o.paperColor !== 'dark') paperColorSel.value = o.paperColor;
 
-    if (o.expanded && !isMobile()) {
-      main.classList.add('reading-mode');
-      bodyEl.classList.add('is-fullscreen');
-      expandBtn.classList.add('active');
-      expandBtn.setAttribute('aria-label', 'Thoát chế độ toàn màn hình');
-      expandBtn.title = 'Hiện lại tiêu đề';
+    const wantDark = !!o.darkMode || o.paperColor === 'dark';
+
+    if (wantDark) {
+      bodyEl.classList.add('dark');
+      darkToggle.setAttribute('aria-pressed', 'true');
+      darkToggle.querySelector('span').textContent = 'Nền sáng';
+      darkToggle.title = 'Tắt nền tối';
+      paperColorSel.disabled = true;
     }
 
     if (o.view === 'read' || o.view === 'input') {
@@ -2640,21 +2587,8 @@ function loadOpts() {
   } catch (e) { /* bỏ qua */ }
 }
 
-/* Áp inline style trực tiếp trên #reader */
-function applyReaderInlineStyle() {
-  const fsVal = fontSizeSel.value;
-  const ffVal = fontFamilySel.value;
-  const lhVal = lineHeightSel.value;
-
-  if (reader) {
-    reader.style.setProperty('font-size', fsVal, 'important');
-    reader.style.setProperty('font-family', ffVal, 'important');
-    reader.style.setProperty('line-height', lhVal, 'important');
-  }
-}
-
 function applyStyles() {
-  const fsVal = fontSizeSel.value;
+  const fsVal = FONT_STEPS[fontIndex];
   const ffVal = fontFamilySel.value;
   const lhVal = lineHeightSel.value;
   const mwVal = maxWidthSel.value;
@@ -2664,51 +2598,56 @@ function applyStyles() {
   root.style.setProperty('--reader-lh', lhVal);
   root.style.setProperty('--reader-mw', mwVal);
 
-  applyReaderInlineStyle();
-
-  let styleEl = document.getElementById('reader-dynamic-style');
-  if (!styleEl) {
-    styleEl = document.createElement('style');
-    styleEl.id = 'reader-dynamic-style';
-    document.head.appendChild(styleEl);
-  }
-  styleEl.textContent =
-    '#reader { font-size: ' + fsVal + ' !important; ' +
-              'font-family: ' + ffVal + ' !important; ' +
-              'line-height: ' + lhVal + ' !important; }';
-
   bodyEl.classList.toggle('is-max-width', mwVal === 'none');
   applyPaper();
   saveOpts();
 }
 
 function applyPaper() {
-  if (paperColorSel.value === 'dark') {
-    bodyEl.classList.add('dark');
+  if (bodyEl.classList.contains('dark')) {
+    root.style.removeProperty('--paper');
   } else {
-    bodyEl.classList.remove('dark');
     root.style.setProperty('--paper', paperColorSel.value);
   }
   updateThemeColor();
 }
 
-[fontSizeSel, fontFamilySel, lineHeightSel, maxWidthSel, paperColorSel].forEach(sel => {
-  sel.addEventListener('change', applyStyles);
-});
+function updateFontDisplay() {
+  fontSizeDisplay.textContent = FONT_STEPS[fontIndex];
+  fontMinus.disabled = (fontIndex === 0);
+  fontPlus.disabled  = (fontIndex === FONT_STEPS.length - 1);
+}
 
-/* =========================================================
-   NÚT CHỨC NĂNG
-   ========================================================= */
-expandBtn.addEventListener('click', () => {
-  const on = !main.classList.contains('reading-mode');
-  main.classList.toggle('reading-mode', on);
-  bodyEl.classList.toggle('is-fullscreen', on);
-  expandBtn.classList.toggle('active', on);
-  expandBtn.setAttribute('aria-label', on ? 'Thoát chế độ toàn màn hình' : 'Bật chế độ toàn màn hình');
-  expandBtn.title = on ? 'Hiện lại tiêu đề' : 'Chỉ giữ thanh nút, ẩn tiêu đề';
-  if (on) setView('read');
+function setFontSize(delta) {
+  const next = Math.max(0, Math.min(FONT_STEPS.length - 1, fontIndex + delta));
+  if (next === fontIndex) return;
+  fontIndex = next;
+  updateFontDisplay();
+  applyStyles();
+}
+
+fontMinus.addEventListener('click', () => setFontSize(-1));
+fontPlus.addEventListener('click', () => setFontSize(+1));
+
+function updateFontPreview() {
+  fontPreview.style.fontFamily = fontFamilySel.value;
+}
+
+darkToggle.addEventListener('click', () => {
+  const on = !bodyEl.classList.contains('dark');
+  bodyEl.classList.toggle('dark', on);
+  darkToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+  darkToggle.querySelector('span').textContent = on ? 'Nền sáng' : 'Nền tối';
+  darkToggle.title = on ? 'Tắt nền tối' : 'Bật nền tối';
+  paperColorSel.disabled = on;
+  applyPaper();
   saveOpts();
 });
+
+[fontFamilySel, lineHeightSel, maxWidthSel, paperColorSel].forEach(sel => {
+  sel.addEventListener('change', applyStyles);
+});
+fontFamilySel.addEventListener('change', updateFontPreview);
 
 cleanBtn.addEventListener('click', () => {
   const hasAnything = hasReadableContent() || stripBlank(input.innerHTML).length > 0;
@@ -2738,23 +2677,17 @@ cleanBtn.addEventListener('click', () => {
   );
 });
 
-/* =========================================================
-   IN BÀI VIẾT
-   ========================================================= */
 printBtn.addEventListener('click', () => {
   if (printBtn.disabled) return;
-
+  render();
   if (!hasReadableContent()) {
     showMessage('Chưa có nội dung để in.', { type: 'warning' });
     return;
   }
-
   closeMenu();
-
   setTimeout(() => {
-    try {
-      window.print();
-    } catch (e) {
+    try { window.print(); }
+    catch (e) {
       showMessage('Trình duyệt không hỗ trợ in. Hãy dùng Ctrl+P / ⌘+P.',
         { type: 'error', title: 'Không in được' });
     }
@@ -2764,6 +2697,7 @@ printBtn.addEventListener('click', () => {
 document.addEventListener('keydown', e => {
   const isPrint = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p';
   if (!isPrint) return;
+  render();
   if (!hasReadableContent()) return;
   e.preventDefault();
   closeMenu();
@@ -2772,9 +2706,6 @@ document.addEventListener('keydown', e => {
   }, 100);
 });
 
-/* =========================================================
-   XUẤT FILE
-   ========================================================= */
 function slugify(s) {
   return (s || '')
     .normalize('NFD')
@@ -2818,30 +2749,29 @@ exportTxtBtn.addEventListener('click', () => {
   const title = getArticleTitle();
   const text = reader.innerText.trim();
   downloadFile(text, slugify(title) + '.txt', 'text/plain');
+  closeExportMenu();
   closeMenu();
 });
 
-/* =========================================================
-   XUẤT HTML — theo tùy chọn hiện tại
-   ========================================================= */
 exportHtmlBtn.addEventListener('click', () => {
   if (!hasReadableContent()) return;
 
   const title = getArticleTitle();
   const bodyHTML = getArticleBodyHTML();
 
-  const fs = fontSizeSel.value;
+  const fs = FONT_STEPS[fontIndex];
   const ff = fontFamilySel.value;
   const lh = lineHeightSel.value;
   const mw = maxWidthSel.value;
+  const isDark = bodyEl.classList.contains('dark');
   const paper = paperColorSel.value;
 
   let bgColor, inkColor, lineColor, mutedColor, linkColor, markBg, markInk;
-  if (paper === 'dark') {
+  if (isDark) {
     bgColor    = '#1c1a17';
     inkColor   = '#d8d4cc';
     lineColor  = '#33302a';
-    mutedColor = '#7a766a';
+    mutedColor = '#9a958a';
     linkColor  = '#e8a06b';
     markBg     = '#8a7a00';
     markInk    = '#ffffff';
@@ -2849,7 +2779,7 @@ exportHtmlBtn.addEventListener('click', () => {
     bgColor    = paper;
     inkColor   = '#1a1a1a';
     lineColor  = '#e6e1d6';
-    mutedColor = '#8a8578';
+    mutedColor = '#6b675c';
     linkColor  = '#b04a00';
     markBg     = '#fff3a3';
     markInk    = '#1a1a1a';
@@ -2881,7 +2811,7 @@ exportHtmlBtn.addEventListener('click', () => {
     '  text-transform: none;',
     '  letter-spacing: normal;',
     '}',
-    'h1 { font-size: 1.5em; margin: 1.5em 0 0.6em; }',
+    'h1 { font-size: 1.8em; margin: 0 0 0.8em; }',
     'h2 { font-size: 1.3em; margin: 1.4em 0 0.5em; }',
     'h3 { font-size: 1.15em; margin: 1.2em 0 0.5em; }',
     'h4 { font-size: 1em; margin: 1.1em 0 0.4em; }',
@@ -2958,16 +2888,11 @@ exportHtmlBtn.addEventListener('click', () => {
     's, del { text-decoration: line-through; color: ' + mutedColor + '; }',
     'sub, sup { font-size: 0.75em; line-height: 0; }',
     'small { font-size: 0.85em; color: ' + mutedColor + '; }',
-    'table { border-collapse: collapse; width: 100%; }',
-    'th, td {',
-    '  border: 1px solid ' + lineColor + ';',
-    '  padding: 6px 10px;',
-    '  text-align: left;',
-    '  vertical-align: top;',
-    '}',
-    'blockquote, pre, img, figure, tr { page-break-inside: avoid; }',
+    'blockquote, pre, img, figure { page-break-inside: avoid; }',
     'h1, h2, h3, h4, h5, h6 { page-break-after: avoid; }'
   ].join('\n');
+
+  let titleHTML = title ? '<h1>' + escapeHTML(title) + '</h1>' : '';
 
   const fullHTML =
     '<!DOCTYPE html>\n' +
@@ -2980,18 +2905,17 @@ exportHtmlBtn.addEventListener('click', () => {
     '</head>\n' +
     '<body>\n' +
     '<div class="article-wrap">\n' +
+    titleHTML + '\n' +
     bodyHTML + '\n' +
     '</div>\n' +
     '</body>\n' +
     '</html>';
 
   downloadFile(fullHTML, slugify(title) + '.html', 'text/html');
+  closeExportMenu();
   closeMenu();
 });
 
-/* =========================================================
-   CHIA SẺ (MOBILE)
-   ========================================================= */
 shareBtn.addEventListener('click', async () => {
   if (!hasReadableContent()) return;
 
@@ -3008,6 +2932,7 @@ shareBtn.addEventListener('click', async () => {
     text = text.slice(0, MAX_LEN) + '…';
   }
 
+  closeExportMenu();
   closeMenu();
 
   if (navigator.share) {
@@ -3035,9 +2960,6 @@ shareBtn.addEventListener('click', async () => {
   }
 });
 
-/* =========================================================
-   COPY BÀI VIẾT
-   ========================================================= */
 async function copyRich(html, text) {
   try {
     if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
@@ -3049,7 +2971,7 @@ async function copyRich(html, text) {
       ]);
       return true;
     }
-  } catch (e) { /* fallback */ }
+  } catch (e) { /* Fallback */ }
 
   try {
     const ta = document.createElement('textarea');
@@ -3081,17 +3003,12 @@ function getPrimaryFontName(stack) {
   return map[first] || first;
 }
 
-/* =========================================================
-   XÂY HTML KHI COPY — theo tùy chọn đang chọn
-   Font-size được áp inline ở đây, KHÔNG dựa vào whitelist
-   của sanitizer (vì sanitizer đã xoá font khỏi whitelist).
-   ========================================================= */
 function buildCopyWithReaderOptions() {
   const titleEl = reader.querySelector('.article-title');
   const bodyElm = reader.querySelector('.article-body');
   if (!bodyElm) return '';
 
-  const fs = fontSizeSel.value;
+  const fs = FONT_STEPS[fontIndex];
   const ff = fontFamilySel.value;
   const lh = lineHeightSel.value;
   const mw = maxWidthSel.value;
@@ -3101,7 +3018,6 @@ function buildCopyWithReaderOptions() {
   const ffCSS = '"' + primaryFont.replace(/"/g, '\\"') + '"';
 
   const clone = bodyElm.cloneNode(true);
-
   clone.removeAttribute('class');
   clone.querySelectorAll('[class]').forEach(el => el.removeAttribute('class'));
 
@@ -3167,29 +3083,10 @@ copyBtn.addEventListener('click', async () => {
   }
 });
 
-/* =========================================================
-   XỬ LÝ XOAY MÀN HÌNH
-   ========================================================= */
-window.addEventListener('resize', () => {
-  if (isMobile()) {
-    if (main.classList.contains('reading-mode')) {
-      main.classList.remove('reading-mode');
-      bodyEl.classList.remove('is-fullscreen');
-      expandBtn.classList.remove('active');
-      saveOpts();
-    }
-  } else {
-    if (main.dataset.view === 'read' && !main.classList.contains('reading-mode')) {
-      setView('input');
-    }
-    closeMenu();
-  }
-});
-
-/* =========================================================
-   KHỞI TẠO
-   ========================================================= */
 loadOpts();
+updateFontDisplay();
+updateFontPreview();
+updatePreviewText();
 
 (function restoreContent() {
   const saved = loadContent();
@@ -3207,21 +3104,8 @@ if (savedView === 'read' && !reader.querySelector('.placeholder')) {
   setView('input');
 }
 
-if (isMobile() && !reader.querySelector('.article-body')) {
-  setTimeout(() => {
-    input.focus();
-    try {
-      const range = document.createRange();
-      range.selectNodeContents(input);
-      range.collapse(false);
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    } catch (e) { /* bỏ qua */ }
-  }, 300);
-}
+/* Tự động bật bảng Tuỳ Chọn khi mới khởi động để người dùng nhận diện phần mềm */
+openMenu();
 </script>
 
 </body>
